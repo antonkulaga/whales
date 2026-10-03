@@ -1,0 +1,129 @@
+{
+  "verified_on": "2026-10-04",
+  "scope": "Curated starting inventory, not exhaustive. Observed schemas in resources/audits; unknowns remain explicit.",
+  "datasets": [
+    {
+      "id": "orrp/DSWP",
+      "url": "https://huggingface.co/datasets/orrp/DSWP",
+      "labels": "None per clip. Species and region describe the corpus; public viewer feature is audio only.",
+      "starting_point": "1,501 codas; 45 minutes. Smallest whale corpus in this inventory.",
+      "license": "CC BY 4.0",
+      "context": "One vocal clan near Dominica. No per-file equipment, caller or behavior metadata."
+    },
+    {
+      "id": "dolphinteam/OpenWhistle-CNN",
+      "url": "https://huggingface.co/datasets/dolphinteam/OpenWhistle-CNN",
+      "labels": "0=noise, 1=whistle; a binary acoustic detection label.",
+      "starting_point": "review-sample: 480 rows; full default: 76,516 0.4-second windows.",
+      "license": "Not specified in inspected card/API",
+      "context": "recording, onset, offset; not animal coordinates or behavior.",
+      "license_note": "OpenWhistle paper is CC BY 4.0; inspected HF data license field is empty. Do not substitute the article license for a dataset declaration."
+    },
+    {
+      "id": "dolphinteam/OpenWhistle-Classification-Finetuning",
+      "url": "https://huggingface.co/datasets/dolphinteam/OpenWhistle-Classification-Finetuning",
+      "labels": "balanced: 0=NSW_1, 1=SW_Luna, 2=SW_Nana, 3=SW_Neo, 4=SW_Nikita, 5=SW_Yosefa. all/unbalanced: 0=NSW_3, 1=NSW_2, 2=NSW_1, 3=SW_Dana, 4=SW_Luna, 5=SW_Nana, 6=SW_Neo, 7=SW_Nikita, 8=SW_Shy, 9=SW_Yosefa.",
+      "starting_point": "balanced-review-sample: 480 rows. balanced: 3,000; unbalanced: 3,488; all: 8,354. Configs overlap and must not be summed as independent samples.",
+      "license": "Not specified in inspected card/API",
+      "context": "Signature/non-signature whistle types; named signature type does not establish the actual caller. F0 time/frequency/confidence tracks, QC, session and timing; snr_db in all configs.",
+      "license_note": "OpenWhistle paper is CC BY 4.0; inspected HF data license field is empty. Do not substitute the article license for a dataset declaration."
+    },
+    {
+      "id": "dolphinteam/OpenWhistle-Detection-Finetuning",
+      "url": "https://huggingface.co/datasets/dolphinteam/OpenWhistle-Detection-Finetuning",
+      "labels": "Seven-element multi-label vector ordered SW_Neo, SW_Luna, SW_Nikita, SW_Nana, SW_Yosefa, SW_Dana, NSW_1; all zeros=background. binary_label: noise/whistle.",
+      "starting_point": "5,600 windows of 0.5 seconds; train 3,920, validation/test 840 each.",
+      "license": "Not specified in inspected card/API",
+      "context": "name and source_label; fixed windows can contain multiple types. No published behavior/position fields.",
+      "license_note": "OpenWhistle paper is CC BY 4.0; inspected HF data license field is empty. Do not substitute the article license for a dataset declaration."
+    },
+    {
+      "id": "dolphinteam/OpenWhistle-Pretraining",
+      "url": "https://huggingface.co/datasets/dolphinteam/OpenWhistle-Pretraining",
+      "labels": "No classification labels. Metadata: start_time, end_time, duration, year, hydrophone.",
+      "starting_point": "review-sample: 480 sequences, 1.85 hours (~793 MB card download size). Full: 31,780 sequences, 114.284 hours at 96 kHz.",
+      "license": "Not specified in inspected card/API",
+      "context": "Hydrophone channel is a recording attribute, not source location. Sequence-level metadata is not a confirmed social interaction label.",
+      "license_note": "OpenWhistle paper is CC BY 4.0; inspected HF data license field is empty. Do not substitute the article license for a dataset declaration."
+    },
+    {
+      "id": "Watkins Marine Mammal Sound Database",
+      "url": "https://www.whalingmuseum.org/research/digital/watkins-marine-mammal-sound-recording/",
+      "labels": "Species-level archive identification with recording metadata; detailed annotation availability varies by cut and mirror.",
+      "starting_point": "Best-of cuts for a broad species comparison; avoid the full archive initially.",
+      "license": "WHOI original use statement permits personal/academic use and prohibits commercial use; check each mirror separately.",
+      "context": "Cross-species labels, historical dates/places. Species labels are not call meanings.",
+      "terms_source": "https://www.whoi.edu/press-room/news-release/historic-marine-mammal-sound-archive-now-available-online/"
+    },
+    {
+      "id": "sw-combinatoriality",
+      "url": "https://github.com/pratyushasharma/sw-combinatoriality",
+      "labels": "Actual coda table: codaNUM2018,Date,nClicks,Duration,ICI1\u2013ICI9,CodaType,Clan,Unit,UnitNum,IDN. Dialogue table: REC,nClicks,Duration,ICI1\u2013ICI28,Whale,TsTo.",
+      "starting_point": "Inspect public CSVs: 8,719 coda rows and 3,840 dialogue rows (actual file count). No HF DSWP clip alignment established.",
+      "license": "Check data/repository terms separately",
+      "context": "Public table includes EC1 and EC2 clan values and unidentified IDN=0 rows. Dialogue Whale codes need interpretation. No verified join to HF numbered clips."
+    },
+    {
+      "id": "DCLDE Northeast Pacific killer whales",
+      "url": "https://www.nature.com/articles/s41597-025-05281-5",
+      "labels": "Observed collated CSV: ClassSpecies=HW,KW,UndBio,AB; Ecotype=SRKW,TKW,NRKW,SAR,OKW,NA. AnnotationLevel=Detection,Call,File. Soundfile,Dataset,LowFreqHz,HighFreqHz,FileEndSec,UTC,FileBeginSec,KW,KW_certain,Provider,FilePath,FileOk.",
+      "starting_point": "Authors\u2019 versioned archive (4.9 MB compressed) contains code and collated annotations: 207,574 rows. Paper describes >225,000 provider annotations. Audio archive is ~1.6 TB.",
+      "license": "Verify deposited audio terms; article license is not an audio license",
+      "context": "Species/ecotype and recording metadata. Time-frequency boxes are not animal coordinates; site/deployment positions are recording positions. Workshop site currently advertises 2027 despite dataset\u2019s 2026 challenge framing.",
+      "metadata_url": "https://zenodo.org/records/15743034"
+    },
+    {
+      "id": "Killer whale HFM contours",
+      "url": "https://datadryad.org/dataset/doi:10.5061/dryad.8cz8w9h7f",
+      "labels": "Traced signal contours: time, frequency, amplitude; regional source folders.",
+      "starting_point": "Read small README first; matched audio/CSV files are bundled in a 5.99 GB ZIP. Exact CSV headers not inspected.",
+      "license": "CC0 1.0, verified Dryad API",
+      "context": "High-frequency modulated signals attributed to killer whales. Function is a hypothesis, not a semantic label."
+    },
+    {
+      "id": "cairninstitute/mmc-sanctsound-humpback-dac9",
+      "url": "https://huggingface.co/datasets/cairninstitute/mmc-sanctsound-humpback-dac9",
+      "labels": "Codec tokens and automated quality/detector scores; no human descriptions of song meaning.",
+      "starting_point": "Inspect metadata before 29 TAR shards (~1.5 GB each), 488,320 token arrays.",
+      "license": "Project DoLittle Dataset Terms (custom)",
+      "context": "chunk_scores.csv: npy_file, flac_name, chunk_idx_in_flac, whale_cv, energy_ratio, whale_rms, detector_score. Retains source file links; scores are machine-derived."
+    },
+    {
+      "id": "Sarasota Dolphin Whistle Database",
+      "url": "https://doi.org/10.3389/fmars.2022.923046",
+      "labels": "Known individual signature whistles connected to age, sex, matrilineal relationships and social associations in longitudinal research.",
+      "starting_point": "Read the resource paper and establish access to recordings/linked metadata; not verified as a bulk public ML download.",
+      "license": "Access and use terms need confirmation",
+      "context": "Richer biological/social metadata than the public binary datasets; collection includes catch-and-release recordings, which affect behavioral interpretation."
+    },
+    {
+      "id": "DOLPHINFREE",
+      "url": "https://zenodo.org/records/14637675",
+      "species": "Delphinus delphis",
+      "labels": "Visual group-minute percentages: foraging, travelling, socializing, milling, attraction to boat; fishing-net/context annotations. 4,637 manually verified whistle contours.",
+      "starting_point": "Paper describes internal XLSX observations and JSON contours; public data currently packaged as one 39.9 GB ZIP. Internal schemas not locally inspected.",
+      "license": "CC BY 4.0, verified Zenodo API",
+      "context": "Bay of Biscay, summers 2020\u20132022. Four-channel TETRA and sensor geometry support estimated directions, not ready-made individual positions or identities.",
+      "source": "https://essd.copernicus.org/articles/17/4495/2025/essd-17-4495-2025.html"
+    },
+    {
+      "id": "Madeira odontocete dataset",
+      "url": "https://zenodo.org/records/17952229",
+      "labels": "Species, group behavior, group size, calves, call types, vessel/environment context. Behavior: Erratic, Feeding, Feeding/Socialising, Resting, Resting/Travelling, Socialising, Socialising/Resting, Travelling, Travelling/Socialising.",
+      "starting_point": "Actual inspected Metadata.xlsx: 36,345 bytes and 35 recordings. Paper calls it CSV. Audio Dataset.zip: 2.3 GB; seven species, 2022\u20132025.",
+      "license": "CC BY 4.0, verified Zenodo API",
+      "context": "Latitude/longitude = initial sighting position; behavior/call categories = recording/group context, not per-call intent. Taxonomy contains spelling errors to normalize separately.",
+      "metadata_url": "https://zenodo.org/api/records/17952229/files/Metadata.xlsx/content",
+      "source": "https://www.nature.com/articles/s41597-026-07675-5"
+    },
+    {
+      "id": "DCLDE fin-whale DAS localization",
+      "url": "https://doi.org/10.25921/v2vh-8w16",
+      "labels": "Challenge advertises arrival-time picks, UTC, ground-truth Lat/Lon and UTM derived call localization.",
+      "starting_point": "Inspect challenge description and file schema; schema and data terms not yet verified.",
+      "license": "Unverified",
+      "context": "Spatial source-location lead rather than call meaning. Fiber-optic cable recordings and derived localization.",
+      "source": "https://www.dclde.org/challenges-and-data-sets"
+    }
+  ]
+}

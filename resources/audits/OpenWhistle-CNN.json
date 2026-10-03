@@ -1,0 +1,128 @@
+{
+  "dataset": "dolphinteam/OpenWhistle-CNN",
+  "fetched_at_utc": "2026-10-03T21:48:42.372086+00:00",
+  "hub_revision_at_inspection": "e9a0561485a09c1977b9badbccc9c22322cdd6d1",
+  "gated": false,
+  "declared_license": null,
+  "sources": [
+    "https://huggingface.co/api/datasets/dolphinteam/OpenWhistle-CNN",
+    "https://datasets-server.huggingface.co/info?dataset=dolphinteam%2FOpenWhistle-CNN"
+  ],
+  "note": "Viewer metadata is live, not a revision-pinned download. Missing license is unknown.",
+  "configs": {
+    "default": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "spectrogram": {
+          "_type": "Image"
+        },
+        "label": {
+          "names": [
+            "noise",
+            "whistle"
+          ],
+          "_type": "ClassLabel"
+        },
+        "file_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "recording": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float64",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float64",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "noise",
+          "1": "whistle"
+        }
+      },
+      "splits": {
+        "test": {
+          "name": "test",
+          "num_bytes": 1676427051,
+          "num_examples": 16708,
+          "dataset_name": null
+        },
+        "train": {
+          "name": "train",
+          "num_bytes": 5367561044,
+          "num_examples": 53828,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 596417173,
+          "num_examples": 5980,
+          "dataset_name": null
+        }
+      }
+    },
+    "review-sample": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "spectrogram": {
+          "_type": "Image"
+        },
+        "label": {
+          "names": [
+            "noise",
+            "whistle"
+          ],
+          "_type": "ClassLabel"
+        },
+        "file_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "recording": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float64",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float64",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "noise",
+          "1": "whistle"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 37508078,
+          "num_examples": 376,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 10438612,
+          "num_examples": 104,
+          "dataset_name": null
+        }
+      }
+    }
+  }
+}

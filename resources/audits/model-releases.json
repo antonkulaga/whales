@@ -1,0 +1,251 @@
+{
+  "checked_on": "2026-10-04",
+  "scope": "Metadata, release history, dependency manifests and documented inference paths; no weights downloaded or inference verified",
+  "models": [
+    {
+      "repo": "dolphinteam/OpenWhistle-Wav2Vec2.0",
+      "source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-Wav2Vec2.0?blobs=true",
+      "revision": "985ac11bc6939af5e41383143aad5a0ae6993f68",
+      "license": null,
+      "parameters": 95054848,
+      "weights": [
+        {
+          "file": "model.safetensors",
+          "bytes": 380245704
+        }
+      ],
+      "paper": "https://arxiv.org/abs/2609.34839",
+      "paper_first_submission": "2026-09-28",
+      "hub_created_at": "2026-05-04T13:36:21.000Z",
+      "hub_last_modified": "2026-09-29T08:01:41.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2026-05-04",
+        "revision": "1b92224edab2059633d11e49daa10bf53c309394",
+        "source": "https://huggingface.co/dolphinteam/OpenWhistle-Wav2Vec2.0/commit/1b92224edab2059633d11e49daa10bf53c309394",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "quick_backbone_candidate",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-Wav2Vec2.0/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-Wav2Vec2.0/tree/1b92224edab2059633d11e49daa10bf53c309394?recursive=true"
+    },
+    {
+      "repo": "dolphinteam/OpenWhistle-CNN-VGG16",
+      "source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-CNN-VGG16?blobs=true",
+      "revision": "81a0a9a5b2764ca42382e19d8febb131e49961c9",
+      "license": null,
+      "parameters": null,
+      "weights": [
+        {
+          "file": "model_vgg_final_best.pt",
+          "bytes": 63893809
+        }
+      ],
+      "paper": "https://arxiv.org/abs/2609.34839",
+      "paper_first_submission": "2026-09-28",
+      "hub_created_at": "2026-05-04T13:27:30.000Z",
+      "hub_last_modified": "2026-09-29T08:01:40.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2026-05-04",
+        "revision": "6b2eca4e139fbf5f12006ffb89f56962259af00e",
+        "source": "https://huggingface.co/dolphinteam/OpenWhistle-CNN-VGG16/commit/6b2eca4e139fbf5f12006ffb89f56962259af00e",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "needs_exact_model_and_frontend",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-CNN-VGG16/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/dolphinteam/OpenWhistle-CNN-VGG16/tree/6b2eca4e139fbf5f12006ffb89f56962259af00e?recursive=true"
+    },
+    {
+      "repo": "laion/clap-htsat-unfused",
+      "source": "https://huggingface.co/api/models/laion/clap-htsat-unfused?blobs=true",
+      "revision": "8fa0f1c6d0433df6e97c127f64b2a1d6c0dcda8a",
+      "license": "apache-2.0",
+      "parameters": null,
+      "weights": [
+        {
+          "file": "pytorch_model.bin",
+          "bytes": 614525833
+        }
+      ],
+      "paper": "https://arxiv.org/abs/2211.06687",
+      "paper_first_submission": "2022-11-12",
+      "hub_created_at": "2023-02-16T20:47:08.000Z",
+      "hub_last_modified": "2023-04-24T14:39:57.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2023-02-16",
+        "revision": "25c14ec96c0ce7a0740dd55a2e877f3b755228e1",
+        "source": "https://huggingface.co/laion/clap-htsat-unfused/commit/25c14ec96c0ce7a0740dd55a2e877f3b755228e1",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "quick_candidate",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/laion/clap-htsat-unfused/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/laion/clap-htsat-unfused/tree/25c14ec96c0ce7a0740dd55a2e877f3b755228e1?recursive=true"
+    },
+    {
+      "repo": "davidrrobinson/BioLingual",
+      "source": "https://huggingface.co/api/models/davidrrobinson/BioLingual?blobs=true",
+      "revision": "808bb50859ce7d0c0fcc2b233676c7ba9319107e",
+      "license": null,
+      "parameters": null,
+      "weights": [
+        {
+          "file": "pytorch_model.bin",
+          "bytes": 614525833
+        }
+      ],
+      "paper": "https://arxiv.org/abs/2308.04978",
+      "paper_first_submission": "2023-08-09",
+      "hub_created_at": "2023-07-24T01:15:23.000Z",
+      "hub_last_modified": "2023-07-25T05:31:41.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2023-07-24",
+        "revision": "32b47d1291a1d09544e63a93bd4a3a390e006395",
+        "source": "https://huggingface.co/davidrrobinson/BioLingual/commit/32b47d1291a1d09544e63a93bd4a3a390e006395",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "likely_quick_check_correct_repo_id",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/davidrrobinson/BioLingual/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/davidrrobinson/BioLingual/tree/32b47d1291a1d09544e63a93bd4a3a390e006395?recursive=true"
+    },
+    {
+      "repo": "cairninstitute/mmc-humpback-dac9-models",
+      "source": "https://huggingface.co/api/models/cairninstitute/mmc-humpback-dac9-models?blobs=true",
+      "revision": "58aaf875ec5da7987962040f1f76aaaa28fc40ce",
+      "license": "apache-2.0",
+      "parameters": null,
+      "weights": [
+        {
+          "file": "10k/best_model.pt",
+          "bytes": 1917661284
+        },
+        {
+          "file": "10k/checkpoint_step648000.pt",
+          "bytes": 2893291562
+        },
+        {
+          "file": "128k/best_model.pt",
+          "bytes": 1501465396
+        },
+        {
+          "file": "32k/best_model.pt",
+          "bytes": 1501451920
+        },
+        {
+          "file": "32k/checkpoint_step504000.pt",
+          "bytes": 2264691718
+        },
+        {
+          "file": "32k/checkpoint_step506000.pt",
+          "bytes": 2264691718
+        }
+      ],
+      "paper": null,
+      "paper_first_submission": null,
+      "hub_created_at": "2026-07-24T17:18:44.000Z",
+      "hub_last_modified": "2026-07-29T15:29:41.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2026-07-24",
+        "revision": "2facc80de2eec736f5470931f11203bdb191e7a1",
+        "source": "https://huggingface.co/cairninstitute/mmc-humpback-dac9-models/commit/2facc80de2eec736f5470931f11203bdb191e7a1",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "project_scripts_codec_token_prompt",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/cairninstitute/mmc-humpback-dac9-models/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/cairninstitute/mmc-humpback-dac9-models/tree/2facc80de2eec736f5470931f11203bdb191e7a1?recursive=true"
+    },
+    {
+      "repo": "EarthSpeciesProject/NatureLM-audio",
+      "source": "https://huggingface.co/api/models/EarthSpeciesProject/NatureLM-audio?blobs=true",
+      "revision": "77855d9b0acd039f90798dcf0861f626bfefbd6f",
+      "license": "cc-by-nc-sa-4.0",
+      "parameters": 665378431,
+      "weights": [
+        {
+          "file": "model.safetensors",
+          "bytes": 1556386132
+        }
+      ],
+      "paper": "https://arxiv.org/abs/2411.07186",
+      "paper_first_submission": "2024-11-11",
+      "hub_created_at": "2025-03-07T10:06:40.000Z",
+      "hub_last_modified": "2025-09-09T22:34:09.000Z",
+      "first_recorded_weights_commit": {
+        "date": "2025-04-24",
+        "revision": "8d6eb55493984186c4aceec22d03f09e8101d8da",
+        "source": "https://huggingface.co/EarthSpeciesProject/NatureLM-audio/commit/8d6eb55493984186c4aceec22d03f09e8101d8da",
+        "evidence": "Commit history and weight-bearing tree at this revision; historical public visibility not established"
+      },
+      "inference_readiness": "requires_gated_llama_base",
+      "locally_tested": false,
+      "commit_history_source": "https://huggingface.co/api/models/EarthSpeciesProject/NatureLM-audio/commits/main",
+      "first_weights_tree_source": "https://huggingface.co/api/models/EarthSpeciesProject/NatureLM-audio/tree/8d6eb55493984186c4aceec22d03f09e8101d8da?recursive=true"
+    }
+  ],
+  "other_releases": [
+    {
+      "model": "WhAM",
+      "source": "https://zenodo.org/api/records/17633708",
+      "publication_date": "2025-12-02",
+      "paper": "https://arxiv.org/abs/2512.02206",
+      "paper_first_submission": "2025-12-01",
+      "weights": [
+        {
+          "file": "coarse.pth",
+          "bytes": 1343719071
+        },
+        {
+          "file": "codec.pth",
+          "bytes": 600996465
+        },
+        {
+          "file": "c2f.pth",
+          "bytes": 1111128367
+        },
+        {
+          "file": "wavebeat.pth",
+          "bytes": 33248861
+        }
+      ],
+      "inference_readiness": "legacy_environment_required",
+      "locally_tested": false
+    },
+    {
+      "model": "AVES base bio TorchAudio",
+      "source": "https://storage.googleapis.com/esp-public-files/ported_aves/aves-base-bio.torchaudio.pt",
+      "bytes": 377570545,
+      "size_evidence": "HTTP HEAD Content-Length",
+      "paper": "https://arxiv.org/abs/2210.14493",
+      "paper_first_submission": "2022-10-26",
+      "weights_release_date": null,
+      "inference_readiness": "quick_candidate_with_matching_config",
+      "locally_tested": false
+    },
+    {
+      "model": "ImageBind huge",
+      "source": "https://dl.fbaipublicfiles.com/imagebind/imagebind_huge.pth",
+      "bytes": 4803584173,
+      "size_evidence": "HTTP HEAD Content-Length",
+      "paper": "https://arxiv.org/abs/2305.05665",
+      "paper_first_submission": "2023-05-09",
+      "weights_release_date": null,
+      "inference_readiness": "complete_example_heavier_setup",
+      "locally_tested": false
+    },
+    {
+      "model": "Perch 2.0",
+      "source": "https://www.kaggle.com/models/google/bird-vocalization-classifier",
+      "displayed_gpu_package_size": "410.28 MB",
+      "size_evidence": "Official card UI; CPU package size not independently audited",
+      "paper": "https://arxiv.org/abs/2508.04665",
+      "paper_first_submission": "2025-08-06",
+      "public_release_announcement": "2025-08-07",
+      "release_date_source": "https://deepmind.google/blog/how-ai-is-helping-advance-the-science-of-bioacoustics-to-save-endangered-species/",
+      "inference_readiness": "quick_candidate_choose_cpu_or_gpu_variant",
+      "locally_tested": false
+    }
+  ]
+}

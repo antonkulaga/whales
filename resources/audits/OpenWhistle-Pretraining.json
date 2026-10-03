@@ -1,0 +1,101 @@
+{
+  "dataset": "dolphinteam/OpenWhistle-Pretraining",
+  "fetched_at_utc": "2026-10-03T21:48:42.464000+00:00",
+  "hub_revision_at_inspection": "eea37423c7841b0f99a7c0380f945999c0a2c489",
+  "gated": false,
+  "declared_license": null,
+  "sources": [
+    "https://huggingface.co/api/datasets/dolphinteam/OpenWhistle-Pretraining",
+    "https://datasets-server.huggingface.co/info?dataset=dolphinteam%2FOpenWhistle-Pretraining"
+  ],
+  "note": "Viewer metadata is live, not a revision-pinned download. Missing license is unknown.",
+  "configs": {
+    "default": {
+      "features": {
+        "audio": {
+          "sampling_rate": 96000,
+          "_type": "Audio"
+        },
+        "start_time": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "end_time": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "year": {
+          "dtype": "int32",
+          "_type": "Value"
+        },
+        "hydrophone": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {},
+      "splits": {
+        "validation": {
+          "name": "validation",
+          "num_bytes": 8377320906,
+          "num_examples": 3370,
+          "dataset_name": null
+        },
+        "train": {
+          "name": "train",
+          "num_bytes": 70620551222,
+          "num_examples": 28410,
+          "dataset_name": null
+        }
+      }
+    },
+    "review-sample": {
+      "features": {
+        "audio": {
+          "sampling_rate": 96000,
+          "decode": false,
+          "_type": "Audio"
+        },
+        "start_time": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "end_time": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "year": {
+          "dtype": "int32",
+          "_type": "Value"
+        },
+        "hydrophone": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {},
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 1155433955,
+          "num_examples": 430,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 123347215,
+          "num_examples": 50,
+          "dataset_name": null
+        }
+      }
+    }
+  }
+}

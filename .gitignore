@@ -151,8 +151,12 @@ activemq-data/
 
 # Environments
 .env
+.env.*
+!.env.example
+!.env.template
 .envrc
 .venv
+.venv*/
 env/
 venv/
 ENV/
@@ -205,6 +209,63 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# Local corpora, model downloads, and generated experiments
+# Keep source code, notebooks, resources/*.json, documentation assets,
+# .python-version, and uv.lock in version control.
+/data/
+/datasets/
+/models/
+/weights/
+/checkpoints/
+/outputs/
+/runs/
+/logs/
+/tensorboard/
+wandb/
+
+# Download/cache directories (including custom Hugging Face and uv caches)
+.cache/
+.hf/
+.huggingface/
+.uv-cache/
+
+# Audio corpora and binary model/data artifacts, even outside those directories
+*.wav
+*.flac
+*.mp3
+*.ogg
+*.m4a
+*.aif
+*.aiff
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.tflite
+pytorch_model*.bin
+*.h5
+*.hdf5
+*.parquet
+*.arrow
+*.npy
+*.npz
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# Partial downloads, local credentials, editor and operating-system files
+*.part
+*.incomplete
+*.pem
+*.key
+.netrc
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
 # Ruff stuff:
 .ruff_cache/
 
@@ -218,3 +279,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Deliberately shared assets can be versioned through .gitattributes / Git LFS.
+!/assets/
+!/assets/**
+# Never make local credentials shareable through the assets exception.
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+.netrc

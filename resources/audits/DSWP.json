@@ -1,0 +1,34 @@
+{
+  "dataset": "orrp/DSWP",
+  "fetched_at_utc": "2026-10-03T21:48:42.406182+00:00",
+  "hub_revision_at_inspection": "a2e5d6dd02fc60343e1288c33314e14e8b7aa5be",
+  "gated": false,
+  "declared_license": "cc-by-4.0",
+  "sources": [
+    "https://huggingface.co/api/datasets/orrp/DSWP",
+    "https://datasets-server.huggingface.co/info?dataset=orrp%2FDSWP"
+  ],
+  "note": "Viewer metadata is live, not a revision-pinned download. Missing license is unknown.",
+  "configs": {
+    "default": {
+      "features": {
+        "audio": {
+          "_type": "Audio"
+        }
+      },
+      "class_labels": {},
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 585509261,
+          "num_examples": 1501,
+          "shard_lengths": [
+            1300,
+            201
+          ],
+          "dataset_name": "dswp"
+        }
+      }
+    }
+  }
+}

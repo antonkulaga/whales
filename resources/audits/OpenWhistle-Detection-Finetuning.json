@@ -1,0 +1,71 @@
+{
+  "dataset": "dolphinteam/OpenWhistle-Detection-Finetuning",
+  "fetched_at_utc": "2026-10-03T21:48:42.459097+00:00",
+  "hub_revision_at_inspection": "c2e89807b51142e106b76d486f4cf620ec63c1fb",
+  "gated": false,
+  "declared_license": null,
+  "sources": [
+    "https://huggingface.co/api/datasets/dolphinteam/OpenWhistle-Detection-Finetuning",
+    "https://datasets-server.huggingface.co/info?dataset=dolphinteam%2FOpenWhistle-Detection-Finetuning"
+  ],
+  "note": "Viewer metadata is live, not a revision-pinned download. Missing license is unknown.",
+  "configs": {
+    "default": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "binary_label": {
+          "names": [
+            "noise",
+            "whistle"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "source_label": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "label": {
+          "feature": {
+            "dtype": "int64",
+            "_type": "Value"
+          },
+          "length": 7,
+          "_type": "List"
+        }
+      },
+      "class_labels": {
+        "binary_label": {
+          "0": "noise",
+          "1": "whistle"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 376725108,
+          "num_examples": 3920,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 80727060,
+          "num_examples": 840,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 80727060,
+          "num_examples": 840,
+          "dataset_name": null
+        }
+      }
+    }
+  }
+}

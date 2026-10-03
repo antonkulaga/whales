@@ -1,0 +1,690 @@
+{
+  "dataset": "dolphinteam/OpenWhistle-Classification-Finetuning",
+  "fetched_at_utc": "2026-10-03T21:48:59.206415+00:00",
+  "hub_revision_at_inspection": "2b7806e3c5913c459c40b824ab7f944d494b3993",
+  "gated": false,
+  "declared_license": null,
+  "sources": [
+    "https://huggingface.co/api/datasets/dolphinteam/OpenWhistle-Classification-Finetuning",
+    "https://datasets-server.huggingface.co/info?dataset=dolphinteam%2FOpenWhistle-Classification-Finetuning"
+  ],
+  "note": "Viewer metadata is live, not a revision-pinned download. Missing license is unknown.",
+  "configs": {
+    "all": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_3",
+            "NSW_2",
+            "NSW_1",
+            "SW_Dana",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Shy",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        },
+        "snr_db": {
+          "dtype": "float64",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_3",
+          "1": "NSW_2",
+          "2": "NSW_1",
+          "3": "SW_Dana",
+          "4": "SW_Luna",
+          "5": "SW_Nana",
+          "6": "SW_Neo",
+          "7": "SW_Nikita",
+          "8": "SW_Shy",
+          "9": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 2629714304,
+          "num_examples": 5848,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 558004239,
+          "num_examples": 1253,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 561928058,
+          "num_examples": 1253,
+          "dataset_name": null
+        }
+      }
+    },
+    "all-review-sample": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_3",
+            "NSW_2",
+            "NSW_1",
+            "SW_Dana",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Shy",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        },
+        "snr_db": {
+          "dtype": "float64",
+          "_type": "Value"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_3",
+          "1": "NSW_2",
+          "2": "NSW_1",
+          "3": "SW_Dana",
+          "4": "SW_Luna",
+          "5": "SW_Nana",
+          "6": "SW_Neo",
+          "7": "SW_Nikita",
+          "8": "SW_Shy",
+          "9": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 152967129,
+          "num_examples": 336,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 33622544,
+          "num_examples": 72,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 31818122,
+          "num_examples": 72,
+          "dataset_name": null
+        }
+      }
+    },
+    "balanced": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_1",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_1",
+          "1": "SW_Luna",
+          "2": "SW_Nana",
+          "3": "SW_Neo",
+          "4": "SW_Nikita",
+          "5": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 925938926,
+          "num_examples": 2100,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 199087627,
+          "num_examples": 450,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 202708809,
+          "num_examples": 450,
+          "dataset_name": null
+        }
+      }
+    },
+    "balanced-review-sample": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_1",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_1",
+          "1": "SW_Luna",
+          "2": "SW_Nana",
+          "3": "SW_Neo",
+          "4": "SW_Nikita",
+          "5": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 149450487,
+          "num_examples": 336,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 31705970,
+          "num_examples": 72,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 31923325,
+          "num_examples": 72,
+          "dataset_name": null
+        }
+      }
+    },
+    "unbalanced": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_3",
+            "NSW_2",
+            "NSW_1",
+            "SW_Dana",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Shy",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_3",
+          "1": "NSW_2",
+          "2": "NSW_1",
+          "3": "SW_Dana",
+          "4": "SW_Luna",
+          "5": "SW_Nana",
+          "6": "SW_Neo",
+          "7": "SW_Nikita",
+          "8": "SW_Shy",
+          "9": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 1083650233,
+          "num_examples": 2442,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 233955973,
+          "num_examples": 523,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 234595867,
+          "num_examples": 523,
+          "dataset_name": null
+        }
+      }
+    },
+    "unbalanced-review-sample": {
+      "features": {
+        "audio": {
+          "decode": false,
+          "_type": "Audio"
+        },
+        "label": {
+          "names": [
+            "NSW_3",
+            "NSW_2",
+            "NSW_1",
+            "SW_Dana",
+            "SW_Luna",
+            "SW_Nana",
+            "SW_Neo",
+            "SW_Nikita",
+            "SW_Shy",
+            "SW_Yosefa"
+          ],
+          "_type": "ClassLabel"
+        },
+        "name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "onset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "offset": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "recording_duration": {
+          "dtype": "float32",
+          "_type": "Value"
+        },
+        "whistle_type": {
+          "dtype": "int64",
+          "_type": "Value"
+        },
+        "whistle_name": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_time": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_hz": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_conf": [
+          {
+            "dtype": "float32",
+            "_type": "Value"
+          }
+        ],
+        "f0_ok": {
+          "dtype": "bool",
+          "_type": "Value"
+        },
+        "f0_bad_reason": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "f0_spectrogram": {
+          "_type": "Image"
+        }
+      },
+      "class_labels": {
+        "label": {
+          "0": "NSW_3",
+          "1": "NSW_2",
+          "2": "NSW_1",
+          "3": "SW_Dana",
+          "4": "SW_Luna",
+          "5": "SW_Nana",
+          "6": "SW_Neo",
+          "7": "SW_Nikita",
+          "8": "SW_Shy",
+          "9": "SW_Yosefa"
+        }
+      },
+      "splits": {
+        "train": {
+          "name": "train",
+          "num_bytes": 150039159,
+          "num_examples": 336,
+          "dataset_name": null
+        },
+        "validation": {
+          "name": "validation",
+          "num_bytes": 32152498,
+          "num_examples": 72,
+          "dataset_name": null
+        },
+        "test": {
+          "name": "test",
+          "num_bytes": 32088725,
+          "num_examples": 72,
+          "dataset_name": null
+        }
+      }
+    }
+  }
+}
