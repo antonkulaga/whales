@@ -11,9 +11,28 @@ of Livia's artwork**, and **audio features → drawn forms → ControlNet images
 The connecting step can be a vocabulary, an image, or a few numerical controls.
 We can choose that correspondence ourselves and make it part of the work.
 
+**Implementation update, 4 October 2026:** ideas 1 and 2 now run through
+`uv run --group art main.py art`. Following the preference for current models,
+the implementation uses [FLUX.2 klein 4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B)
+(released January 2026) instead of SDXL-Turbo. Idea 1 keeps the CLAP-to-material
+mapping; idea 2 uses a jewelry photo as the reference, with CLAP-selected material
+instructions and shared-reference RMS mapped to bounded edit wording. FLUX's
+native reference editing has no denoising-strength argument, so the actual edit
+prompt varies while its template, reference image and seed stay fixed. The
+earlier SDXL designs below remain proposals for comparison. See the
+[run instructions](../README.md#next-experiments) and [data layout](../data/README.md).
+
+The revised [Livia brief](livia-experiment-brief.md) uses her actual Nanot and
+Mitoring photographs as model inputs. Idea 1 now compares silver/amber jewelry
+with pavilion concepts at Livistone's architectural scale; idea 2 changes the
+silver setting of Mitoring. The HTML includes Mycelium's drainage rationale
+and Livistone's source scene, so the acoustic geometry choices are visibly
+connected to her practice. The earlier generic paper/thread/glass trial is
+preserved under ignored `data/interim/superseded-generic/`.
+
 These are proposed artworks and engineering designs. Model capabilities and
-loading routes are grounded in the linked releases; the combinations have not
-been run in this repo. “Low effort” assumes that the chosen checkpoints load
+loading routes are grounded in the linked releases. Beyond the two implemented
+prototypes above, these combinations have not been run in this repo. “Low effort” assumes that the chosen checkpoints load
 successfully. It does not mean a tiny download or real-time CPU generation.
 
 ## Shortlist

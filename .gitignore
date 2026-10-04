@@ -212,7 +212,17 @@ tempCodeRunnerFile.py
 # Local corpora, model downloads, and generated experiments
 # Keep source code, notebooks, resources/*.json, documentation assets,
 # .python-version, and uv.lock in version control.
-/data/
+/data/*
+!/data/README.md
+!/data/input/
+/data/input/*
+!/data/input/.gitkeep
+!/data/interim/
+/data/interim/*
+!/data/interim/.gitkeep
+!/data/output/
+/data/output/*
+!/data/output/.gitkeep
 /datasets/
 /models/
 /weights/

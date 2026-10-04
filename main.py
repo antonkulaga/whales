@@ -1,4 +1,4 @@
-"""Metadata-first cetacean dataset explorer; no audio or weights downloaded."""
+"""Cetacean dataset explorer and reproducible sound-to-image experiments."""
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -15,9 +15,12 @@ from huggingface_hub.errors import HfHubHTTPError
 import polars as pl
 import typer
 
+from experiments.cli import app as art_app
+
 ROOT = Path(__file__).resolve().parent
 CLASSIFICATION = "dolphinteam/OpenWhistle-Classification-Finetuning"
 app = typer.Typer(help=__doc__, no_args_is_help=True, add_completion=False)
+app.add_typer(art_app, name="art")
 
 
 @dataclass
@@ -218,7 +221,7 @@ def contours_command(
     offset: Annotated[int, typer.Option(min=0, help="First viewer row.")] = 0,
     limit: Annotated[int, typer.Option(min=1, max=24, help="Number of contours.")] = 6,
     min_confidence: Annotated[float, typer.Option(min=0, max=1, help="Minimum F0 confidence.")] = 0.3,
-    output: Annotated[Path, typer.Option(help="Directory for plots and annotations.")] = Path("outputs/openwhistle"),
+    output: Annotated[Path, typer.Option(help="Directory for plots and annotations.")] = ROOT / "data/output/openwhistle",
 ):
     """Fetch a few OpenWhistle F0 annotations and draw shapes."""
     if not math.isfinite(min_confidence):

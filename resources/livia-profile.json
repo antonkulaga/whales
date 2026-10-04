@@ -1,0 +1,18 @@
+{
+  "name": "Livia Zaharia / ParalDesign",
+  "summary": "Livia develops digitally designed, printed and cast jewelry around natural materials. Open silver settings expose and protect irregular stones; biological forms become geometry and practical structure. Livistone extends selected jewelry into buildings and landscapes.",
+  "experiment_note": "These are new AI-generated concept studies made from her reference photographs. The acoustic mappings and proposed buildings are this experiment's choices. Outputs are images, not validated wearable objects or fabrication meshes.",
+  "sources": [
+    {"root": "livia", "path": "content/pieces.md"},
+    {"root": "livia", "path": "content/biography.md"},
+    {"root": "livistone", "path": "src/game/piece-stories.ts"},
+    {"root": "livistone", "path": "src/game/jewelry-catalogue.json"},
+    {"root": "livistone", "path": "README.md"}
+  ],
+  "references": [
+    {"id": "nanot", "root": "livia", "path": "assets/RJW2025/IMG_3433.jpg", "title": "Nanot of Power · sterling silver", "connection": "Digitally designed open silver lattice. Livistone enlarges its lattice into the Ministry of Science.", "model_styles": ["jewelry", "pavilion"]},
+    {"id": "mitoring", "root": "livia", "path": "assets/RJW2025/IMG_3475.jpg", "title": "Mitoring · amber and sterling silver", "connection": "An irregular amber core held by folded silver. Livistone interprets these folds as mitochondrial cristae and enlarges them into the Ministry of Energy.", "model_styles": ["jewelry", "pavilion"], "edit_reference": true},
+    {"id": "mycelium", "root": "livia", "path": "assets/RJW2021/LiviaZaharia_ring_Mycelium_2021_sterlingsilver_opal_2.1x2.0x2.8cm.jpg", "title": "Mycelium · opal and sterling silver", "connection": "Livia's stated problem was drainage around porous opal. The open fungal-inspired setting becomes a rain garden in Livistone.", "model_styles": []},
+    {"id": "livistone", "root": "livistone", "path": "docs/images/livistone-centre.jpg", "title": "Livistone · jewelry at architectural scale", "connection": "Mitoring's amber hall, Nut of Power's walnut city hall and Nanot's silver lattice science hall. This is a rendered town scene, not a photograph of a built place.", "model_styles": ["pavilion"]}
+  ]
+}
