@@ -66,7 +66,7 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .map-panel > .panel-head, .hall-seating, .legend, .roster { background: var(--surface) }
 .map-tools { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: end }
 .map-tools > .small { font: .58rem var(--mono) }
-.map-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 310px; height: clamp(300px, 50vh, 480px); border-block: 1px solid #d4bc94; min-width: 0 }
+.map-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 310px; height: clamp(300px, 58vh, 760px); border-block: 1px solid #d4bc94; min-width: 0 }
 .map-workspace.programme-collapsed { grid-template-columns: minmax(0, 1fr) 38px }
 .map-box { position: relative; background: #faf8f240; height: 100%; min-width: 0; overflow: hidden; color: var(--ink) }
 .programme-drawer { display: grid; grid-template-columns: 38px minmax(0, 1fr); min-height: 0; min-width: 0; border-left: 2px solid var(--accent); background: #f8f1e4 }

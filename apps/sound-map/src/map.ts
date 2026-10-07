@@ -11,6 +11,8 @@ import type { DatasetPoint, Location, Source, Species } from "./lib/types.ts";
 const NS = "http://www.w3.org/2000/svg";
 const W = 960;
 const H = 500;
+// The globe fills the box height. A site north of about 72°N would need room above it for its halo.
+const frame = (width: number): [[number, number], [number, number]] => [[25, 0], [width - 25, H]];
 
 export const SPECIES_COLOR = Object.fromEntries(Object.entries(SPECIES).map(([name, s]) => [name, s.color])) as Record<Species, string>;
 
@@ -62,6 +64,7 @@ export class AtlasMap {
   private readonly behaviour: ZoomBehavior<SVGSVGElement, unknown>;
   private k = 1;
   private panX = 0;
+  private panY = 0;
   private parts: MapPart[] = [];
   private framedSites: Site[] | null = null;
 
@@ -80,7 +83,7 @@ export class AtlasMap {
     const defs = el("defs", {}, svg);
     const clip = el("clipPath", { id: "map-viewport-clip" }, defs);
     this.viewport = el("rect", { x: 0, y: 0, width: this.width, height: H }, clip);
-    this.projection = geoEqualEarth().fitExtent([[25, 32], [this.width - 25, H - 32]], { type: "Sphere" });
+    this.projection = geoEqualEarth().fitExtent(frame(this.width), { type: "Sphere" });
     const path = geoPath(this.projection);
     const mapStage = el("g", { "clip-path": "url(#map-viewport-clip)" }, svg);
     this.world = el("g", {}, mapStage);
@@ -111,6 +114,7 @@ export class AtlasMap {
         this.world.setAttribute("transform", event.transform.toString());
         this.k = event.transform.k;
         this.panX = event.transform.x;
+        this.panY = event.transform.y;
         this.rescale();
       });
     select(svg).call(this.behaviour);
@@ -126,7 +130,7 @@ export class AtlasMap {
     this.width = width;
     this.svg.setAttribute("viewBox", `0 0 ${width} ${H}`);
     this.viewport.setAttribute("width", String(width));
-    this.projection.fitExtent([[25, 32], [width - 25, H - 32]], { type: "Sphere" });
+    this.projection.fitExtent(frame(width), { type: "Sphere" });
     const path = geoPath(this.projection);
     for (const { node, shape } of this.geography) node.setAttribute("d", path(shape as never) ?? "");
     this.datasets.querySelectorAll<SVGCircleElement>("circle").forEach((dot) => {
@@ -159,7 +163,9 @@ export class AtlasMap {
       const cx = left + (this.width - left - right) / 2;
       transform = zoomIdentity.translate(cx - (k * (x0 + x1)) / 2, H / 2 - (k * (y0 + y1)) / 2).scale(k);
     }
-    select(this.svg).call(this.behaviour.transform, transform);
+    // Respect the pan limits a hand drag has, so at zoom 1 the globe stays centred instead of sliding off one side.
+    const view: [[number, number], [number, number]] = [[0, 0], [this.width, H]];
+    select(this.svg).call(this.behaviour.transform, this.behaviour.constrain()(transform, view, this.behaviour.translateExtent()));
   }
 
   /** Sites with at least one recording in the orchestra get a halo. */
@@ -276,7 +282,9 @@ export class AtlasMap {
     for (const { location, numbers } of seats.values()) {
       const [x, y] = this.xy(location);
       const k = this.displayZoom();
-      el("text", { class: "part-pin", x: x - 15 / k, y: y - 13 / k, "font-size": 11 / k, "stroke-width": 3 / k, "text-anchor": "end" }, this.pins)
+      // The number sits above its site, or below one close to the top edge of the view.
+      const above = (y * this.k + this.panY) * (k / this.k) > 28;
+      el("text", { class: "part-pin", x: x - 15 / k, y: above ? y - 13 / k : y + 25 / k, "font-size": 11 / k, "stroke-width": 3 / k, "text-anchor": "end" }, this.pins)
         .textContent = numbers.join("·");
     }
   }
