@@ -7,6 +7,7 @@ import { SPECIES } from "./lib/species.ts";
 import { renderIndividualTracks, renderLanes, renderScores, partColor } from "./lanes.ts";
 import { catalogUrl, comboUrl, combosUrl, fileUrl, isStatic } from "./lib/api.ts";
 import { activePulses, soundingParts } from "./lib/pulses.ts";
+import { CATEGORY, THREATENED, TREND_ARROW, TREND_WORD, statusLine, statusOf, voiceInfo, type Status } from "./lib/status.ts";
 import type { Catalog, CombineMessage, ComboSummary, GenerationRuntime, Manifest, Source, Species, StemName } from "./lib/types.ts";
 import { AtlasMap, SPECIES_COLOR, sitesOf, type Countries, type MapPart, type Site } from "./map.ts";
 import { Player, type Track } from "./player.ts";
@@ -15,6 +16,12 @@ import "./silver.ts"; // the Sound to silver tab: its idea tabs and images
 const $ = <T extends Element>(selector: string) => document.querySelector(selector) as T;
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+const statusChip = (status: Status) => `<i class="status-chip ${status.category.toLowerCase()}" title="${esc(CATEGORY[status.category])}">${status.category}</i>`;
+/** The status line under a recording: chip, then who, listing, count and trend, with a button to the voice card. */
+const statusRow = (source: Source) => {
+  const status = statusOf(source);
+  return `<span class="rec-status">${statusChip(status)} <span>${esc(statusLine(status))}</span> <button class="more" type="button" data-info="${esc(source.id)}" aria-label="More about ${esc(status.group)}">More</button></span>`;
+};
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PULSE_LIFETIME = 0.9;
 const STEM_LABELS: Record<StemName, string> = { animal: "Recorded voices", guide: "Musical guide", response: "Constructed response", ace: "Generated music" };
@@ -173,7 +180,8 @@ $<HTMLElement>("#legend").innerHTML = (Object.keys(SPECIES) as Species[]).filter
     return `<span title="${esc(capital(species))}: guide played as ${esc(instrument)}"><i class="swatch" style="--c:${SPECIES_COLOR[species]}"></i>${species}${instrument ? ` ${instrumentIcon(instrument)}` : ""}</span>`;
   }).join("") +
   `<span><i class="swatch" style="--c:var(--muted)"></i>published position</span><span><i class="swatch diamond" style="--c:var(--muted)"></i>approximate</span>` +
-  `<span><i class="swatch halo"></i>in the orchestra</span><span><i class="swatch" style="--c:var(--pt-archive);width:6px;height:6px"></i>other datasets, not playable</span>`;
+  `<span><i class="swatch halo"></i>in the orchestra</span><span><i class="swatch" style="--c:var(--pt-archive);width:6px;height:6px"></i>other datasets, not playable</span>` +
+  `<span title="IUCN Red List category of the species, or the listing of the recorded population where it has its own">${(["CR", "EN", "VU"] as const).map((c) => `<i class="status-chip ${c.toLowerCase()}">${c}</i>`).join("")}critically endangered · endangered · vulnerable</span>`;
 
 const near = (lon0: number, lon1: number, lat0: number, lat1: number) =>
   sites.filter((s) => s.location.lon >= lon0 && s.location.lon <= lon1 && s.location.lat >= lat0 && s.location.lat <= lat1);
@@ -210,14 +218,16 @@ $<HTMLElement>("#roster").innerHTML = sites.map((site) => `<li class="roster-sit
       <span class="rec-text"><b>${esc(source.title)}</b><span>${esc(capital(source.species))} · ${instrumentIcon(source.instrument)} ${esc(source.instrument)} · ${source.duration_s.toFixed(0)} s · ${source.onsets_s.length} ${source.material === "clicks" ? "clicks" : "calls"}</span></span>
     </button>
     <button class="listen" type="button" data-listen="${esc(source.id)}" data-label="▶" aria-label="Listen to ${esc(source.title)}">▶</button>
+    ${statusRow(source)}
     <span class="thumb" aria-hidden="true"><img src="${esc(fileUrl(source.files.animal.image))}" alt="" loading="lazy"><svg viewBox="0 0 1000 22" preserveAspectRatio="none">${onsetTicks(source)}</svg></span>
   </li>`).join("")}</ul></li>`).join("");
 
 $<HTMLElement>("#roster").addEventListener("click", (event) => {
   const target = (event.target as Element).closest<HTMLButtonElement>("button");
-  const source = target && sourceById.get(target.dataset.toggle ?? target.dataset.listen ?? "");
+  const source = target && sourceById.get(target.dataset.toggle ?? target.dataset.listen ?? target.dataset.info ?? "");
   if (!target || !source) return;
-  if (target.dataset.toggle) toggle(source);
+  if (target.dataset.info) openVoiceCard(source);
+  else if (target.dataset.toggle) toggle(source);
   else listen(source, target);
 });
 $<HTMLElement>("#roster").addEventListener("pointerover", (event) => {
@@ -260,6 +270,7 @@ function openSite(site: Site) {
     const seated = composer?.has(source.id) ?? false;
     return `<div class="row" style="--c:${SPECIES_COLOR[source.species]}"><b>${esc(source.title)}</b>
     <span class="small">${esc(capital(source.species))} · ${source.duration_s.toFixed(0)} s · ${source.onsets_s.length} ${source.material === "clicks" ? "clicks" : "calls"} · ${esc(source.note)}</span>
+    ${statusRow(source)}
     <div class="row-actions"><button class="btn" type="button" data-listen="${esc(source.id)}" data-label="Listen">Listen</button>
     ${isStatic ? "" : `<button class="btn ${seated ? "seated" : "add"}" type="button" data-toggle="${esc(source.id)}" aria-pressed="${seated}">${seated ? "✓ In the orchestra · remove" : "+ Seat"}</button>`}</div></div>`;
   }).join("");
@@ -288,8 +299,9 @@ $<HTMLElement>("#popover").addEventListener("click", (event) => {
   const target = (event.target as Element).closest<HTMLButtonElement>("button");
   if (!target) return;
   const site = sites.find((s) => s.key === openSiteKey);
-  const source = sourceById.get(target.dataset.toggle ?? target.dataset.listen ?? "");
+  const source = sourceById.get(target.dataset.toggle ?? target.dataset.listen ?? target.dataset.info ?? "");
   if (target.classList.contains("close")) closeSite();
+  else if (source && target.dataset.info) openVoiceCard(source);
   else if (target.dataset.all !== undefined && site) seatAll(site);
   else if (source && target.dataset.toggle) toggle(source);
   else if (source && target.dataset.listen) listen(source, target);
@@ -404,18 +416,56 @@ function renderHallSeats(ids: string[]) {
   const chairs = Math.max(catalog.combination.max_parts, ids.length);
   $("#hall-seats").innerHTML = Array.from({ length: chairs }, (_, i) => {
     const source = sourceById.get(ids[i] ?? "");
+    const status = source && statusOf(source);
     const animal = source ? `<img class="species-icon" src="${esc(fileUrl(`species/${SPECIES[source.species].icon}.png`))}" alt="" aria-hidden="true"><span class="instrument-badge">${instrumentIcon(source.instrument)}</span>` : "";
-    const chair = `<span class="seat-figure"><svg viewBox="0 0 36 42" aria-hidden="true"><path d="M8 19V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v12M6 17v13h24V17M9 30v8M27 30v8"/><rect x="9" y="20" width="18" height="8" rx="2"/></svg>${animal}</span><span class="seat-caption">${i + 1}${source ? ` · ${SPECIES[source.species].seat}` : " · Empty"}</span>`;
-    return source ? `<li class="occupied" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="${isStatic ? "Inspect" : "Remove"} ${esc(source.title)}, guide played as ${esc(source.instrument)}" title="${esc(capital(source.species))} · ${esc(source.location.label)} · guide: ${esc(source.instrument)}">${chair}</button></li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
+    // A threatened voice keeps its status on the chair: a border in the status colour and the category under it.
+    const marked = status && THREATENED.has(status.category) ? status : undefined;
+    const statusCaption = marked ? `<span class="seat-status">${statusChip(marked)}${TREND_ARROW[marked.trend] ? ` <span title="${esc(marked.trend)}">${TREND_ARROW[marked.trend]}</span>` : ""}</span>` : "";
+    const chair = `<span class="seat-figure"><svg viewBox="0 0 36 42" aria-hidden="true"><path d="M8 19V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v12M6 17v13h24V17M9 30v8M27 30v8"/><rect x="9" y="20" width="18" height="8" rx="2"/></svg>${animal}</span><span class="seat-caption">${i + 1}${source ? ` · ${SPECIES[source.species].seat}` : " · Empty"}</span>${statusCaption}`;
+    return source ? `<li class="occupied${marked ? ` threatened ${marked.category.toLowerCase()}` : ""}" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="About ${esc(source.title)}, guide played as ${esc(source.instrument)}${status ? `. ${esc(statusLine(status))}` : ""}" title="${esc(capital(source.species))} · ${esc(source.location.label)} · guide: ${esc(source.instrument)}${status ? `\n${esc(statusLine(status))}` : ""}">${chair}</button></li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
   }).join("");
 }
 
 $("#hall-seats").addEventListener("click", (event) => {
   const button = (event.target as Element).closest<HTMLButtonElement>("[data-chair]");
   const source = button && sourceById.get(button.dataset.chair ?? "");
-  if (!button || !source) return;
-  if (isStatic) openSite(siteOf.get(source.id)!);
-  else composer?.remove(source.id);
+  if (button && source) openVoiceCard(source);
+});
+
+/* ---------- voice card: who is singing, and how their population is doing ---------- */
+const voiceCard = $<HTMLDialogElement>("#voice-card");
+
+function statusBlock(status: Status, heading: string): string {
+  const trend = `${TREND_ARROW[status.trend] ? `${TREND_ARROW[status.trend]} ` : ""}${status.trend === "unknown" ? "Unknown" : capital(TREND_WORD[status.trend])}${status.trendNote ? `: ${status.trendNote}` : ""}`;
+  const row = (term: string, value?: string) => value ? `<dt>${term}</dt><dd>${esc(value)}</dd>` : "";
+  return `<section class="voice-status"><span class="section-number">${heading}</span>
+    <p class="voice-group">${statusChip(status)} <b>${esc(status.group)}</b></p>
+    <dl>${row("Status", status.listing)}${row("History", status.history)}${row("Number", status.count)}<dt>Trend</dt><dd>${esc(trend)}</dd>${row("Threats", status.threats)}${row("Protection", status.protection)}</dl></section>`;
+}
+
+function openVoiceCard(source: Source) {
+  const { population, species, note, noteRefs } = voiceInfo(source);
+  const refs = [...(population?.refs ?? []), ...noteRefs, ...species.refs].filter((ref, i, all) => all.findIndex((r) => r.url === ref.url) === i);
+  const seated = !isStatic && (composer?.has(source.id) ?? false);
+  voiceCard.innerHTML = `<button class="close" type="button" data-close aria-label="Close">×</button>
+    <header class="voice-head" style="--c:${SPECIES_COLOR[source.species]}"><img src="${esc(fileUrl(`species/${SPECIES[source.species].icon}.png`))}" alt="" aria-hidden="true">
+      <div><span class="section-number">${esc(capital(source.species))} · ${esc(source.location.label)}</span><h3 id="voice-card-title">${esc(source.title)}</h3></div></header>
+    ${population ? statusBlock(population, "This population") : ""}
+    ${note ? `<p class="voice-note">${esc(note)}</p>` : ""}
+    ${statusBlock(species, population || note ? "The species worldwide" : "The species")}
+    <section class="voice-refs"><span class="section-number">Sources</span><ul>${refs.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.label)} ↗</a></li>`).join("")}</ul></section>
+    <p class="small">Counts name the year they describe. A population's own listing replaces its species' category on the map and the chair.</p>
+    <div class="row-actions"><button class="btn" type="button" data-listen="${esc(source.id)}" data-label="Listen to the recording">Listen to the recording</button>${seated ? `<button class="btn" type="button" data-remove="${esc(source.id)}">Remove from the orchestra</button>` : ""}</div>`;
+  voiceCard.showModal();
+}
+
+voiceCard.addEventListener("click", (event) => {
+  if (event.target === voiceCard) return voiceCard.close(); // a click on the backdrop
+  const target = (event.target as Element).closest<HTMLButtonElement>("button");
+  const source = target && sourceById.get(target.dataset.listen ?? target.dataset.remove ?? "");
+  if (target?.dataset.close !== undefined) voiceCard.close();
+  else if (source && target?.dataset.listen) listen(source, target);
+  else if (source && target?.dataset.remove) { composer?.remove(source.id); voiceCard.close(); }
 });
 
 function say(text: string) {

@@ -7,6 +7,8 @@
   --right: #3b6d9c; --fin: #5e86b8; --blue: #2c4f9e; --minke: #4a8a62; --bowhead: #2f6b58;
   --false-killer: #5a477f; --pilot: #9b5f9a;
   --common: #b8892a; --spinner: #c26a2f; --striped: #6e7a2c; --rough-toothed: #7d5435; --spotted: #a14d63;
+  /* Conservation status, after the IUCN Red List's colours, darkened or lightened to carry text on paper. */
+  --cr: #c0281f; --en: #e27a30; --vu: #e6c03e; --nt: #bccd62; --lc: #86b783; --dd: #cfcabd;
   --pt-published: #98875f; --pt-archive: #a4987b; --pt-regional: #839070;
   --display: "DM Sans", "Avenir Next", system-ui, sans-serif;
   --body: "DM Sans", "Segoe UI", system-ui, sans-serif;
@@ -150,11 +152,46 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 #hall-seats .occupied { color: var(--c) }
 #hall-seats .occupied button:hover { color: var(--accent) }
 #hall-seats .vacant svg { opacity: .6 }
+#hall-seats .threatened .seat-figure { box-shadow: inset 0 0 0 2px var(--s) }
+.seat-status { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 4px; color: var(--ink); font-size: .7rem }
 .legend { display: flex; flex-wrap: wrap; gap: 7px 14px; font: .58rem/1.4 var(--mono); color: var(--muted); padding: 14px 22px; min-height: 67px; align-content: center }
 .legend span { display: inline-flex; align-items: center; gap: 5px }
 .swatch { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c) }
 .swatch.diamond { border-radius: 1px; transform: rotate(45deg) scale(.85) }
 .swatch.halo { background: transparent; border: 2px solid var(--ink); width: 10px; height: 10px }
+/* Conservation status: a chip with the category code, the same colour as the map tag and the chair border. */
+:is(.status-chip, .status-tag, .threatened) { --s-ink: var(--ink) }
+:is(.status-chip, .status-tag, .threatened).cr { --s: var(--cr); --s-ink: #fff } :is(.status-chip, .status-tag, .threatened).en { --s: var(--en) }
+:is(.status-chip, .status-tag, .threatened).vu { --s: var(--vu) } .status-chip.nt { --s: var(--nt) } .status-chip.lc { --s: var(--lc) } .status-chip.dd { --s: var(--dd) }
+.status-chip { flex: none; display: inline-grid; place-items: center; min-width: 2.2em; height: 1.6em; padding: 0 .35em; border-radius: 999px; background: var(--s); color: var(--s-ink); font: 600 .56rem/1 var(--mono); font-style: normal; letter-spacing: .03em }
+.legend .status-chip { margin-right: -2px }
+.rec-status { grid-column: 1 / -1; margin-left: 37px; display: flex; gap: 6px; align-items: baseline; font-size: .62rem; line-height: 1.45; color: var(--muted) }
+.rec-status .more { flex: none; border: 0; border-bottom: 1px solid currentColor; padding: 0; background: none; color: var(--muted); font: inherit; cursor: pointer }
+.rec-status .more:hover { color: var(--accent) }
+.popover .rec-status { margin-left: 0 }
+/* The voice card: who sings, and how their population and species are doing, with sources. */
+.voice-card { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow-y: auto; border: 1px solid var(--rule); border-radius: 4px; padding: 26px 26px 22px; background: var(--surface); color: var(--ink); box-shadow: 0 18px 50px #0004 }
+.voice-card[open] { display: grid; gap: 16px }
+.voice-card::backdrop { background: #1b1f1e8c }
+.voice-head { display: flex; gap: 14px; align-items: center; padding-right: 28px; border-left: 3px solid var(--c); padding-left: 12px }
+.voice-head img { width: 64px; height: auto; flex: none }
+.voice-head h3 { font: 400 1.35rem/1.15 var(--serif); margin: 4px 0 0 }
+.voice-status { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 12px }
+.voice-group { display: flex; gap: 8px; align-items: center; margin: 0; font-size: .9rem }
+.voice-status dl { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: .78rem; line-height: 1.45 }
+.voice-status dt { color: var(--muted); font: .62rem/1.9 var(--mono); text-transform: uppercase; letter-spacing: .06em }
+.voice-status dd { margin: 0 }
+.voice-note { margin: 0; padding: 10px 12px; background: var(--sunk); font-size: .78rem; line-height: 1.5 }
+.voice-refs { display: grid; gap: 6px; border-top: 1px solid var(--rule); padding-top: 12px }
+.voice-refs ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: .74rem }
+.voice-card .row-actions { display: flex; gap: 8px; flex-wrap: wrap }
+@media (max-width: 560px) {
+  .voice-card { padding: 22px 16px 18px }
+  .voice-status dl { grid-template-columns: minmax(0, 1fr) }
+  .voice-status dt { line-height: 1.4; margin-top: 4px }
+}
+.site .status-tag circle { fill: var(--s); stroke: #fff7e7; stroke-width: 1.2; vector-effect: non-scaling-stroke }
+.site .status-tag text { font: 700 6.6px var(--mono); fill: var(--s-ink); dominant-baseline: central; text-anchor: middle; pointer-events: none }
 .popover { position: absolute; z-index: 3; width: min(320px, calc(100% - 20px)); max-height: calc(100% - 20px); overflow-y: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); box-shadow: 0 8px 24px #0003; padding: 18px; display: grid; gap: 10px }
 .popover h3 { font-size: 1.05rem; padding-right: 16px }
 .popover .row { display: grid; gap: 6px; border-top: 1px solid var(--rule); border-left: 3px solid var(--c); padding: 8px 0 0 8px; font-size: .8rem }

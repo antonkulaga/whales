@@ -6,6 +6,7 @@ import { select } from "d3-selection";
 import { zoom, zoomIdentity, type D3ZoomEvent, type ZoomBehavior } from "d3-zoom";
 import type { Pulse } from "./lib/pulses.ts";
 import { SPECIES } from "./lib/species.ts";
+import { CATEGORY, THREATENED, mostThreatened, statusOf } from "./lib/status.ts";
 import type { DatasetPoint, Location, Source, Species } from "./lib/types.ts";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -189,12 +190,16 @@ export class AtlasMap {
   private drawSites() {
     for (const site of this.sites) {
       const [x, y] = this.xy(site.location);
+      // The most threatened voice recorded here sets the site's status tag; unthreatened sites carry none.
+      const status = mostThreatened(site.sources.map(statusOf));
+      const threatened = status && THREATENED.has(status.category) ? status : undefined;
+      const recordings = `${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`;
       const group = el("g", {
         class: `site ${site.location.precision}`, "data-key": site.key, tabindex: 0, role: "button", "aria-pressed": "false",
-        "aria-label": `${site.location.label}: ${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`,
+        "aria-label": `${site.location.label}: ${recordings}${threatened ? `, ${threatened.group}: ${CATEGORY[threatened.category]}` : ""}`,
         style: `--c:${SPECIES_COLOR[site.species]}`, "data-x": x, "data-y": y,
       }, this.siteLayer);
-      el("title", {}, group).textContent = `${site.location.label} · ${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`;
+      el("title", {}, group).textContent = `${site.location.label} · ${recordings}${threatened ? ` · ${threatened.group}: ${CATEGORY[threatened.category]}` : ""}`;
       el("circle", { class: "hit", r: 18 }, group);
       el("circle", { class: "halo", r: 15 }, group);
       // A second species recorded at the same site shows as an outer ring in its colour.
@@ -204,6 +209,12 @@ export class AtlasMap {
         : el("rect", { class: "mark", x: -7, y: -7, width: 14, height: 14, transform: "rotate(45)" }, group);
       mark.setAttribute("data-shape", site.location.precision);
       el("text", { class: "badge", y: 0.5 }, group).textContent = String(site.sources.length);
+      if (threatened) {
+        // Upper left of the mark, inside the 15-unit halo, so a site near the top edge keeps its tag.
+        const tag = el("g", { class: `status-tag ${threatened.category.toLowerCase()}`, transform: "translate(-8,-8)" }, group);
+        el("circle", { r: 7 }, tag);
+        el("text", { y: 0.4 }, tag).textContent = threatened.category;
+      }
       el("text", { class: "site-label", x: 13, y: 4 }, group).textContent = site.location.label;
       const open = () => this.onSite(site);
       group.addEventListener("click", (event) => { event.stopPropagation(); open(); });
