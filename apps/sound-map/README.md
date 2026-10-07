@@ -1,8 +1,22 @@
-# Phrase Atlas
+# Whale and Dolphin Orchestra
 
-Pick recordings on the world map, layer them or play them in sequence, and hear one
-piece built from their measured phrases. While it plays, each recording site pulses on
-its own onsets and the arcs between the parts light up.
+Click recording sites on the world map to seat whales and dolphins in the orchestra,
+then compose one piece from all their measured phrases with ACE-Step 1.5. While it
+plays, each recording site pulses on its own onsets and the arcs between players
+light up.
+
+- **Seating:** a site with one recording toggles it on click; a site with several opens
+  a short list with "Seat all". The recordings list under the map seats, removes and
+  previews every recording and shows its spectrogram with the measured calls.
+- **Map:** zoom presets (All sites, North-east Pacific, Salish Sea, World) frame the
+  clustered hydrophones. Seated sites get a halo and their seat numbers.
+- **Dock:** a bar pinned to the bottom of the window lists the players. Use × to
+  remove one and Layer or Sequence to arrange them. **Compose piece** turns into
+  **Update piece** after any change and **Up to date** when nothing changed.
+  **New take** keeps the players with a new ACE-Step seed. Ctrl+Enter triggers the
+  main button.
+- **Presets:** a piece is named only when saved as a preset under the result. Opening
+  any saved piece seats its players again.
 
 The app is Bun + TypeScript. Measurement, guides, the deterministic response, ACE-Step
 and scoring all run in Python (`main.py follow combine`); the server writes a spec, runs
@@ -38,9 +52,9 @@ The server binds to localhost and runs one combination at a time, because the GP
 
 | File | Role |
 |---|---|
-| `server.ts` | `/api/catalog`, `/api/combos`, `/api/combos/:id`, `POST /api/combine`, `/files/*` from `data/output/follow` |
+| `server.ts` | `/api/catalog`, `/api/combos`, `/api/combos/:id`, `POST /api/combos/:id/preset`, `POST /api/combine`, `/files/*` from `data/output/follow` (falling back to `demo/follow`) |
 | `src/map.ts` | Equal Earth map from `resources/maps/world-countries-110m.geojson`, catalogue dataset dots, sites, arcs, pulses |
-| `src/composer.ts` | Parts, trims, offsets, gains, registers, ACE-Step options, timeline preview |
+| `src/composer.ts` | The orchestra: seat/remove/load players, trims, offsets, gains, registers, ACE-Step options and seed, timeline preview |
 | `src/player.ts` | WebAudio playback: every stem starts on the same clock; toggles change gains only |
 | `src/lanes.ts` | Spectrogram lanes with each part's onsets and contours, envelopes, scores |
 | `src/lib/` | Pure logic shared by UI, server and tests |

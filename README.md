@@ -1,31 +1,112 @@
-# Whales: sound, identity, and form
+# Whale and Dolphin Orchestra
 
-An exploration repo for Livia's marine art residency proposal: discover what
-cetacean recordings actually annotate, then experiment with sound-driven shapes
-and images. Start with the data and context before choosing a training task.
+Click recording sites on a world map to seat whales and dolphins in an orchestra,
+then hear one piece composed from all of them. Every player is a real recording:
+humpback song from Haro Strait, killer-whale calls from the Salish Sea and Alaska,
+sperm-whale codas from Dominica and bottlenose dolphin whistles from Eilat. Audio
+analysis measures each call's onset and pitch contour. A guide plays those
+measurements in an instrument and register per species, and ACE-Step 1.5, a
+generative music model, composes the piece from the combined guide. While it
+plays, every site pulses on its own calls, and spectrograms show what the analysis
+measured and what the model made.
 
-## Research
+The repository also holds the research behind it, made for Livia's marine art
+residency proposal: which recordings exist, what their labels support, which
+models can use them, and what artists have already done with cetacean sound.
+
+## Play the orchestra
+
+```bash
+git lfs pull           # demo recordings and finished pieces, about 65 MB
+cd apps/sound-map
+bun install
+bun run dev            # http://127.0.0.1:3070
+```
+
+- **Seat players.** Click a site to seat its recording and click again to remove it.
+  A site with several recordings opens a short list. The recordings list under the
+  map works too, with a Listen button and a spectrogram strip for each recording.
+- **Compose.** The dock at the bottom shows who is seated. Remove a player with ×,
+  choose layered or sequenced, then press **Compose piece**. After any change the
+  button becomes **Update piece**; **New take** keeps the players and asks
+  ACE-Step for another seed. Ctrl+Enter does the same as the button.
+- **Keep what you like.** Naming waits until you want to keep a piece: **Save
+  preset** under the result. Presets and recent pieces are listed at the bottom,
+  and opening one seats its players so you can change it and update.
+
+A fresh clone plays the 14 recordings and 10 finished pieces committed in
+`apps/sound-map/demo/` (Git LFS). Composing new pieces needs the Python pipeline
+and ACE-Step 1.5 in its own environment:
+
+```bash
+uv run --group art --group viz main.py follow fetch
+uv run --group art --group viz main.py follow prepare
+uv run --group art --group viz main.py follow catalog
+# ACE-Step 1.5: clone into data/interim/tools/ACE-Step-1.5 and run `uv sync` there
+```
+
+An orchestra holds up to six players (`combination.max_parts` in
+`resources/follow-music.json`). Without ACE-Step a piece still renders its guide
+and a deterministic response. The method, the measurements and the tests of
+whether the music follows the animals are in [Follow the phrase](docs/follow-the-phrase.md);
+the app is described in [apps/sound-map/README.md](apps/sound-map/README.md).
+
+## Next: sound to silver (in progress)
+
+The second idea turns sound into Livia's own material: a recording bends one of
+her cast-silver rings (Inline, Roots). Time runs along the metal, pitch lifts the
+band along the finger, level swells it outward and pitch slope leans it, while
+casting checks guard wall thickness, gaps and the finger bore. It is not
+implemented end to end yet. Work has started in `experiments/silver.py`, with
+settings in `resources/sound-silver.json`.
+
+One silver piece already exists as a pilot. **Hardata II** (implemented and run)
+engraves a dolphin whistle as a contour groove around a ring band and reads it back
+into sound. A 2026 dolphin encoder kept 75% of its whistle-type score from a
+272-bit groove (macro-F1 0.62 against 0.82 on the original audio). Run it with
+`uv run --group art main.py inscription fetch|run|matched`; see the
+[pilot report](docs/hardata-ii-pilot.md) and the [visual atlas](docs/atlas/index.html).
+
+Other steps toward silver: CLAP-directed jewelry concepts and silver geometry
+studies ([artistic experiments](docs/artistic-experiments.md)) and the human
+[sound brush](docs/sound-brush.md). [Livia's brief](docs/livia-experiment-brief.md)
+describes the pieces these build on.
+
+## Documentation
+
+**Orchestra and music**
+
+- [Follow the phrase — measured guides, ACE-Step 1.5 accompaniment and covers, and swap/perturbation tests of whether music follows an animal phrase](docs/follow-the-phrase.md)
+- [Orchestra app — server, demo bundle and static export](apps/sound-map/README.md)
+
+**Data**
 
 - [Dataset guide — contents, exact labels, context, scale, and access](docs/datasets.md)
-- [Model guide — inference readiness, papers, GitHub/HF, dates, sizes, dependencies, and licenses](docs/models.md)
-- [DCLDE 2027 — challenge tasks, inspected downloads, useful models, and starting experiments](docs/dclde-2027.md)
-- [Artistic experiments — implemented outputs and revised brainstorming](docs/artistic-experiments.md)
-- [Existing art projects — whale music, sound-driven visuals, dolphin painting and CHAT](docs/cetacean-art-precedents.md)
-- [Five ideas investigated — music, sound drawing, dolphin images and annotated maps](docs/2026-art-ideas.md)
-- [2026 art models — actual interfaces, release evidence, explanatory figures and limitations](docs/2026-art-models.md)
-- [CHAT in detail — hardware pictures, shared sound/action interfaces and the drawing proposal](docs/chat-sound-interface.md)
-- [Sound brush — keyboard → emitted waveform → recognized contour → stroke, with replay checks and an OpenWhistle comparison](docs/sound-brush.md)
-- [Follow the phrase — measured guides, ACE-Step 1.5 accompaniment and covers, and swap/perturbation tests of whether music follows an animal phrase](docs/follow-the-phrase.md)
-- [Eight new science-and-art proposals — ranking, recommended pilot and reading map](docs/novel-projects.md) · [experimental plans](docs/novel-experimental-plans.md) · [prior art](docs/novel-prior-art.md) · [novelty assessment](docs/novel-novelty-assessment.md)
-- [Hardata II pilot — how many inscribed bits keep a dolphin whistle's type, and a simulated silver groove](docs/hardata-ii-pilot.md)
-- [DCLDE label audit — what population, spatial and abundance labels actually support](docs/dclde-opportunities.md)
-- [Research overview and experiment plan](docs/research.md)
 - [Dolphin datasets and social context](docs/dolphin-datasets.md)
 - [Whale datasets and annotations](docs/whale-datasets.md)
+- [DCLDE 2027 — challenge tasks, inspected downloads, useful models, and starting experiments](docs/dclde-2027.md)
+- [DCLDE label audit — what population, spatial and abundance labels actually support](docs/dclde-opportunities.md)
+- [World map of dataset locations](docs/world-map.md)
+- [Machine-readable dataset inventory](resources/datasets.json) · [observed Hugging Face schemas](resources/audits/) · [DCLDE file and model-package audit](resources/audits/dclde-2027.json)
+
+**Models**
+
+- [Model guide — inference readiness, papers, GitHub/HF, dates, sizes, dependencies, and licenses](docs/models.md)
 - [Detailed model audit and visual conditioning notes](docs/audio-models.md)
-- [Machine-readable dataset inventory](resources/datasets.json)
-- [Observed Hugging Face schemas](resources/audits/)
-- [DCLDE file and model-package audit](resources/audits/dclde-2027.json)
+- [2026 art models — actual interfaces, release evidence, explanatory figures and limitations](docs/2026-art-models.md)
+
+**Art research and ideas**
+
+- [Research overview and experiment plan](docs/research.md)
+- [Five ideas investigated — music, sound drawing, dolphin images and annotated maps](docs/2026-art-ideas.md)
+- [Existing art projects — whale music, sound-driven visuals, dolphin painting and CHAT](docs/cetacean-art-precedents.md)
+- [CHAT in detail — hardware pictures, shared sound/action interfaces and the drawing proposal](docs/chat-sound-interface.md)
+- [Artistic experiments — implemented outputs and revised brainstorming](docs/artistic-experiments.md)
+- [Sound brush — keyboard → emitted waveform → recognized contour → stroke, with replay checks and an OpenWhistle comparison](docs/sound-brush.md)
+- [Hardata II pilot — how many inscribed bits keep a dolphin whistle's type, and a simulated silver groove](docs/hardata-ii-pilot.md)
+- [Eight new science-and-art proposals — ranking, recommended pilot and reading map](docs/novel-projects.md) · [experimental plans](docs/novel-experimental-plans.md) · [prior art](docs/novel-prior-art.md) · [novelty assessment](docs/novel-novelty-assessment.md) · [visual atlas of all six reports](docs/atlas/index.html) (open in a browser; playable pilot clips)
+
+**For coding agents:** [AGENTS.md](AGENTS.md) covers the layout, commands and conventions.
 
 The inventory was checked on **4 October 2026**. A source's public availability
 does not establish its reuse license. Unknown fields and terms are identified
@@ -34,7 +115,7 @@ Its proposed experiments have not been locally benchmarked, except the human sou
 brush, which is implemented and measured in [docs/sound-brush.md](docs/sound-brush.md),
 and the music experiment, measured in [docs/follow-the-phrase.md](docs/follow-the-phrase.md).
 
-## Run
+## Research toolkit
 
 Install [uv](https://docs.astral.sh/uv/) and run from this directory. The project
 uses Python 3.12 (`>=3.11,<3.14`) to support modern ML dependencies such as AVEX.
@@ -128,8 +209,8 @@ with timing and pitch scores against swapped and perturbed guides. Predictions
 were registered in the code before the first run. See the
 [report](docs/follow-the-phrase.md).
 
-To combine several recordings and hear them on the map, run `main.py follow catalog`,
-then `bun install && bun run dev` in [apps/sound-map](apps/sound-map/README.md).
+To seat several recordings in the [Whale and Dolphin Orchestra](#play-the-orchestra),
+run `main.py follow catalog`, then `bun install && bun run dev` in [apps/sound-map](apps/sound-map/README.md).
 
 ### DCLDE label audit for population, spatial and abundance questions
 

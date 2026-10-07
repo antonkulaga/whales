@@ -13,6 +13,11 @@ const OUTPUT = join(ROOT, "data", "output", "follow");
 // Committed bundle (Git LFS, `bun scripts/demo.ts`): read when OUTPUT lacks a file, so a fresh clone plays.
 const DEMO = join(import.meta.dir, "demo", "follow");
 const SPECS = join(ROOT, "data", "interim", "follow", "combo-specs");
+// Preset names live beside the pieces, not in their manifests: re-running a piece rewrites its manifest,
+// and a name must never change a piece's id.
+const PRESETS = join(OUTPUT, "presets.json");
+type Presets = Record<string, { name: string; saved_at_utc: string }>;
+const readPresets = async (): Promise<Presets> => Bun.file(PRESETS).json().catch(() => ({})) as Promise<Presets>;
 const PORT = Number(process.env.PORT ?? 3070);
 const HOSTNAME = process.env.HOST ?? "127.0.0.1";
 const PYTHON = ["uv", "run", "--group", "art", "--group", "viz", "main.py", "follow"];
@@ -67,14 +72,16 @@ async function catalog(): Promise<Response> {
 async function combos(): Promise<Response> {
   const out: ComboSummary[] = [];
   const seen = new Set<string>();
+  const presets = await readPresets();
   for (const folder of [join(OUTPUT, "combos"), join(DEMO, "combos")]) {
     for (const name of await readdir(folder).catch(() => [] as string[])) {
       const file = Bun.file(join(folder, name, "manifest.json"));
       if (seen.has(name) || !(await file.exists())) continue;
       seen.add(name);
       const m = (await file.json()) as Manifest;
-      out.push({ id: m.id, title: m.title, created_at_utc: m.created_at_utc, duration_s: m.duration_s,
-                 sources: m.parts.map((p) => p.source), ace: Boolean(m.stems.ace) });
+      const preset = presets[m.id];
+      out.push({ id: m.id, title: preset?.name ?? m.title, created_at_utc: preset?.saved_at_utc ?? m.created_at_utc, duration_s: m.duration_s,
+                 sources: m.parts.map((p) => p.source), ace: Boolean(m.stems.ace), preset: Boolean(preset) });
     }
   }
   out.sort((a, b) => b.created_at_utc.localeCompare(a.created_at_utc));
@@ -85,9 +92,27 @@ async function combo(id: string): Promise<Response> {
   if (!/^[0-9a-f]{12}$/.test(id)) return Response.json({ error: "Unknown combination" }, { status: 404 });
   for (const root of [OUTPUT, DEMO]) {
     const file = Bun.file(join(root, "combos", id, "manifest.json"));
-    if (await file.exists()) return new Response(file, { headers: { "content-type": "application/json" } });
+    if (!(await file.exists())) continue;
+    const manifest = (await file.json()) as Manifest;
+    const preset = (await readPresets())[id];
+    return Response.json(preset ? { ...manifest, title: preset.name, preset: true } : manifest);
   }
   return Response.json({ error: "Unknown combination" }, { status: 404 });
+}
+
+/** Name a piece as a preset (an empty name removes it). Only the name is stored; the piece stays as rendered. */
+async function savePreset(request: Request, id: string): Promise<Response> {
+  if (!/^[0-9a-f]{12}$/.test(id)) return Response.json({ error: "Unknown combination" }, { status: 404 });
+  const known = await Promise.all([OUTPUT, DEMO].map((root) => Bun.file(join(root, "combos", id, "manifest.json")).exists()));
+  if (!known.some(Boolean)) return Response.json({ error: "Unknown combination" }, { status: 404 });
+  const body = (await request.json().catch(() => null)) as { name?: unknown } | null;
+  const name = typeof body?.name === "string" ? body.name.trim().slice(0, 120) : "";
+  const presets = await readPresets();
+  if (name) presets[id] = { name, saved_at_utc: new Date().toISOString() };
+  else delete presets[id];
+  await mkdir(OUTPUT, { recursive: true });
+  await Bun.write(PRESETS, JSON.stringify(presets, null, 1));
+  return Response.json({ id, name: name || null });
 }
 
 async function combine(request: Request): Promise<Response> {
@@ -157,6 +182,7 @@ const server = Bun.serve({
     "/api/catalog": { GET: catalog },
     "/api/combos": { GET: combos },
     "/api/combos/:id": { GET: (request) => combo(request.params.id) },
+    "/api/combos/:id/preset": { POST: (request) => savePreset(request, request.params.id) },
     "/api/combine": { POST: combine },
     "/files/*": { GET: files },
   },

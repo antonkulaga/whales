@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Phrase Atlas</title>
+  <title>Whale and Dolphin Orchestra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -12,40 +12,46 @@
 <body>
   <div class="wrap">
     <header class="masthead">
-      <span class="eyebrow">Whale and dolphin art experiments · follow the phrase</span>
-      <h1>Phrase Atlas</h1>
-      <p>Pick recordings where they were made, layer them or play them in sequence, and hear one piece built from their measured phrases. While it plays, each recording site pulses on its own onsets.</p>
+      <span class="eyebrow">Whale and dolphin art experiments</span>
+      <h1>Whale and Dolphin Orchestra</h1>
+      <p>Click recording sites to seat whales and dolphins in the orchestra. ACE-Step composes one piece from all their measured phrases, and while it plays each site pulses on its own calls.</p>
     </header>
 
-    <main class="atlas">
+    <main class="stage">
       <section class="map-panel" aria-labelledby="map-title">
         <div class="panel-head">
           <h2 id="map-title">Recording sites</h2>
-          <div class="legend" id="legend"></div>
+          <div class="zooms" id="zooms" role="group" aria-label="Zoom the map"></div>
         </div>
         <div class="map-box" id="map-box">
           <svg id="map" role="img" aria-label="World map of recording sites and dataset locations"></svg>
           <div class="popover" id="popover" hidden></div>
-          <div class="map-hint" id="map-hint">Scroll or pinch to zoom. Select a site to add its recordings.</div>
+          <div class="map-hint" id="map-hint">Click a site to seat its recording, click again to remove it. Scroll or pinch to zoom.</div>
         </div>
-        <ul class="site-list" id="site-list" aria-label="Recording sites"></ul>
+        <div class="legend" id="legend"></div>
       </section>
 
-      <aside class="composer" aria-labelledby="composer-title">
-        <div class="panel-head"><h2 id="composer-title">Combination</h2></div>
-        <label class="field"><span>Title</span><input id="title" type="text" placeholder="Haro Strait answers Dominica" maxlength="120"></label>
-        <fieldset class="segmented" id="arrangement">
-          <legend>Arrangement</legend>
-          <label><input type="radio" name="arrangement" value="layer" checked> Layer</label>
-          <label><input type="radio" name="arrangement" value="sequence"> Sequence</label>
-        </fieldset>
-        <label class="field" id="gap-field" hidden><span>Gap between parts</span><span class="inline"><input id="gap" type="number" min="0" max="30" step="0.5" value="1"> s</span></label>
-        <ol class="parts" id="parts"></ol>
-        <p class="empty" id="parts-empty">No recordings yet. Select a site on the map and add one.</p>
-        <div class="timeline" id="timeline" aria-label="Timeline preview"></div>
-        <details class="model" id="model" open>
-          <summary>ACE-Step on the combined guide</summary>
-          <label class="check"><input id="ace-on" type="checkbox" checked> Generate with ACE-Step 1.5</label>
+      <aside class="composer roster" aria-labelledby="roster-title">
+        <div class="panel-head"><h2 id="roster-title">Recordings</h2><span class="small" id="roster-count"></span></div>
+        <p class="roster-note small">Each strip is the recording's spectrogram; the marks are the calls our audio analysis measured in it.</p>
+        <ul class="roster-list" id="roster" aria-label="Recordings you can seat"></ul>
+      </aside>
+    </main>
+
+    <section class="settings" aria-label="Piece settings">
+      <details class="panel" id="tune">
+        <summary><span class="sum-title">Fine-tune players</span><span class="small">offsets, trims, gains and guide registers</span></summary>
+        <div class="panel-body">
+          <label class="field" id="gap-field" hidden><span>Gap between players in sequence</span><span class="inline"><input id="gap" type="number" min="0" max="30" step="0.5" value="1"> s</span></label>
+          <ol class="parts" id="parts"></ol>
+          <p class="empty" id="parts-empty">No players yet. Click a site on the map or a recording in the list.</p>
+          <div class="timeline" id="timeline" aria-label="Timeline preview"></div>
+        </div>
+      </details>
+      <details class="panel model" id="model">
+        <summary><span class="sum-title">ACE-Step</span><span class="small" id="model-summary"></span></summary>
+        <div class="panel-body">
+          <label class="check"><input id="ace-on" type="checkbox" checked> Compose with ACE-Step 1.5</label>
           <fieldset class="segmented" id="ace-task">
             <legend>Task</legend>
             <label><input type="radio" name="ace-task" value="cover" checked> Cover</label>
@@ -54,12 +60,13 @@
           <label class="field"><span>Cover strength <output id="strength-out">0.6</output></span><input id="strength" type="range" min="0.2" max="1" step="0.05" value="0.6"></label>
           <label class="field"><span>Caption</span><textarea id="caption" rows="2" maxlength="400"></textarea></label>
           <p class="small">Cover follows the guide's timing best in the first study. Lego tracks mostly ignore it.</p>
-        </details>
-        <div class="problems" id="problems" role="status"></div>
-        <button class="primary" id="combine" type="button">Combine</button>
-        <pre class="log" id="log" hidden></pre>
-      </aside>
-    </main>
+        </div>
+      </details>
+      <details class="panel" id="log-panel">
+        <summary><span class="sum-title">Engine log</span><span class="small">main.py follow combine</span></summary>
+        <div class="panel-body"><pre class="log" id="log">Nothing composed in this session yet.</pre></div>
+      </details>
+    </section>
 
     <section class="result" id="result" hidden aria-labelledby="result-title">
       <div class="result-head">
@@ -67,6 +74,12 @@
           <span class="eyebrow" id="result-eyebrow"></span>
           <h2 id="result-title"></h2>
           <p class="small" id="result-note"></p>
+          <form class="preset" id="preset-form">
+            <label class="sr-only" for="preset-name">Preset name</label>
+            <input id="preset-name" type="text" maxlength="120" placeholder="Name it to keep it as a preset">
+            <button class="btn" id="preset-save" type="submit">Save preset</button>
+            <span class="small" id="preset-status" role="status"></span>
+          </form>
         </div>
         <div class="transport">
           <button class="play" id="play" type="button" aria-pressed="false">Play</button>
@@ -75,18 +88,39 @@
       </div>
       <div class="mixer">
         <fieldset class="stems" id="stems"><legend>Listen to</legend></fieldset>
-        <fieldset class="part-toggles" id="part-toggles"><legend>Parts</legend></fieldset>
+        <fieldset class="part-toggles" id="part-toggles"><legend>Players</legend></fieldset>
       </div>
+      <p class="lanes-note small">How the piece was made, as spectrograms (frequency over time). Coloured ticks and lines are the onsets and pitch contours that audio analysis measured in each recording. The guide plays those measurements; ACE-Step, a generative music model, composes its stem from the combined guide. Click a strip to play from there.</p>
       <div class="lanes" id="lanes"></div>
       <div class="scores" id="scores"></div>
     </section>
 
     <section class="saved" aria-labelledby="saved-title">
-      <h2 id="saved-title">Saved combinations</h2>
+      <h2 id="saved-title">Presets and recent pieces</h2>
+      <p class="small">Opening one seats its players, so you can change them and update it.</p>
       <ul id="saved"></ul>
     </section>
 
     <footer class="small">Engine: <code>main.py follow combine</code> (Python). Locations: published hydrophone positions are circles; approximate site anchors are diamonds. Dataset dots come from the world map catalogue and are not playable.</footer>
+
+    <section class="dock" id="dock" aria-labelledby="dock-title">
+      <div class="dock-head">
+        <h2 id="dock-title">Orchestra</h2>
+        <span class="seats" id="seats"></span>
+        <fieldset class="segmented compact" id="arrangement">
+          <legend class="sr-only">Arrangement</legend>
+          <label><input type="radio" name="arrangement" value="layer" checked> Layer</label>
+          <label><input type="radio" name="arrangement" value="sequence"> Sequence</label>
+        </fieldset>
+      </div>
+      <ol class="players" id="players" aria-label="Players in the orchestra"></ol>
+      <div class="dock-actions">
+        <p class="status" id="status" role="status"></p>
+        <button class="btn quiet" id="clear" type="button">Clear</button>
+        <button class="btn" id="take" type="button" title="Same players, a new ACE-Step seed">New take</button>
+        <button class="primary" id="combine" type="button">Compose piece</button>
+      </div>
+    </section>
   </div>
   <script type="module" src="./main.ts"></script>
 </body>

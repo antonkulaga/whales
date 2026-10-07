@@ -1,8 +1,8 @@
-// The combination being composed: parts, their trims, offsets, gains and registers, a timeline
-// preview that mirrors Python's placement, and the ACE-Step request.
+// The orchestra being composed: which recordings play, their trims, offsets, gains and registers,
+// a timeline preview that mirrors Python's placement, and the ACE-Step request.
 
 import { buildSpec, clamp, draftFor, place, problems, totalDuration, type PlacedPart } from "./lib/arrange.ts";
-import type { AceRequest, Arrangement, Catalog, PartDraft, Source, Spec } from "./lib/types.ts";
+import type { AceRequest, Arrangement, Catalog, Manifest, PartDraft, Source, Spec } from "./lib/types.ts";
 import { SPECIES_COLOR, type MapPart } from "./map.ts";
 
 const $ = <T extends Element>(selector: string) => document.querySelector(selector) as T;
@@ -13,14 +13,14 @@ export class Composer {
   private parts: PartDraft[] = [];
   private arrangement: Arrangement = "layer";
   private gap_s = 1;
+  private seed: number | undefined;
   private captionEdited = false;
   private readonly sources: Map<string, Source>;
 
-  constructor(private readonly catalog: Catalog, private readonly onChange: (parts: MapPart[]) => void) {
+  constructor(private readonly catalog: Catalog, private readonly onChange: () => void) {
     this.sources = new Map(catalog.sources.map((s) => [s.id, s]));
     $<HTMLFieldSetElement>("#arrangement").addEventListener("change", (event) => {
       this.arrangement = (event.target as HTMLInputElement).value as Arrangement;
-      $<HTMLElement>("#gap-field").hidden = this.arrangement !== "sequence";
       this.render();
     });
     $<HTMLInputElement>("#gap").addEventListener("input", (event) => {
@@ -29,9 +29,11 @@ export class Composer {
     });
     $<HTMLInputElement>("#strength").addEventListener("input", (event) => {
       $<HTMLOutputElement>("#strength-out").value = (event.target as HTMLInputElement).value;
+      this.refresh();
     });
-    $<HTMLTextAreaElement>("#caption").addEventListener("input", () => { this.captionEdited = true; });
-    $<HTMLInputElement>("#ace-on").addEventListener("change", () => this.syncModel());
+    $<HTMLTextAreaElement>("#caption").addEventListener("input", () => { this.captionEdited = true; this.refresh(); });
+    $<HTMLInputElement>("#ace-on").addEventListener("change", () => this.refresh());
+    $<HTMLFieldSetElement>("#ace-task").addEventListener("change", () => this.refresh());
     const list = $<HTMLOListElement>("#parts");
     list.addEventListener("input", (event) => this.edit(event.target as HTMLInputElement | HTMLSelectElement));
     list.addEventListener("click", (event) => {
@@ -41,20 +43,93 @@ export class Composer {
       if (button.dataset.action === "remove") this.parts.splice(i, 1);
       if (button.dataset.action === "up" && i > 0) this.parts.splice(i - 1, 0, ...this.parts.splice(i, 1));
       if (button.dataset.action === "down" && i < this.parts.length - 1) this.parts.splice(i + 1, 0, ...this.parts.splice(i, 1));
-      this.render();
+      this.changed();
     });
-    this.render();
-  }
-
-  add(source: Source) {
-    // A new layered part enters a few seconds after the previous one, so layers do not all start together.
-    const offset = this.arrangement === "layer" && this.parts.length ? Math.min(30, this.parts.length * 4) : 0;
-    this.parts.push(draftFor(source, offset));
     this.render();
   }
 
   get count(): number {
     return this.parts.length;
+  }
+
+  get max(): number {
+    return this.catalog.combination.max_parts;
+  }
+
+  get full(): boolean {
+    return this.parts.length >= this.max;
+  }
+
+  get aceOn(): boolean {
+    return $<HTMLInputElement>("#ace-on").checked;
+  }
+
+  /** Recording ids in seat order. */
+  ids(): string[] {
+    return this.parts.map((p) => p.source);
+  }
+
+  has(id: string): boolean {
+    return this.parts.some((p) => p.source === id);
+  }
+
+  /** Seat a recording; returns false when it is already seated or every seat is taken. */
+  add(source: Source): boolean {
+    if (this.has(source.id) || this.full) return false;
+    // A new layered player enters a few seconds after the previous one, so layers do not all start together.
+    const offset = this.arrangement === "layer" && this.parts.length ? Math.min(30, this.parts.length * 4) : 0;
+    this.parts.push(draftFor(source, offset));
+    this.changed();
+    return true;
+  }
+
+  remove(id: string) {
+    const before = this.parts.length;
+    this.parts = this.parts.filter((p) => p.source !== id);
+    if (this.parts.length !== before) this.changed();
+  }
+
+  toggle(source: Source): boolean {
+    if (this.has(source.id)) {
+      this.remove(source.id);
+      return true;
+    }
+    return this.add(source);
+  }
+
+  clear() {
+    if (!this.parts.length) return;
+    this.parts = [];
+    this.changed();
+  }
+
+  /** A fresh ACE-Step seed for the same players: "New take". */
+  newSeed() {
+    this.seed = 1 + Math.floor(Math.random() * 2_147_483_646);
+    this.refresh();
+  }
+
+  /** Seat a saved piece's players with its settings, so updating starts from it. */
+  load(manifest: Manifest) {
+    const spec = manifest.spec;
+    this.parts = spec.parts
+      .filter((p) => this.sources.has(p.source))
+      .map((p) => ({ source: p.source, offset_s: p.offset_s, trim_s: [p.trim_s[0], p.trim_s[1]], gain_db: p.gain_db, shift_octaves: p.shift_octaves }));
+    this.arrangement = spec.arrangement;
+    this.gap_s = spec.gap_s;
+    document.querySelector<HTMLInputElement>(`input[name="arrangement"][value="${spec.arrangement}"]`)!.checked = true;
+    $<HTMLInputElement>("#gap").value = String(spec.gap_s);
+    const ace = manifest.ace;
+    $<HTMLInputElement>("#ace-on").checked = Boolean(ace);
+    if (ace) {
+      document.querySelector<HTMLInputElement>(`input[name="ace-task"][value="${ace.task}"]`)!.checked = true;
+      $<HTMLInputElement>("#strength").value = String(ace.audio_cover_strength);
+      $<HTMLOutputElement>("#strength-out").value = String(ace.audio_cover_strength);
+      $<HTMLTextAreaElement>("#caption").value = ace.caption;
+      this.captionEdited = true;
+      this.seed = ace.seed === this.catalog.seed ? undefined : ace.seed;
+    }
+    this.render();
   }
 
   placed(): PlacedPart[] {
@@ -69,17 +144,22 @@ export class Composer {
   }
 
   spec(): Spec {
-    const on = $<HTMLInputElement>("#ace-on").checked;
-    const ace: AceRequest | null = on ? {
+    const ace: AceRequest | null = this.aceOn ? {
       task: (document.querySelector<HTMLInputElement>('input[name="ace-task"]:checked')?.value ?? "cover") as AceRequest["task"],
       caption: $<HTMLTextAreaElement>("#caption").value.trim() || undefined,
       audio_cover_strength: Number($<HTMLInputElement>("#strength").value),
+      ...(this.seed === undefined ? {} : { seed: this.seed }),
     } : null;
-    return buildSpec($<HTMLInputElement>("#title").value, this.arrangement, this.gap_s, this.parts, ace);
+    // No title: Python names a piece after its players, and names given later as presets never change its id.
+    return buildSpec("", this.arrangement, this.gap_s, this.parts, ace);
   }
 
   problems(): string[] {
     return problems(this.placed(), this.catalog.combination);
+  }
+
+  private changed() {
+    this.render();
   }
 
   private edit(target: HTMLInputElement | HTMLSelectElement) {
@@ -99,15 +179,16 @@ export class Composer {
     this.refresh();
   }
 
-  /** Full re-render: used when parts are added, removed, reordered or the arrangement changes. */
+  /** Full re-render: used when players are added, removed, reordered or the arrangement changes. */
   render() {
     const placed = this.placed();
     $<HTMLOListElement>("#parts").innerHTML = placed.map((p) => this.card(p)).join("");
     $<HTMLElement>("#parts-empty").hidden = this.parts.length > 0;
+    $<HTMLElement>("#gap-field").hidden = this.arrangement !== "sequence";
     this.refresh();
   }
 
-  /** Light update that keeps input focus: timeline, start labels, problems, caption and the map. */
+  /** Light update that keeps input focus: timeline, start labels, caption, model controls, then listeners. */
   private refresh() {
     const placed = this.placed();
     placed.forEach((p) => {
@@ -115,11 +196,8 @@ export class Composer {
       if (label) label.textContent = `starts at ${fmt(p.start_s)} s`;
     });
     $<HTMLElement>("#timeline").innerHTML = this.timeline(placed);
-    const issues = this.problems();
-    $<HTMLElement>("#problems").textContent = issues.join(" ");
-    $<HTMLButtonElement>("#combine").disabled = issues.length > 0;
     this.syncModel();
-    this.onChange(this.mapParts());
+    this.onChange();
   }
 
   private syncModel() {
@@ -128,8 +206,12 @@ export class Composer {
     const only = species.size === 1 ? [...species][0] : undefined;
     const fallback = only ? this.catalog.species[only].caption : this.catalog.combination.caption;
     if (!this.captionEdited) caption.value = fallback;
-    const on = $<HTMLInputElement>("#ace-on").checked;
+    const on = this.aceOn;
     for (const id of ["#ace-task", "#strength", "#caption"]) $<HTMLInputElement>(id).disabled = !on;
+    const task = document.querySelector<HTMLInputElement>('input[name="ace-task"]:checked')?.value ?? "cover";
+    $<HTMLElement>("#model-summary").textContent = on
+      ? `${task} · strength ${$<HTMLInputElement>("#strength").value}${this.seed === undefined ? "" : ` · take ${this.seed}`}`
+      : "off: guide and response only";
   }
 
   private card(p: PlacedPart): string {
@@ -143,9 +225,9 @@ export class Composer {
       <div class="part-head"><div><b>${p.index + 1} · ${esc(source.id)}</b>
         <div class="small">${esc(source.location.label)} · ${fmt(source.duration_s)} s · ${source.onsets_s.length} events</div></div>
         <div class="tools">
-          <button class="btn" type="button" data-action="up" data-index="${p.index}" aria-label="Move part ${p.index + 1} earlier" ${p.index === 0 ? "disabled" : ""}>↑</button>
-          <button class="btn" type="button" data-action="down" data-index="${p.index}" aria-label="Move part ${p.index + 1} later" ${p.index === last ? "disabled" : ""}>↓</button>
-          <button class="btn" type="button" data-action="remove" data-index="${p.index}" aria-label="Remove part ${p.index + 1}">Remove</button>
+          <button class="btn" type="button" data-action="up" data-index="${p.index}" aria-label="Move player ${p.index + 1} earlier" ${p.index === 0 ? "disabled" : ""}>↑</button>
+          <button class="btn" type="button" data-action="down" data-index="${p.index}" aria-label="Move player ${p.index + 1} later" ${p.index === last ? "disabled" : ""}>↓</button>
+          <button class="btn" type="button" data-action="remove" data-index="${p.index}" aria-label="Remove player ${p.index + 1}">Remove</button>
         </div></div>
       <div class="part-grid">
         ${this.arrangement === "layer"
@@ -168,7 +250,7 @@ export class Composer {
     const x = (t: number) => left + (t / duration) * (width - left - 8);
     const step = [5, 10, 15, 30, 60].find((s) => duration / s <= 8) ?? 60;
     const height = placed.length * row + 22;
-    let svg = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Timeline: ${placed.length} parts over ${fmt(duration)} seconds">`;
+    let svg = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Timeline: ${placed.length} players over ${fmt(duration)} seconds">`;
     for (let t = 0; t <= duration; t += step) {
       svg += `<line class="axis" x1="${x(t)}" x2="${x(t)}" y1="0" y2="${height - 14}"/><text x="${x(t)}" y="${height - 2}" text-anchor="middle">${t}s</text>`;
     }

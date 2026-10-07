@@ -3,13 +3,13 @@
 
 import { geoEqualEarth, geoGraticule10, geoPath, type GeoProjection } from "d3-geo";
 import { select } from "d3-selection";
-import { zoom, type D3ZoomEvent } from "d3-zoom";
+import { zoom, zoomIdentity, type D3ZoomEvent, type ZoomBehavior } from "d3-zoom";
 import type { Pulse } from "./lib/pulses.ts";
 import type { DatasetPoint, Location, Source, Species } from "./lib/types.ts";
 
 const NS = "http://www.w3.org/2000/svg";
 const W = 960;
-const H = 540;
+const H = 500;
 
 export const SPECIES_COLOR: Record<Species, string> = {
   humpback: "var(--humpback)",
@@ -60,6 +60,7 @@ export class AtlasMap {
   private readonly pulses: SVGGElement;
   private readonly pins: SVGGElement;
   private readonly siteLayer: SVGGElement;
+  private readonly behaviour: ZoomBehavior<SVGSVGElement, unknown>;
   private k = 1;
   private parts: MapPart[] = [];
 
@@ -92,15 +93,40 @@ export class AtlasMap {
     this.siteLayer = el("g", {}, this.world);
     this.pins = el("g", {}, this.world);
     this.drawSites();
-    const behaviour = zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, 14])
+    this.behaviour = zoom<SVGSVGElement, unknown>()
+      .scaleExtent([1, 64])
       .translateExtent([[0, 0], [W, H]])
       .on("zoom", (event: D3ZoomEvent<SVGSVGElement, unknown>) => {
         this.world.setAttribute("transform", event.transform.toString());
         this.k = event.transform.k;
         this.rescale();
       });
-    select(svg).call(behaviour);
+    select(svg).call(this.behaviour);
+  }
+
+  /** Frame a set of sites (null: the whole world). Zoom stays within the behaviour's limits. */
+  fit(subset: Site[] | null) {
+    let transform = zoomIdentity;
+    if (subset?.length) {
+      const points = subset.map((site) => this.xy(site.location));
+      const xs = points.map((p) => p[0]);
+      const ys = points.map((p) => p[1]);
+      const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+      const pad = 50;
+      const k = Math.max(1, Math.min(64, (W - 2 * pad) / Math.max(x1 - x0, 1), (H - 2 * pad) / Math.max(y1 - y0, 1)));
+      transform = zoomIdentity.translate(W / 2 - (k * (x0 + x1)) / 2, H / 2 - (k * (y0 + y1)) / 2).scale(k);
+    }
+    select(this.svg).call(this.behaviour.transform, transform);
+  }
+
+  /** Sites with at least one recording in the orchestra get a halo. */
+  setSeated(keys: Set<string>) {
+    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((node) => node.classList.toggle("seated", keys.has(node.dataset.key ?? "")));
+  }
+
+  /** Mirror a hover in the recordings list. */
+  highlight(key: string | null) {
+    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((node) => node.classList.toggle("hover", node.dataset.key === key));
   }
 
   private xy(location: Location): [number, number] {
@@ -115,6 +141,9 @@ export class AtlasMap {
         "aria-label": `${site.location.label}: ${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`,
         style: `--c:${SPECIES_COLOR[site.species]}`, "data-x": x, "data-y": y,
       }, this.siteLayer);
+      el("title", {}, group).textContent = `${site.location.label} · ${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`;
+      el("circle", { class: "hit", r: 18 }, group);
+      el("circle", { class: "halo", r: 15 }, group);
       // A second species recorded at the same site shows as an outer ring in its colour.
       site.others.slice(0, 1).forEach((other) => el("circle", { class: "ring", r: 11.5, style: `--c:${SPECIES_COLOR[other]}` }, group));
       const mark = site.location.precision === "published"
@@ -136,8 +165,14 @@ export class AtlasMap {
   private rescale() {
     const k = this.k;
     this.datasets.querySelectorAll("circle").forEach((dot) => dot.setAttribute("r", String(2.2 / k)));
-    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((group) => {
+    const groups = [...this.siteLayer.querySelectorAll<SVGGElement>(".site")];
+    const at = groups.map((g) => [Number(g.dataset.x), Number(g.dataset.y)] as const);
+    groups.forEach((group, i) => {
       group.setAttribute("transform", `translate(${group.dataset.x},${group.dataset.y}) scale(${1 / k})`);
+      // Show a label only when no other site sits within 70 screen units; zooming in reveals the rest.
+      const [x, y] = at[i]!;
+      const crowded = at.some(([ox, oy], j) => j !== i && Math.hypot(ox - x, oy - y) * k < 70);
+      group.querySelector<SVGTextElement>(".site-label")?.setAttribute("visibility", crowded ? "hidden" : "visible");
     });
     this.drawPins();
   }
@@ -170,23 +205,27 @@ export class AtlasMap {
     this.drawPins();
   }
 
+  /** Seat numbers beside each site, joined when several players sit at one place ("2·4·5"). */
   private drawPins() {
     this.pins.replaceChildren();
-    const stacked = new Map<string, number>();
+    const seats = new Map<string, { location: Location; numbers: number[] }>();
     this.parts.forEach((part, i) => {
-      const [x, y] = this.xy(part.location);
-      const n = stacked.get(part.location.label) ?? 0;
-      stacked.set(part.location.label, n + 1);
-      el("text", { class: "part-pin", x: x + (-14 - n * 11) / this.k, y: y - 12 / this.k, "font-size": 10 / this.k, "stroke-width": 3 / this.k }, this.pins)
-        .textContent = String(i + 1);
+      const entry = seats.get(part.location.label) ?? { location: part.location, numbers: [] };
+      entry.numbers.push(i + 1);
+      seats.set(part.location.label, entry);
     });
+    for (const { location, numbers } of seats.values()) {
+      const [x, y] = this.xy(location);
+      el("text", { class: "part-pin", x: x - 15 / this.k, y: y - 13 / this.k, "font-size": 11 / this.k, "stroke-width": 3 / this.k, "text-anchor": "end" }, this.pins)
+        .textContent = numbers.join("·");
+    }
   }
 
   /** One ring per fresh onset; sounding parts light the arcs that touch them. */
-  setPlayback(pulses: Pulse[], lifetime: number, sounding: number[]) {
+  setPlayback(pulses: Pulse[], lifetime: number, sounding: number[], parts: MapPart[] = this.parts) {
     this.pulses.replaceChildren();
     for (const pulse of pulses) {
-      const part = this.parts[pulse.part];
+      const part = parts[pulse.part];
       if (!part) continue;
       const [x, y] = this.xy(part.location);
       const u = pulse.age_s / lifetime;

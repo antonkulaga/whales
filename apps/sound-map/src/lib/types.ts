@@ -83,6 +83,7 @@ export interface AceRequest {
   task: "cover" | "lego";
   caption?: string;
   audio_cover_strength: number;
+  seed?: number; // omitted: the experiment seed; set by "New take"
 }
 
 export interface Spec {
@@ -139,6 +140,7 @@ export interface Manifest {
   scores: Partial<Record<"response" | "ace", OutputScores>>;
   ace: { caption: string; seed: number; task: string; seconds: number; audio_cover_strength: number } | null;
   interpretation: string;
+  preset?: boolean; // set by the server when the user named this piece
 }
 
 export interface ComboSummary {
@@ -148,6 +150,7 @@ export interface ComboSummary {
   duration_s: number;
   sources: string[];
   ace: boolean;
+  preset?: boolean; // named by the user; unnamed pieces are kept as recent work
 }
 
 /** Lines streamed by POST /api/combine as NDJSON. */

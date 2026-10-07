@@ -1,0 +1,59 @@
+{
+  "interpretation": "Sound bends one of Livia's cast-silver rings. Time runs along the metal from one end of the open ring to the other; pitch lifts the band along the finger, level swells it outward, pitch slope leans it. Every point keeps its angle, may only move outward from the finger and may slide along the finger, so the map is one-to-one: the piece cannot tear or pass through itself. Casting checks then decide how far it may go.",
+  "pieces": {
+    "inline": {
+      "title": "Inline Ring",
+      "year": 2022,
+      "materials": "Silver",
+      "source": "06_PARAM 2022/sound manipulation/INLINE/+2inline.stl",
+      "photo": "Inline ring/LiviaZaharia-ring-Inline-1-2022-silver-2.2x2.1x9.4cm.jpg",
+      "note": "Exported from Livia's 2022 'sound manipulation' Grasshopper folder, whose definition records microphone level with Sound Capture and moves points along a curve."
+    },
+    "roots": {
+      "title": "Roots Ring",
+      "year": 2019,
+      "materials": "Silver",
+      "source": "03_PARAM 2019/roots/ciopercute.stl",
+      "photo": "Roots ring/2241842046132722.jpg",
+      "note": "Slender adjustable ring; Livia wrote that she would geometrically reinforce it for future castings."
+    }
+  },
+  "sounds": [
+    {"id": "nana", "path": "data/output/inscription/audio/test-0000-0267-original.wav", "title": "SW_Nana", "kind": "Signature whistle, OpenWhistle test set"},
+    {"id": "neo", "path": "data/output/inscription/audio/test-0000-0051-original.wav", "title": "SW_Neo", "kind": "Signature whistle with clicks, OpenWhistle test set"},
+    {"id": "nsw", "path": "data/output/inscription/audio/test-0000-0303-original.wav", "title": "NSW_1", "kind": "Non-signature whistle with clicks, OpenWhistle test set"},
+    {"id": "coda", "path": "data/input/audio/dswp-0000.wav", "title": "Sperm whale coda", "kind": "Clicks only, DSWP"},
+    {"id": "wave", "path": "data/output/brush/keys/F.wav", "title": "Brush key F: wave", "kind": "Synthesized designed contour (art brush)"}
+  ],
+  "features": {
+    "pitch_full_scale_octaves": 0.5,
+    "slope_full_scale_octaves_per_s": 4.0,
+    "level_floor_percentile": 20,
+    "level_headroom_db": 3.0,
+    "smooth_s": 0.02
+  },
+  "mapping": {
+    "sigma_mm": 2.5,
+    "lock_ramp_mm": 1.5,
+    "lift": 1.0,
+    "swell": 1.0,
+    "lean": 1.0,
+    "lean_reference_mm": 3.0,
+    "profile_bins": 1440,
+    "bore_bins": 360,
+    "bore_smooth_degrees": 4.0,
+    "opening_min_degrees": 10.0
+  },
+  "casting": {
+    "min_wall_mm": 0.6,
+    "min_gap_mm": 0.4,
+    "relative_tolerance": 0.9,
+    "measurable_wall_mm": 0.3,
+    "measurable_gap_mm": 0.1,
+    "max_violating_area_fraction": 0.001,
+    "density_g_cm3": 10.36,
+    "note": "Assumed lost-wax sterling limits; confirm with Livia's caster. A point fails only if it falls below the floor and also loses more than 10% of its own original wall or gap, so walls that were already thin are not penalised for staying thin."
+  },
+  "search": {"max_gain_mm": 6.0, "steps": 9},
+  "viewer": {"triangles": 60000}
+}

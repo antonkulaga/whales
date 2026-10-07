@@ -1,6 +1,7 @@
 // Result lanes for one combination: spectrograms with each part's onsets (and contours on the guide),
 // onset-strength envelopes, a shared playhead, and per-part timing scores.
 
+import { fileUrl } from "./lib/api.ts";
 import type { Manifest, ManifestPart, OutputScores, PhraseEvent, StemName, Timing } from "./lib/types.ts";
 import { SPECIES_COLOR } from "./map.ts";
 
@@ -49,7 +50,7 @@ export function renderLanes(container: HTMLElement, manifest: Manifest, onSeek: 
     const overlay = ticks(parts, manifest.duration_s) + (lane.key === "guide" || lane.key === "ace" ? contours(parts, manifest.duration_s, stem.band) : "");
     const scores = lane.key === "response" || lane.key === "ace" ? manifest.scores[lane.key] : undefined;
     return `<div class="lane"><div><h3>${esc(lane.title)}</h3><div class="small">${esc(lane.caption(manifest))}</div></div>
-      <div><div class="spec" data-lane="${lane.key}"><img src="/files/${esc(stem.image)}" alt="Spectrogram of ${esc(lane.title)}" loading="lazy">
+      <div><div class="spec" data-lane="${lane.key}"><img src="${esc(fileUrl(stem.image))}" alt="Spectrogram of ${esc(lane.title)}" loading="lazy">
         <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${overlay}</svg><div class="playhead"></div></div>${envelope(scores, manifest.duration_s)}</div></div>`;
   }).join("");
   container.querySelectorAll<HTMLElement>(".spec").forEach((spec) => spec.addEventListener("click", (event) => {

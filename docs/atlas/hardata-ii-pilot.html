@@ -1,0 +1,538 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Hardata II pilot · Sound into Silver</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap"><link rel="stylesheet" href="styles.css"></head>
+<body class="report"><header class="topbar"><a class="brand" href="index.html">Sound into Silver</a><nav aria-label="Reports"><a href="novel-projects.html">Overview &amp; ranking</a><a href="novel-experimental-plans.html">Experimental plans</a><a href="novel-prior-art.html">Prior art</a><a href="novel-novelty-assessment.html">Novelty assessment</a><a href="hardata-ii-pilot.html" aria-current="page">Hardata II pilot</a><a href="dclde-opportunities.html">DCLDE label audit</a></nav></header><main class="report-main"><p class="eyebrow">Report · 7 October 2026</p><p class="report-summary">Registered predictions, method, results and limits of the whistle-inscription pilot.</p><article class="prose"><h1 id="hardata-ii-pilot-how-much-of-a-dolphin-whistle-can-a-silver-band-keep">Hardata II pilot: how much of a dolphin whistle can a silver band keep?<a href="#hardata-ii-pilot-how-much-of-a-dolphin-whistle-can-a-silver-band-keep">#</a></h1>
+<p>Run <strong>7 October 2026</strong> on this repository's assets. This is the minimal
+experiment for <a href="novel-experimental-plans.html#p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">proposal P1</a>,
+chosen as the first pilot in the <a href="novel-projects.html#ranking">ranking</a>.
+Prior art is in the <a href="novel-prior-art.html#p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">prior-art report</a>;
+novelty in the <a href="novel-novelty-assessment.html#p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">assessment</a>.</p>
+<h2 id="answer-in-brief">Answer in brief<a href="#answer-in-brief">#</a></h2>
+<p>A 2026 dolphin-trained encoder still recognised the whistle type of <strong>62% (macro-F1)</strong>
+of held-out whistles from a <strong>272-bit</strong> contour inscription, against <strong>82%</strong> for
+the original recordings: 75% of the original performance from a pure tone that
+follows the annotated pitch. Even <strong>80 bits</strong> kept 60%. An exploratory probe
+trained on decoded tones raised the 272-bit contour to 75% macro-F1 (91% of
+original), level with a codec using ten times the bits, so most of the loss was
+domain shift rather than missing information. Reversing the contour or
+flattening it to its mean pitch dropped performance to near chance, so the
+encoder uses the contour's <em>shape</em>. Livia's 2021 <em>Hardata</em> rule, amplitude
+only, scored below chance. At comparable budgets a spectrogram relief and a
+neural codec kept far less; they caught up only at 2–12 kbit, more than a cast
+ring band can hold at silver's 0.35 mm detail limit. A contour engraved as a
+groove and read back after simulated casting blur kept the digital contour's
+score, but that simulation omits the real failure modes of casting and
+polishing.</p>
+<p><img src="media/hardata-ii-rate-distortion.svg" alt="Macro-F1 against inscribed bits for two listeners, and the decoded silver groove against casting blur" class="light-figure"></p>
+<p><em>Upper panels: each point is one inscription condition on 420 test whistles,
+with bootstrap 95% intervals; dashed lines mark original audio and chance.
+Lower panel: contour read back from a simulated cast band. Hover titles work
+when the SVG is opened directly; the playable gallery has the same charts and a
+table view.</em></p>
+<h2 id="why-this-experiment">Why this experiment<a href="#why-this-experiment">#</a></h2>
+<p>Livia's <em>Hardata</em> (2021) engraved a sound-amplitude pattern on a cylinder and
+noted that it had "no way of being played". Two questions follow. Which
+inscription of a whistle could be played back and still be <em>that</em> whistle? And
+does the answer survive the resolution of cast silver?</p>
+<p>Biologically, signature-whistle identity is carried by the frequency contour:
+dolphins recognised whistles with voice features removed
+(<a href="https://doi.org/10.1073/pnas.0509918103" target="_blank" rel="noopener">Janik et al. 2006</a>). The pilot does
+<strong>not</strong> test dolphins. It tests whether the 2026 OpenWhistle encoder, trained on
+114 hours of dolphin audio, separates whistle types from minimal inscriptions,
+and which properties it relies on.</p>
+<h2 id="registered-predictions">Registered predictions<a href="#registered-predictions">#</a></h2>
+<p>Written into <a href="../../experiments/inscription.py"><code>experiments/inscription.py</code></a> before
+the dataset was fetched (16:05 UTC). An 18-clip smoke test ran afterwards to
+check the pipeline; the predictions were not changed. The first full run stamped
+the registration in local time (UTC+3) labelled as UTC; the results file and code
+were corrected.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Prediction</th>
+<th>Outcome</th>
+<th>Evidence (OpenWhistle listener, macro-F1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td>A 32-point, 8-bit contour (272 bits) keeps ≥70% of original-audio macro-F1</td>
+<td><strong>Supported</strong></td>
+<td>0.617 vs 0.822 (75%)</td>
+</tr>
+<tr>
+<td>H2</td>
+<td>Near 0.5 kbit, contour beats spectrogram relief and the 1-codebook DAC codec</td>
+<td><strong>Supported</strong></td>
+<td>vs relief 16×16×2 (528 bits): +0.107 [+0.051, +0.165]; vs DAC-1 (728 bits): +0.412 [+0.355, +0.467]</td>
+</tr>
+<tr>
+<td>H3</td>
+<td>Amplitude only (Hardata 2021) stays within 10 points of chance</td>
+<td><strong>Supported</strong></td>
+<td>0.096; chance ≈ 0.167</td>
+</tr>
+<tr>
+<td>H4</td>
+<td>Reversed contour and flat tone lose most of the contour's advantage</td>
+<td><strong>Supported</strong></td>
+<td>reversed 0.229, flat tone 0.256 vs contour 0.617</td>
+</tr>
+<tr>
+<td>H5</td>
+<td>Simulated groove keeps ≥90% of the digital contour at 0.1 mm blur, degrading smoothly</td>
+<td><strong>Supported by its rule, but see limits</strong></td>
+<td>0.607 vs 0.633 (96%); 0.61–0.65 at every blur up to 0.45 mm</td>
+</tr>
+</tbody>
+</table></div>
+<p>Brackets are paired bootstrap 95% intervals on the same 420 whistles.</p>
+<h2 id="data-and-listeners">Data and listeners<a href="#data-and-listeners">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Whistles</td>
+<td>OpenWhistle <code>balanced</code>, pinned parquet revision <code>101cc5fbe69e</code>; session-disjoint upstream splits</td>
+</tr>
+<tr>
+<td>Labels</td>
+<td>Five signature-whistle types associated with named dolphins (Luna, Nana, Neo, Nikita, Yosefa) and one shared non-signature type (NSW_1). Types, not verified callers</td>
+</tr>
+<tr>
+<td>Inclusion</td>
+<td>Upstream <code>f0_ok</code> and ≥4 F0 points with confidence ≥0.3 between 2 and 22.05 kHz: 2,005 train, 427 validation, <strong>420 test</strong> (30 test whistles excluded)</td>
+</tr>
+<tr>
+<td>Species listener</td>
+<td><code>dolphinteam/OpenWhistle-Wav2Vec2.0</code> at <code>985ac11bc693</code>, mean-pooled hidden states; logistic-regression probe; layer and regularisation chosen on validation originals only (layer 2, C = 0.01; validation macro-F1 0.855)</td>
+</tr>
+<tr>
+<td>General listener</td>
+<td><code>laion/clap-htsat-unfused</code> at <code>8fa0f1c6d043</code>, 48 kHz, same probe procedure (validation macro-F1 0.680)</td>
+</tr>
+<tr>
+<td>Codec</td>
+<td><code>descript/dac_44khz</code> at <code>c1bc521685ad</code>; input normalised to −20 dBFS and restored with one 8-bit gain, counted in its bits</td>
+</tr>
+</tbody>
+</table></div>
+<p>The probe never sees decoded audio during training. Every condition is scored on
+the same 420 whistles.</p>
+<h2 id="inscriptions-and-their-bit-counts">Inscriptions and their bit counts<a href="#inscriptions-and-their-bit-counts">#</a></h2>
+<p>Bits count only what would be inscribed per whistle. The decoder's shared
+knowledge (frequency axis, synthesis rule, noise bed, codec weights) is free.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Encoding</th>
+<th>Decoder</th>
+<th>Bits per whistle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contour</td>
+<td>N points of log-frequency at b bits, plus start/end (16 bits)</td>
+<td>Constant-amplitude tone following the contour</td>
+<td>N·b + 16: 80 to 1,296</td>
+</tr>
+<tr>
+<td>Contour + sea</td>
+<td>As above</td>
+<td>Tone plus a shared background spectrum at 10 dB SNR</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Controls</td>
+<td>Reversed 32×8 contour; flat tone at the whistle's mean pitch over its span</td>
+<td>Tone</td>
+<td>272; 24</td>
+</tr>
+<tr>
+<td>Relief</td>
+<td>Log-power cells (frames × log bands × depth bits, 40 dB range), 2–22 kHz</td>
+<td>Griffin-Lim, 48 iterations</td>
+<td>144 to 12,304</td>
+</tr>
+<tr>
+<td>Amplitude (Hardata 2021)</td>
+<td>32 RMS segments × 3 bits</td>
+<td>Band-limited noise shaped by the envelope</td>
+<td>112</td>
+</tr>
+<tr>
+<td>DAC codec</td>
+<td>1, 2, 4 or 9 residual codebooks at 86 frames/s × 10 bits</td>
+<td>DAC decoder</td>
+<td>median 728 to 6,488</td>
+</tr>
+<tr>
+<td>Silver groove</td>
+<td>Contour groove on a band (below)</td>
+<td>Deepest point per column after simulated casting, then tone</td>
+<td>Analog; compared with 34–1,068 bits of pit capacity</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="the-simulated-band">The simulated band<a href="#the-simulated-band">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Source of the choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Band</td>
+<td>18 mm inner diameter, 1.6 mm wall, 6 mm wide</td>
+<td>A plain ring; Livia to decide</td>
+</tr>
+<tr>
+<td>Time axis</td>
+<td>30 mm per second around the band</td>
+<td>Median whistle 0.8 s → 24 mm</td>
+</tr>
+<tr>
+<td>Frequency axis</td>
+<td>log 2–22.05 kHz across 4.4 mm of width</td>
+<td>0.8 mm margins</td>
+</tr>
+<tr>
+<td>Groove</td>
+<td>0.30 mm deep, 0.35 mm wide at half depth</td>
+<td>Shapeways engraved-detail minimum 0.3 mm; Materialise detail 0.35 mm</td>
+</tr>
+<tr>
+<td>Channel</td>
+<td>Gaussian blur σ = 0.025–0.45 mm, 0.005 mm surface noise, 0.005 mm depth steps</td>
+<td>Print, cast, polish and scan combined</td>
+</tr>
+<tr>
+<td>Digital comparison</td>
+<td>Binary pits at max(0.35 mm, 4σ), half spent on error correction</td>
+<td>1,068 payload bits at fine blur; 34 at 0.45 mm</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each example whistle has a watertight STL band (129,948 triangles, millimetres)
+and an unrolled heightmap in the gallery.</p>
+<h2 id="results">Results<a href="#results">#</a></h2>
+<h3 id="species-trained-listener-openwhistle">Species-trained listener (OpenWhistle)<a href="#species-trained-listener-openwhistle">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condition</th>
+<th style="text-align: right;">Median bits</th>
+<th>Macro-F1 [95% CI]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original recording</td>
+<td style="text-align: right;">585,192</td>
+<td><strong>0.822</strong> [0.781, 0.854]</td>
+</tr>
+<tr>
+<td>Contour 8 × 8</td>
+<td style="text-align: right;">80</td>
+<td>0.603 [0.553, 0.649]</td>
+</tr>
+<tr>
+<td>Contour 16 × 8</td>
+<td style="text-align: right;">144</td>
+<td>0.615 [0.570, 0.659]</td>
+</tr>
+<tr>
+<td>Contour 32 × 4</td>
+<td style="text-align: right;">144</td>
+<td>0.564 [0.515, 0.608]</td>
+</tr>
+<tr>
+<td><strong>Contour 32 × 8</strong></td>
+<td style="text-align: right;"><strong>272</strong></td>
+<td><strong>0.617</strong> [0.568, 0.661]</td>
+</tr>
+<tr>
+<td>Contour 64 × 8</td>
+<td style="text-align: right;">528</td>
+<td>0.612 [0.566, 0.655]</td>
+</tr>
+<tr>
+<td>Contour 128 × 10</td>
+<td style="text-align: right;">1,296</td>
+<td>0.633 [0.586, 0.677]</td>
+</tr>
+<tr>
+<td>Contour 32 × 8 + sea bed</td>
+<td style="text-align: right;">272</td>
+<td>0.545 [0.496, 0.588]</td>
+</tr>
+<tr>
+<td>Contour 128 × 10 + sea bed</td>
+<td style="text-align: right;">1,296</td>
+<td>0.550 [0.504, 0.591]</td>
+</tr>
+<tr>
+<td>Reversed contour (control)</td>
+<td style="text-align: right;">272</td>
+<td>0.229 [0.199, 0.263]</td>
+</tr>
+<tr>
+<td>Flat tone (control)</td>
+<td style="text-align: right;">24</td>
+<td>0.256 [0.220, 0.291]</td>
+</tr>
+<tr>
+<td>Relief 8 × 8 × 2</td>
+<td style="text-align: right;">144</td>
+<td>0.369 [0.328, 0.409]</td>
+</tr>
+<tr>
+<td>Relief 16 × 16 × 2</td>
+<td style="text-align: right;">528</td>
+<td>0.511 [0.460, 0.556]</td>
+</tr>
+<tr>
+<td>Relief 32 × 24 × 3</td>
+<td style="text-align: right;">2,320</td>
+<td>0.664 [0.617, 0.706]</td>
+</tr>
+<tr>
+<td>Relief 64 × 48 × 4</td>
+<td style="text-align: right;">12,304</td>
+<td>0.729 [0.682, 0.767]</td>
+</tr>
+<tr>
+<td>Amplitude only (Hardata 2021)</td>
+<td style="text-align: right;">112</td>
+<td>0.096 [0.072, 0.121]</td>
+</tr>
+<tr>
+<td>DAC, 1 codebook</td>
+<td style="text-align: right;">728</td>
+<td>0.206 [0.170, 0.236]</td>
+</tr>
+<tr>
+<td>DAC, 2 codebooks</td>
+<td style="text-align: right;">1,448</td>
+<td>0.369 [0.327, 0.408]</td>
+</tr>
+<tr>
+<td>DAC, 4 codebooks</td>
+<td style="text-align: right;">2,888</td>
+<td>0.585 [0.541, 0.626]</td>
+</tr>
+<tr>
+<td>DAC, 9 codebooks</td>
+<td style="text-align: right;">6,488</td>
+<td>0.674 [0.628, 0.717]</td>
+</tr>
+<tr>
+<td>Silver groove, 0.025 / 0.05 / 0.1 mm blur</td>
+<td style="text-align: right;">analog</td>
+<td>0.618 / 0.629 / 0.607</td>
+</tr>
+<tr>
+<td>Silver groove, 0.2 / 0.3 / 0.45 mm blur</td>
+<td style="text-align: right;">analog</td>
+<td>0.644 / 0.647 / 0.639</td>
+</tr>
+</tbody>
+</table></div>
+<p>Chance is 1/6 accuracy (macro-F1 of a random guess is near 0.17).</p>
+<p>Per-type recall shows where the contour falls short:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align: right;">Original</th>
+<th style="text-align: right;">Contour 32×8</th>
+<th style="text-align: right;">Relief 16×16×2</th>
+<th style="text-align: right;">DAC 4 codebooks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NSW_1 (shared, non-signature)</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">0.51</td>
+<td style="text-align: right;">0.37</td>
+<td style="text-align: right;">0.77</td>
+</tr>
+<tr>
+<td>SW_Luna</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.67</td>
+</tr>
+<tr>
+<td>SW_Nana</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">0.46</td>
+<td style="text-align: right;">0.19</td>
+<td style="text-align: right;">0.12</td>
+</tr>
+<tr>
+<td>SW_Neo</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.86</td>
+<td style="text-align: right;">0.83</td>
+<td style="text-align: right;">0.64</td>
+</tr>
+<tr>
+<td>SW_Nikita</td>
+<td style="text-align: right;">0.91</td>
+<td style="text-align: right;">0.85</td>
+<td style="text-align: right;">0.87</td>
+<td style="text-align: right;">0.78</td>
+</tr>
+<tr>
+<td>SW_Yosefa</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">0.67</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="general-audio-listener-clap">General-audio listener (CLAP)<a href="#general-audio-listener-clap">#</a></h3>
+<p>CLAP separated the original whistles less well (0.588 [0.537, 0.635]) and fell to
+chance on every contour and groove decode (0.14–0.20). Relief and codec decodes
+recovered only at the largest budgets (relief 64×48×4: 0.363; DAC-9: 0.335). The
+contour's retained type information is therefore specific to the dolphin-trained
+representation in this test. CLAP's 14 kHz mel ceiling also removes part of the
+whistle band.</p>
+<h3 id="lost-information-or-domain-shift-exploratory">Lost information or domain shift? (exploratory)<a href="#lost-information-or-domain-shift-exploratory">#</a></h3>
+<p>Added after the registered predictions, so this is exploratory. The main probe
+only ever heard original recordings, so it may misjudge clean tones even when
+their contour carries the type. Here the probe is trained, tuned and tested on
+decoded audio of one condition (same splits, same OpenWhistle encoder).</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condition</th>
+<th style="text-align: right;">Bits</th>
+<th style="text-align: right;">Probe trained on originals</th>
+<th>Probe trained on decoded audio [95% CI]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contour 8 × 8</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">0.603</td>
+<td><strong>0.703</strong> [0.657, 0.742]</td>
+</tr>
+<tr>
+<td>Contour 32 × 8</td>
+<td style="text-align: right;">272</td>
+<td style="text-align: right;">0.617</td>
+<td><strong>0.749</strong> [0.709, 0.787]</td>
+</tr>
+<tr>
+<td>Contour 128 × 10</td>
+<td style="text-align: right;">1,296</td>
+<td style="text-align: right;">0.633</td>
+<td><strong>0.756</strong> [0.714, 0.794]</td>
+</tr>
+<tr>
+<td>DAC, 4 codebooks</td>
+<td style="text-align: right;">2,888</td>
+<td style="text-align: right;">0.585</td>
+<td><strong>0.741</strong> [0.694, 0.779]</td>
+</tr>
+<tr>
+<td>Original recording</td>
+<td style="text-align: right;">585,192</td>
+<td style="text-align: right;">0.822</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>Most of the earlier gap was domain shift. With matched training a 272-bit
+contour keeps <strong>91%</strong> of original performance and equals a codec using ten times
+the bits; 80 bits keep 86%. The remaining ~0.07 is what the encoder takes from
+outside the contour: harmonics, amplitude, timing within the clip or the
+recording itself. For the artwork this means the decoder, not the inscription,
+limits recognition: a better resynthesis of the same 272 bits should sound more
+like its whistle type to this listener.</p>
+<h2 id="interpretation-kept-in-three-layers">Interpretation, kept in three layers<a href="#interpretation-kept-in-three-layers">#</a></h2>
+<p><strong>Acoustic pattern.</strong> For this encoder, a whistle's pitch trajectory alone
+carries most of the type information it uses: 75% of original performance from
+a tone with no harmonics, amplitude variation or background. Shape matters; pitch
+range and duration alone do not. More contour points barely help beyond 16, so
+the plateau is not contour resolution. Generic representations need far more
+bits for the same score: spectrogram relief about 8 times more (2.3 kbit), the
+codec between 11 and 24 times more (2.9 kbit falls just short, 6.5 kbit exceeds it).</p>
+<p><strong>Biological interpretation.</strong> The result is consistent with playback evidence
+that dolphins use contour shape for identity, but it shows only that a
+dolphin-trained model behaves this way. It does not show what dolphins perceive.
+The weak types (NSW_1, Luna, Nana) are where non-contour features matter to the
+encoder; whether they matter to dolphins is unknown.</p>
+<p><strong>Artistic correspondence.</strong> A contour groove is the inscription that fits a
+ring: 272 bits fit easily, while relief needs 2.3 kbit and the codec 3–6.5 kbit to
+match it, beyond a band's roughly 1 kbit pit capacity at 0.35 mm. Time
+around the band and pitch across it are our choices, not a dolphin's notation.
+Hardata's amplitude pattern, the 2021 starting point, carries no type
+information for this listener; that is a reason for the new piece, not a
+judgement of the old one, which never claimed to preserve the sound.</p>
+<h2 id="limits">Limits<a href="#limits">#</a></h2>
+<ul>
+<li>One encoder, one population of five dolphins, six types, 420 test whistles.
+  Session-disjoint splits do not guarantee generalisation to other dolphins.</li>
+<li>The probe was trained on originals; decoded tones are out of domain. The
+  exploratory matched-domain probe shows this explains most of the gap, but it was
+  not a registered prediction and picks its own layer per condition.</li>
+<li>The groove channel is optimistic: blur and white noise only. Real casting adds
+  porosity, shrinkage, polishing that can remove 0.3 mm relief, scratches and
+  scanning perspective. The flat groove curve to 0.45 mm reflects the reader's
+  robustness to symmetric blur, not demonstrated casting tolerance.</li>
+<li>Contours come from upstream F0 annotation with confidence filtering; errors in
+  the tracks propagate. Gaps are bridged by interpolation.</li>
+</ul>
+<h2 id="what-it-means-for-the-artwork">What it means for the artwork<a href="#what-it-means-for-the-artwork">#</a></h2>
+<ol>
+<li>Engrave the contour, not amplitude or a spectrogram. It is the most
+   identity-efficient inscription measured, and the only one that fits.</li>
+<li>A band can hold more than one whistle: a 272-bit contour uses about a quarter
+   of a band's pit capacity, and as a groove a median whistle takes 24 mm of the
+   band's 66 mm circumference.</li>
+<li>Pair the groove with a calibration line (as First Sounds used a tuning-fork
+   trace) so a phone scan can recover speed and scale.</li>
+<li>Show the weak types honestly: Luna's and Nana's bands play back as recognisably
+   theirs less often to this listener.</li>
+</ol>
+<h2 id="next-steps">Next steps<a href="#next-steps">#</a></h2>
+<ol>
+<li><strong>Cast and scan:</strong> three bands (Neo, Luna, NSW_1), lost-wax sterling silver;
+   scan by phone macro and by a confocal or structured-light scanner; decode and
+   rerun the probe. Success: within 10 points of the simulated groove.</li>
+<li><strong>Human listening:</strong> ABX tests between original and decoded whistles at half
+   speed, with consent; compare human and encoder confusions.</li>
+<li><strong>Add a second groove</strong> for the first harmonic or amplitude, and test whether
+   it lifts the weak types.</li>
+<li><strong>Partnered playback:</strong> only with a dolphin research group, and only after the
+   in-silico and human results justify it.</li>
+</ol>
+<h2 id="reproduce">Reproduce<a href="#reproduce">#</a></h2>
+<pre><code class="language-bash">uv run --group art main.py inscription fetch      # 1.2 GB pinned parquet
+uv run --group art main.py inscription run        # ~30 min on one 16 GB GPU
+uv run --group art main.py inscription matched    # exploratory, ~20 min
+uv run --group art python -m unittest tests.test_inscription
+</code></pre>
+<p>Outputs (Git-ignored): <code>data/output/inscription/index.html</code> (playable input →
+schema → output gallery), <code>results.json</code> (every prediction, bit count, confusion
+matrix, model revision and parameter), <code>verdicts.json</code>, <code>matched.json</code>, decoded
+audio, unrolled heightmaps and STL bands under <code>bands/</code>. Groove heightmaps are
+in <code>data/interim/inscription/</code>.</p></article>
+<footer class="pager"><a href="novel-novelty-assessment.html">← Novelty assessment</a><a href="index.html">Back to the atlas</a><a href="dclde-opportunities.html">DCLDE label audit →</a></footer></main></body></html>

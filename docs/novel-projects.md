@@ -14,6 +14,10 @@ from sparse features** (P7).
 
 ## Reports in this set
 
+A visual atlas of these reports, with every proposal, the ranking chart and
+playable pilot clips, is saved as [atlas/index.html](atlas/index.html); open it
+in a browser.
+
 | Report | Contents |
 |---|---|
 | [Experimental plans](novel-experimental-plans.md) | All eight proposals in eight parts: question, artwork, precedents, contribution, enabling advance, data, minimal experiment, first artifact |

@@ -1,0 +1,411 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Novelty assessment · Sound into Silver</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap"><link rel="stylesheet" href="styles.css"></head>
+<body class="report"><header class="topbar"><a class="brand" href="index.html">Sound into Silver</a><nav aria-label="Reports"><a href="novel-projects.html">Overview &amp; ranking</a><a href="novel-experimental-plans.html">Experimental plans</a><a href="novel-prior-art.html">Prior art</a><a href="novel-novelty-assessment.html" aria-current="page">Novelty assessment</a><a href="hardata-ii-pilot.html">Hardata II pilot</a><a href="dclde-opportunities.html">DCLDE label audit</a></nav></header><main class="report-main"><p class="eyebrow">Report · 7 October 2026</p><p class="report-summary">What is new, what was already done, what was dropped, an evidence ledger and the search log.</p><article class="prose"><h1 id="novelty-assessment">Novelty assessment<a href="#novelty-assessment">#</a></h1>
+<p>Checked <strong>7 October 2026</strong>. For each <a href="novel-experimental-plans.html">proposal</a>,
+this report states the exact contribution claimed, the closest work found, and
+how far the novelty has been verified. "Novel within the scoped search" means we
+searched the sources and queries listed in the <a href="#search-log">search log</a> and found
+no prior instance; it is not proof that none exists. Precedents are detailed,
+with pictures, in the <a href="novel-prior-art.html">prior-art report</a>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Proposal</th>
+<th>Verdict</th>
+<th>What remains new</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">P1 Hardata II</a></td>
+<td>Novel within the scoped search; the pilot ran</td>
+<td>Identity-preserving minimal inscription, scored by a species-trained encoder, coupled to casting resolution</td>
+</tr>
+<tr>
+<td><a href="#p2-expectation-in-humpback-song">P2 Expectation in humpback song</a></td>
+<td>Novel within the scoped search</td>
+<td>Per-token surprisal of a public humpback model against repetition; human-versus-model prediction</td>
+</tr>
+<tr>
+<td><a href="#p3-population-voices-without-recorder-fingerprints">P3 Population voices</a></td>
+<td>Partly anticipated</td>
+<td>Box-convention confound; site- and day-controlled test with 2026 encoders</td>
+</tr>
+<tr>
+<td><a href="#p4-moveout-fin-whale-calls-drawn-by-a-fibre">P4 Moveout</a></td>
+<td>Science anticipated; artwork novel within search</td>
+<td>Wearable and walkable DAS geometry</td>
+</tr>
+<tr>
+<td><a href="#p5-calls-against-counts-a-right-whale-census-hourglass">P5 Census hourglass</a></td>
+<td>Partly anticipated</td>
+<td>Seasonal stability of the calls-per-whale calibration on the public subset</td>
+</tr>
+<tr>
+<td><a href="#p6-what-an-echo-sees-of-a-jewel">P6 Echo of a jewel</a></td>
+<td>Novel application; physics established</td>
+<td>Echo simulation of actual jewellery meshes, tested predictions about lattices and amber</td>
+</tr>
+<tr>
+<td><a href="#p7-a-whistle-alphabet-from-sparse-features">P7 Whistle alphabet</a></td>
+<td>Novel within the scoped search</td>
+<td>Sparse-autoencoder features of a species-trained bioacoustic encoder</td>
+</tr>
+<tr>
+<td><a href="#p8-a-day-ring-24-hours-of-seven-dolphins">P8 Day ring</a></td>
+<td>Likely partly anticipated</td>
+<td>Cross-population transfer of the OpenWhistle encoder; the wearable day</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="excluded-or-narrowed-after-checking">Excluded or narrowed after checking<a href="#excluded-or-narrowed-after-checking">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Why it changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Predicting one sperm whale's next coda from its partner's</td>
+<td>Assayag et al. 2026, <em>Bioacoustics</em> (<a href="https://doi.org/10.1080/09524622.2026.2684665" target="_blank" rel="noopener">DOI 10.1080/09524622.2026.2684665</a>), WhaleLM and Sinha &amp; Chavan 2026 already address cross-whale and context prediction. Dropped from P2</td>
+</tr>
+<tr>
+<td>"The first whale song stored in an object"</td>
+<td>Voyager (1977) and National Geographic's 1979 humpback flexi-disc did this. P1 claims identity-preserving minimal inscription instead</td>
+</tr>
+<tr>
+<td>Population classification failing across recorders as a new finding</td>
+<td>Palmer et al. 2026 (<a href="https://doi.org/10.1111/mms.70126" target="_blank" rel="noopener">DOI 10.1111/mms.70126</a>) report degradation on a different hydrophone system. P3 narrows to the annotation-convention confound and controlled tests</td>
+</tr>
+<tr>
+<td>Calibrating right-whale calls to aerial counts</td>
+<td>Garcia, Tolkova et al. 2025 (<a href="https://doi.org/10.3354/esr01384" target="_blank" rel="noopener">DOI 10.3354/esr01384</a>) did this. P5 tests whether one calibration holds across the season</td>
+</tr>
+<tr>
+<td>Any dependency on DolphinGemma</td>
+<td>Its page still says "in development"; no weights were found. Not used</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2 id="p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">P1 Hardata II: a silver inscription that keeps the whistle<a href="#p1-hardata-ii-a-silver-inscription-that-keeps-the-whistle">#</a></h2>
+<p><strong>Claimed contribution.</strong> A rate–distortion measurement for a biological
+category: bits per whistle against retention of signature-whistle type, scored
+by a dolphin-trained encoder, for contour, spectrogram, amplitude and neural
+codec inscriptions, and extended through a simulated casting channel into a
+wearable object that stores the sound itself.</p>
+<p><strong>Closest work and differences.</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Closest</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Janik et al. 2006 (identity in contour)</td>
+<td>Tested dolphins with synthetic contours; P1 asks whether a 2026 encoder relies on the same property, and at what bit budget. P1 does not test dolphins</td>
+</tr>
+<tr>
+<td>Miyaguchi et al. 2026 (codec collapses bird identification)</td>
+<td>Birds, one codec, no fabrication channel; P1 compares four inscription families for dolphin whistle types</td>
+</tr>
+<tr>
+<td>Voyager, NatGeo flexi-disc, Ghassaei</td>
+<td>Full-bandwidth analog grooves needing fine resolution; P1 asks what minimal inscription survives casting at 0.3 mm</td>
+</tr>
+<tr>
+<td>Soundwave Art, Skin Motion</td>
+<td>Store a link, not audio</td>
+</tr>
+<tr>
+<td>Livia's Hardata (2021)</td>
+<td>Amplitude pattern with no decoder; P1 measures why that rule loses identity</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Verification.</strong> No artwork was found that encodes whale or dolphin sound to be
+decoded from the object itself; no benchmark was found that measures cetacean
+call-type retention under codec reconstruction. Both are scoped-search results.
+The pilot's outcome is reported in <a href="hardata-ii-pilot.html">the pilot report</a>.</p>
+<p><strong>Residual risk.</strong> The encoder's judgement is not a dolphin's. Probe accuracy on
+decoded audio could reflect encoder quirks; the CLAP comparison and controls only
+partly address this. Dolphin perception needs a partnered playback study.</p>
+<h2 id="p2-expectation-in-humpback-song">P2 Expectation in humpback song<a href="#p2-expectation-in-humpback-song">#</a></h2>
+<p><strong>Claimed contribution.</strong> (a) Whether DoLittle's surprisal falls on repeated
+phrases beyond a context-swap control; (b) whether surprisal peaks mark phrase
+boundaries; (c) human listeners against the model in choosing real
+continuations.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Closest</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arnon et al. 2025; Kirby et al. 2026</td>
+<td>Transitional probabilities over human-labelled units; P2 uses a neural model's likelihood over unlabelled codec tokens</td>
+</tr>
+<tr>
+<td>DoLittle blog</td>
+<td>Reports only aggregate validation perplexity</td>
+</tr>
+<tr>
+<td>WhAM listening test</td>
+<td>Experts discriminate real from synthetic codas; P2 asks people and the model to <em>predict</em> continuations, with a model-likelihood baseline</td>
+</tr>
+<tr>
+<td>Chambers et al. 2025</td>
+<td>Entropy of sequences, no neural model, no listener prediction</td>
+</tr>
+<tr>
+<td>Sugar-Sugar</td>
+<td>Same human-versus-model design for glucose; P2 transfers it to whale song</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Verification.</strong> No 2024–2026 humpback surprisal or language-model study and no
+human-versus-model prediction study for cetacean sequences were found.</p>
+<p><strong>Residual risk.</strong> Codec tokens at ~11.6 ms per frame do not align with song
+units; repetitions must be found by self-similarity and confirmed by ear. The
+80 Hz–4 kHz band-pass of the token corpus removes some song energy.</p>
+<h2 id="p3-population-voices-without-recorder-fingerprints">P3 Population voices without recorder fingerprints<a href="#p3-population-voices-without-recorder-fingerprints">#</a></h2>
+<p><strong>Claimed contribution.</strong> Documenting that DCLDE provider box conventions
+(SIO and SIMRES zero-bandwidth boxes; OrcaSound without bounds) are confounded
+with population; testing SRKW/TKW separation within sites with day-held-out
+probes on SPARROW, Perch 2.0 and AVES embeddings; and measuring provider
+decodability.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Closest</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palmer et al. 2026</td>
+<td>Out-of-distribution degradation and call-type balancing with BirdNET models; no annotation-convention audit in the abstract</td>
+</tr>
+<tr>
+<td>Ruiz et al. 2026</td>
+<td>File-grouped splits, no provider holdout</td>
+</tr>
+<tr>
+<td>Perch 2.0 whale transfer</td>
+<td>Few-shot probes without site holdout</td>
+</tr>
+<tr>
+<td>DORI</td>
+<td>Low held-out ecotype accuracy; different label sources</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Verification.</strong> The confound numbers are reproduced by
+<a href="../../dclde_opportunities.py"><code>dclde_opportunities.py</code></a>. Whether the challenge
+organisers already handle the box conventions in their evaluation is unknown;
+the challenge page states no metric.</p>
+<p><strong>Residual risk.</strong> Few days per population within each site; results may be
+inconclusive. The artwork's value does not depend on a positive result.</p>
+<h2 id="p4-moveout-fin-whale-calls-drawn-by-a-fibre">P4 Moveout: fin-whale calls drawn by a fibre<a href="#p4-moveout-fin-whale-calls-drawn-by-a-fibre">#</a></h2>
+<p><strong>Claimed contribution.</strong> A transparent single- versus two-cable geometry
+analysis from public picks, and the first wearable and walkable rendering of DAS
+whale arrivals found in our search.</p>
+<p><strong>Verification.</strong> Goestchel et al. 2026 and Horne et al. 2025 already localize
+and track fin whales on these cables, so the analysis is a reproduction. No DAS
+whale artwork or OOI cetacean sonification was found. No DAS-based fin-whale
+density paper was found, which leaves cue counting open but beyond a pilot.</p>
+<h2 id="p5-calls-against-counts-a-right-whale-census-hourglass">P5 Calls against counts: a right-whale census hourglass<a href="#p5-calls-against-counts-a-right-whale-census-hourglass">#</a></h2>
+<p><strong>Claimed contribution.</strong> A seasonal stability test of the calls-per-counted-whale
+ratio on the public DCLDE subset, with explicit detector-threshold and
+de-duplication sensitivity; the census hourglass.</p>
+<p><strong>Verification.</strong> Garcia &amp; Tolkova 2025 is the anticipating study. Whether their
+paper already reports seasonal variation of the ratio could not be read (the
+journal page was blocked); check their supplement, included in the DCLDE bucket,
+before claiming this test is new.</p>
+<h2 id="p6-what-an-echo-sees-of-a-jewel">P6 What an echo sees of a jewel<a href="#p6-what-an-echo-sees-of-a-jewel">#</a></h2>
+<p><strong>Claimed contribution.</strong> Simulated echoes of real jewellery meshes at dolphin
+click frequencies, testing whether sub-wavelength lattices are resolved and
+whether amber is acoustically faint beside silver; auralised "sonar portraits".</p>
+<p><strong>Verification.</strong> Echo physics and dolphin discrimination of material and wall
+thickness are established (Au; DeLong et al. 2007). Simulated click–object echoes
+exist (Wei et al. 2021). No simulation or artwork using jewellery meshes was found.
+SpeakDolphin's 3D prints are a contested contrast, not a precedent for the method.</p>
+<p><strong>Residual risk.</strong> Material parameters for amber at ultrasonic frequencies need
+a citable source or measurement; rigid-body BEM ignores elastic ringing.</p>
+<h2 id="p7-a-whistle-alphabet-from-sparse-features">P7 A whistle alphabet from sparse features<a href="#p7-a-whistle-alphabet-from-sparse-features">#</a></h2>
+<p><strong>Claimed contribution.</strong> Sparse-autoencoder features of a species-trained
+bioacoustic encoder, tested against contour descriptors and nuisance variables
+on session-held-out whistles, with a general-encoder comparison.</p>
+<p><strong>Verification.</strong> Searches of arXiv, Hugging Face papers and the web found SAE
+work on speech models, audio codecs and singing, probing of bioacoustic
+embeddings and prototype models for birds, but no SAE on AVES, BEATs, Perch,
+NatureLM, animal2vec or a dolphin encoder.</p>
+<p><strong>Residual risk.</strong> A fast-moving area; repeat the search before writing up.</p>
+<h2 id="p8-a-day-ring-24-hours-of-seven-dolphins">P8 A day ring: 24 hours of seven dolphins<a href="#p8-a-day-ring-24-hours-of-seven-dolphins">#</a></h2>
+<p><strong>Claimed contribution.</strong> Context and time structure of whistle output in a
+continuous captive recording, plus a cross-population transfer test of the
+OpenWhistle encoder; the day ring.</p>
+<p><strong>Verification.</strong> The dataset authors built it for behavioural classification,
+so context-versus-vocal-output analyses probably exist in their paper; we did
+not read it in full. Cross-population transfer of the 2026 encoder was not found.</p>
+<hr />
+<h2 id="evidence-ledger">Evidence ledger<a href="#evidence-ledger">#</a></h2>
+<p>E = established, P = probable, S = speculative; confidence H/M/L. Rows are
+transfers into our setting, not published results, except where the pilot has
+now measured them. Conflict marks a material contrary finding or constraint.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Tier</th>
+<th>Conf</th>
+<th>Conflict</th>
+<th>Modality</th>
+<th>Source</th>
+<th>Status</th>
+<th>Verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In OpenWhistle test whistles, a 272-bit contour retains more encoder type information than 528-bit relief or 728-bit codec inscriptions, measured by paired macro-F1 at pilot evaluation</td>
+<td>E</td>
+<td>M</td>
+<td>N</td>
+<td>In silico</td>
+<td><a href="hardata-ii-pilot.html">pilot</a>; DOI 10.1073/pnas.0509918103</td>
+<td>Measured: +0.107 and +0.412, intervals exclude 0</td>
+<td>Cast and scan real bands; second encoder</td>
+</tr>
+<tr>
+<td>In SanctSound tokens, DoLittle surprisal falls on in-context phrase repeats more than under context swap</td>
+<td>S</td>
+<td>L</td>
+<td>N</td>
+<td>In silico</td>
+<td>DoLittle release (no paper); DOI 10.1126/science.adq7055</td>
+<td>Cand</td>
+<td>Swap-controlled surprisal</td>
+</tr>
+<tr>
+<td>In DCLDE, within-site day-held-out SRKW/TKW accuracy is below pooled accuracy</td>
+<td>P</td>
+<td>M</td>
+<td>Y</td>
+<td>In silico</td>
+<td>DOI 10.1111/mms.70126; local audit</td>
+<td>Cand</td>
+<td>Leave-one-day-out probes</td>
+</tr>
+<tr>
+<td>On OOI cables, single-cable moveout fits recover along-cable position but not side</td>
+<td>E</td>
+<td>H</td>
+<td>N</td>
+<td>In silico</td>
+<td>DOI 10.1121/10.0044257</td>
+<td>Cand</td>
+<td>Fit vs batch-1 localizations</td>
+</tr>
+<tr>
+<td>In Cape Cod Bay 2019, calls per counted whale differ between early and late season</td>
+<td>S</td>
+<td>L</td>
+<td>Y</td>
+<td>Observational</td>
+<td>DOI 10.3354/esr01384</td>
+<td>Cand</td>
+<td>Bootstrap over 21 flights</td>
+</tr>
+<tr>
+<td>At 30–80 kHz, Nanot's lattice and its hull give echo spectra within a few dB</td>
+<td>P</td>
+<td>M</td>
+<td>N</td>
+<td>In silico</td>
+<td>DOI 10.1121/1.400930; DOI 10.1121/1.1909055</td>
+<td>Cand</td>
+<td>BEM with mesh refinement</td>
+</tr>
+<tr>
+<td>OpenWhistle SAE features align more with contour descriptors than nuisance variables</td>
+<td>S</td>
+<td>L</td>
+<td>N</td>
+<td>In silico</td>
+<td>arXiv:2606.12503; arXiv:2602.05027</td>
+<td>Cand</td>
+<td>Session-held-out regressions</td>
+</tr>
+<tr>
+<td>OpenWhistle embeddings transfer to Oltremare tags better than CLAP</td>
+<td>S</td>
+<td>M</td>
+<td>N</td>
+<td>In silico</td>
+<td>arXiv:2609.34839; DOI 10.17882/109081</td>
+<td>Cand</td>
+<td>Day-held-out probes</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="search-log">Search log<a href="#search-log">#</a></h2>
+<p>Searches ran on 7 October 2026 through five parallel verification passes (web
+search and fetch, arXiv API and HTML, Crossref, Europe PMC, bioRxiv API,
+Hugging Face Hub and datasets-server, GitHub API, Zenodo and SEANOE). Hit counts
+were not recorded. R/E/P/V denote retraction, expression-of-concern,
+preregistration and published-version checks; ✓ marks a check performed.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Representative queries</th>
+<th>Checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Representations and interpretability</td>
+<td>sparse autoencoder bioacoustic / AVES / BEATs / Perch / NatureLM; interpretable features animal vocalization encoder; prototype bioacoustic</td>
+<td>☐R ☐E ☐P ✓V</td>
+</tr>
+<tr>
+<td>Codecs and identity</td>
+<td>neural audio codec bioacoustics species classification reconstruction; DAC EnCodec whale bird evaluation</td>
+<td>☐R ☐E ☐P ✓V</td>
+</tr>
+<tr>
+<td>Temporal models</td>
+<td>humpback song language model surprisal; sperm whale coda dialogue prediction 2025 2026; human vs model prediction animal vocal sequence</td>
+<td>☐R ☐E ☐P ✓V</td>
+</tr>
+<tr>
+<td>Physical sound objects and art</td>
+<td>artwork encode whale sound playable object; whale song sculpture jewellery; 3D printed record; optical groove playback</td>
+<td>☐R ☐E ☐P ☐V</td>
+</tr>
+<tr>
+<td>Echolocation and objects</td>
+<td>dolphin echolocation material wall thickness discrimination; echo simulation object FEM BEM dolphin click</td>
+<td>☐R ☐E ☐P ✓V</td>
+</tr>
+<tr>
+<td>DCLDE tracks</td>
+<td>DCLDE 2027 tracks; Goestchel DAS fin whale; orca ecotype held-out provider; Cape Cod Bay right whale acoustic abundance</td>
+<td>☐R ☐E ☐P ✓V</td>
+</tr>
+<tr>
+<td>Datasets</td>
+<td>dolphin whistle dataset behaviour 2025 2026; humpback unit annotated dataset; killer whale call type dataset; Oltremare SEANOE</td>
+<td>☐R ☐E ☐P ☐V</td>
+</tr>
+</tbody>
+</table></div>
+<p>Published-version checks (V) used Crossref to confirm that cited preprints and
+articles exist with matching titles; preprints remain marked as preprints.</p></article>
+<footer class="pager"><a href="novel-prior-art.html">← Prior art</a><a href="index.html">Back to the atlas</a><a href="hardata-ii-pilot.html">Hardata II pilot →</a></footer></main></body></html>

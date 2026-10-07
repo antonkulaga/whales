@@ -144,6 +144,27 @@ Dominica" (humpback-a layered with sperm-b), the ACE-Step cover follows the hump
 it follows the humpback part (z +3.4) more than the dolphin and coda parts (+1.9, +2.3).
 The deterministic response follows every part (z 5–14).
 
+For the map, eight more recordings come from the DCLDE 2027 killer-whale dataset, using
+30 s windows with the densest annotated calls. Seven are killer whales: Southern Residents
+at Orcasound Lab, Bush Point, Port Townsend and Tekteksen; Bigg's transients at Cape
+Elizabeth; offshore killer whales at Kachemak Bay and Montague Strait. The eighth is a
+humpback at Cape Elizabeth. The two Cape Elizabeth windows (from 710 MB and 3.4 GB files)
+were read with HTTP byte ranges. These sources are marked `"study": false`, so the
+registered six-source study, its ACE-Step grid and its verdicts are unchanged. Their
+guides track F0 on whitened spectra inside each annotated call's frequency box, because
+hydrophone noise otherwise pulled the tracker to the bottom of its range.
+
+Across ten combined pieces, the cover follows parts in sequences better than in dense
+layers:
+
+- **Sequence:** "Southern Residents down the Salish Sea" follows its Port Townsend part
+  at z +5.4 and its other parts at +1.6 to +2.3.
+- **Dense layers:** with three or four overlapping parts, no part reaches z 2.2.
+- **Duet:** "Dominica answers Kachemak" follows the offshore orcas (+2.9) and ignores the codas.
+
+`bun run export` in `apps/sound-map` writes a read-only copy (`atlas.html` and the files
+it lists in `atlas-files.json`), which was published as a private listening page.
+
 ## Files
 
 - `experiments/follow.py`: sources, measurement, guides, perturbation, response, ACE-Step jobs, CLI

@@ -305,3 +305,5 @@ __marimo__/
 
 # Phrase Atlas demo bundle: MP3 stems are committed through Git LFS
 !apps/sound-map/demo/**/*.mp3
+# Docs atlas playable pilot clips (Git LFS)
+!docs/atlas/audio/*.wav

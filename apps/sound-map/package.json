@@ -2,12 +2,13 @@
   "name": "sound-map",
   "private": true,
   "type": "module",
-  "description": "Pick recordings on the map, combine their measured phrases, and hear the music move between seas.",
+  "description": "Whale and Dolphin Orchestra: seat recordings from the map and hear one ACE-Step piece composed from their measured phrases.",
   "scripts": {
     "dev": "bun --hot server.ts",
     "start": "NODE_ENV=production bun server.ts",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "export": "bun scripts/export.ts"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",
