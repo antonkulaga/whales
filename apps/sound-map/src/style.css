@@ -48,9 +48,12 @@ code, .mono { font-family: var(--mono); font-size: .9em }
 .edition-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent) }
 .edition > span:last-child { margin-left: 5px; font-size: .9rem }
 .view-panel { display: grid; gap: 18px; outline: none }
-.hero { padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title action" "story story"; align-items: center; gap: 8px 24px }
+.hero { padding-top: 14px; padding-bottom: 24px; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title action" "story story" "cue cue"; align-items: center; gap: 12px 24px }
 .hero h1 { grid-area: title; font-size: clamp(1.6rem, 2.1vw, 2.05rem); line-height: 1.08; letter-spacing: -.04em }
 .hero > p { grid-area: story; font-size: .875rem; color: var(--muted); line-height: 1.55; max-width: none }
+.prototype-cue { grid-area: cue; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: .72rem; color: var(--muted) }
+.prototype-badge { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #32674936; border-radius: 2px; background: #32674912; color: var(--good); padding: 5px 9px; font: .56rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap }
+.prototype-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--good) }
 h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .text-link { border: 0; border-bottom: 1px solid var(--ink); background: none; padding: 8px 0; font-size: .8rem; display: inline-flex; gap: 22px; align-items: center; width: fit-content; text-align: left }
 .text-link:hover { color: var(--accent); border-color: var(--accent) }
@@ -378,7 +381,7 @@ input[type="range"] { width: 100% }
 @media (max-width: 850px) {
   .masthead { min-height: 68px; gap: 20px }
   .edition { display: none }
-  .hero { grid-template-areas: "title title" "story story" "action action"; gap: 8px 20px }
+  .hero { grid-template-areas: "title title" "story story" "cue cue" "action action"; gap: 12px 20px }
   .hero h1 { font-size: 1.8rem }
   .hero > p { font-size: .82rem }
   .roster-list, .static .composer #saved { grid-template-columns: repeat(2, minmax(0, 1fr)) }
@@ -404,7 +407,7 @@ input[type="range"] { width: 100% }
   .brand svg { width: 35px }
   .view-tabs { min-height: 52px; gap: 18px }
   .view-tabs button { font-size: .72rem }
-  .hero { padding-top: 12px; grid-template-columns: 1fr; grid-template-areas: "title" "story" "action"; gap: 8px }
+  .hero { padding-top: 12px; grid-template-columns: 1fr; grid-template-areas: "title" "story" "cue" "action"; gap: 12px }
   .hall-backdrop img { opacity: .32 }
   .hero h1 { font-size: clamp(1.5rem, 6.8vw, 1.75rem) }
   .hero > p { font-size: .8rem }
