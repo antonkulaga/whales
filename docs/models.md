@@ -10,6 +10,10 @@ generation, representation learning, detection, and cross-modal alignment.
 The specifications below are from released cards, code, and metadata. Model
 inference and VRAM requirements have not been benchmarked in this repo.
 
+For challenge work, use the [DCLDE 2027 model shortlist](dclde-2027.md#models-and-methods-worth-testing).
+It adds pretrained orca detection/ecotype packages, Perch transfer evidence,
+and DAS association/localization code to the artistic models below.
+
 [Setup readiness](#which-models-can-we-set-up-quickly) ·
 [Papers, code, dates](#papers-repositories-and-release-dates) ·
 [Dependencies](#dependency-and-environment-comparison) ·
@@ -55,6 +59,30 @@ Readiness evidence:
 [DoLittle scripts](https://github.com/cairninstitute/cairn_marine_mammals_communication),
 [WhAM installation](https://github.com/Project-CETI/wham#installation),
 [NatureLM installation and Llama access requirement](https://github.com/earthspecies/NatureLM-audio#requirements).
+
+## DCLDE detection and localization candidates
+
+These address monitoring tasks rather than audio generation. Availability was
+checked separately from model quality. On 7 October 2026, both SPARROW ONNX
+models were downloaded, hash-verified, and exercised with synthetic inputs on
+CPU. The [local evidence](../resources/audits/dclde-orca-local-models.json) records
+input/output shapes and runtime version. Real-audio preprocessing and accuracy
+remain untested.
+
+| Candidate | Inputs and outputs | Setup assessment |
+|---|---|---|
+| SPARROW `orca-detector-dclde2026-v5` | 24 kHz / 3 s through the specified dB-mel frontend; binary orca score | Public MIT ONNX package; external frontend and sigmoid required |
+| SPARROW `orca-ecotype-dclde2026-v1` | 24 kHz / 3 s waveform plus original sample-rate input; five ecotype scores | Public MIT ONNX package; embedded mel/temperature scaling, external softmax and abstention |
+| Perch 2.0 + fitted probe | Frozen embeddings to species/population labels | DCLDE transfer studied; downstream classifier still needs fitting |
+| DORI `whisper-tiny-mm-cpu` | Marine-mammal presence/absence | Quantized ONNX screening candidate; does not identify orca ecotypes |
+| DAS4Whales + Goestchel scripts | DAS arrival picks, sensor geometry, association and physical localization | Scientific-code route; confirm coordinate conventions and download only a small batch first |
+
+The [DCLDE guide](dclde-2027.md#models-and-methods-worth-testing) has exact
+package links, download sizes, class order, environment limits, and evidence
+about transfer failures. The [package audit](../resources/audits/dclde-2027.json)
+saves the inspected manifests and declared ONNX hashes. The public SPARROW
+exports provide a more concrete DC starting point than a generic audio encoder;
+they still require held-out site/provider evaluation.
 
 ## Papers, repositories, and release dates
 

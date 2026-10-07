@@ -1,0 +1,152 @@
+{
+  "verified_on": "2026-10-07",
+  "downloads": {
+    "fetched_at_utc": "2026-10-07T12:38:05.202931+00:00",
+    "scope": "Selected ONNX model files and small metadata; no upstream .ckpt files or audio",
+    "models": [
+      {
+        "id": "orca-detector-dclde2026-v5",
+        "record": "https://zenodo.org/api/records/22018132",
+        "archive": "acoustics__detector__orca-detector-dclde2026-v5.zip",
+        "archive_bytes": 145390371,
+        "archive_checksum_declared": "md5:a142139cb4caf3386d173b32a74a02fa",
+        "archive_checksum_verified": false,
+        "transferred_bytes": 41518667,
+        "members": [
+          {
+            "name": "orca-detector-dclde2026-v5/1/model.onnx",
+            "bytes": 44682687,
+            "sha256": "5bfb0a3cdf2e9bd34781450aa258d58e344c4fc8f78e735be4844d3b351b3249"
+          },
+          {
+            "name": "orca-detector-dclde2026-v5/LICENSE.md",
+            "bytes": 1148,
+            "sha256": "91a73af7e81a093d4949a0d146ba9210c1d34a9fb154855b1898fb55d970204c"
+          },
+          {
+            "name": "orca-detector-dclde2026-v5/MODEL_CARD.md",
+            "bytes": 2309,
+            "sha256": "a7240a67d98bc03086c603e9d814e172b26412e89b87ae2e632868fa3ed7baa4"
+          },
+          {
+            "name": "orca-detector-dclde2026-v5/labels.txt",
+            "bytes": 7,
+            "sha256": "0224625ac4cb7e9c5ff2e1d199a452c58f39c8e70710447113b3347297f48d59"
+          },
+          {
+            "name": "orca-detector-dclde2026-v5/manifest.toml",
+            "bytes": 2685,
+            "sha256": "d3eda75848e9fc822b0db2c074c33d58431f91440c42d2d99bfbb16687b70ea8"
+          },
+          {
+            "name": "orca-detector-dclde2026-v5/upstream/PROVENANCE.json",
+            "bytes": 2401,
+            "sha256": "7b484c798c101302758b312c6c49e7eb567280b008f69c7843a3c3356146cfcf"
+          }
+        ],
+        "onnx_sha256_verified": true
+      },
+      {
+        "id": "orca-ecotype-dclde2026-v1",
+        "record": "https://zenodo.org/api/records/22018132",
+        "archive": "acoustics__classifier__orca-ecotype-dclde2026-v1.zip",
+        "archive_bytes": 169247143,
+        "archive_checksum_declared": "md5:2186f7027c931952ad1107c35944891f",
+        "archive_checksum_verified": false,
+        "transferred_bytes": 45247195,
+        "members": [
+          {
+            "name": "orca-ecotype-dclde2026-v1/1/model.onnx",
+            "bytes": 49738945,
+            "sha256": "2d9cd25fe2d703626713c026bc8ff1e2f60cf03e6bc7582cd7bc1008b856f0d7"
+          },
+          {
+            "name": "orca-ecotype-dclde2026-v1/LICENSE.md",
+            "bytes": 1148,
+            "sha256": "91a73af7e81a093d4949a0d146ba9210c1d34a9fb154855b1898fb55d970204c"
+          },
+          {
+            "name": "orca-ecotype-dclde2026-v1/MODEL_CARD.md",
+            "bytes": 8489,
+            "sha256": "028b653f3e7d4c6d3d90488acdb4cb33cdb0152d4b2a66689d182f6d45365741"
+          },
+          {
+            "name": "orca-ecotype-dclde2026-v1/labels.txt",
+            "bytes": 32,
+            "sha256": "1be48057d1d69cd6a3dfb354ba2a24a6f89241f97a7154ff28eb19268b7900e6"
+          },
+          {
+            "name": "orca-ecotype-dclde2026-v1/manifest.toml",
+            "bytes": 2823,
+            "sha256": "457c829ba54a4c92e487cc15c8c9db16537969eeb4bc5bdb53bde867d07cbec5"
+          },
+          {
+            "name": "orca-ecotype-dclde2026-v1/upstream/PROVENANCE.json",
+            "bytes": 1637,
+            "sha256": "dbdf6ac0b2f456581fa76ee88323c9c374e094fa2833099472a562c63b4f62fb"
+          }
+        ],
+        "onnx_sha256_verified": true
+      }
+    ]
+  },
+  "synthetic_cpu_checks": {
+    "checked_at_utc": "2026-10-07T12:38:38.725623+00:00",
+    "onnxruntime": "1.30.0",
+    "provider": "CPUExecutionProvider",
+    "checks": [
+      {
+        "id": "orca-detector-dclde2026-v5",
+        "inputs": [
+          {
+            "name": "input",
+            "shape": [
+              "batch",
+              1,
+              256,
+              555
+            ],
+            "type": "tensor(float)"
+          }
+        ],
+        "output_shapes": [
+          [
+            1,
+            1
+          ]
+        ],
+        "finite_outputs": true,
+        "onnx_sha256": "5bfb0a3cdf2e9bd34781450aa258d58e344c4fc8f78e735be4844d3b351b3249"
+      },
+      {
+        "id": "orca-ecotype-dclde2026-v1",
+        "inputs": [
+          {
+            "name": "audio",
+            "shape": [
+              "batch",
+              72000
+            ],
+            "type": "tensor(float)"
+          },
+          {
+            "name": "orig_sample_rate",
+            "shape": [
+              1
+            ],
+            "type": "tensor(int64)"
+          }
+        ],
+        "output_shapes": [
+          [
+            1,
+            5
+          ]
+        ],
+        "finite_outputs": true,
+        "onnx_sha256": "2d9cd25fe2d703626713c026bc8ff1e2f60cf03e6bc7582cd7bc1008b856f0d7"
+      }
+    ],
+    "limitation": "Synthetic graph-loading check only; no frontend validation or biological performance evaluation."
+  }
+}

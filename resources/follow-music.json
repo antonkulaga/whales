@@ -1,0 +1,630 @@
+{
+  "interpretation": "Music that follows the animal phrase (docs/2026-art-ideas.md, section 1). Real recordings are measured into events and contours; a guide renders those measurements in a declared register and instrument; a perturbed twin mirrors the event order and inverts each contour while every other setting stays fixed. Generated music is judged by event timing and pitch-class agreement with its own guide versus swapped and perturbed guides. Register shifts, instruments, captions and the response rules are our artistic choices, not properties of the animals.",
+  "sample_rate": 48000,
+  "seed": 20261007,
+  "sources": [
+    {
+      "id": "humpback-a",
+      "species": "humpback",
+      "kind": "excerpt",
+      "location": {
+        "label": "Orcasound Lab, Haro Strait",
+        "lon": -123.16,
+        "lat": 48.52,
+        "precision": "published",
+        "map_point": 113,
+        "note": "Hydrophone position from the DCLDE deployment table (rounded)."
+      },
+      "file": "humpback/OS_10_28_2021_1900_HB.flac",
+      "annotations": "humpback/OS_10_28_2021_1900_HB.selections.txt",
+      "start_s": 142.0,
+      "duration_s": 30.0,
+      "title": "Humpback song: ascending moan, growl, whup ×3",
+      "note": "Annotated units 33–42 of Emily Vierling's Orcasound selection table; the excerpt start and length are ours.",
+      "study": true
+    },
+    {
+      "id": "humpback-b",
+      "species": "humpback",
+      "kind": "excerpt",
+      "location": {
+        "label": "Orcasound Lab, Haro Strait",
+        "lon": -123.16,
+        "lat": 48.52,
+        "precision": "published",
+        "map_point": 113,
+        "note": "Hydrophone position from the DCLDE deployment table (rounded)."
+      },
+      "file": "humpback/OS_10_28_2021_1900_HB.flac",
+      "annotations": "humpback/OS_10_28_2021_1900_HB.selections.txt",
+      "start_s": 56.0,
+      "duration_s": 30.0,
+      "title": "Humpback song: moans, upsweep and cries",
+      "note": "Annotated units 6–13 of the same recording; a different phrase type from humpback-a.",
+      "study": true
+    },
+    {
+      "id": "dolphin-a",
+      "species": "dolphin",
+      "kind": "excerpt",
+      "location": {
+        "label": "Dolphin Reef, Eilat",
+        "lon": 34.94,
+        "lat": 29.52,
+        "precision": "approximate",
+        "map_point": 152,
+        "note": "Site anchor for the OpenWhistle corpus; clips carry no coordinates."
+      },
+      "file": "long-audio/openwhistle-long-0094.wav",
+      "start_s": 0.0,
+      "duration_s": 30.0,
+      "title": "Bottlenose dolphin whistles, OpenWhistle sequence 94",
+      "note": "Whistles are detected from the waveform, not annotated; detection can also respond to noise.",
+      "study": true
+    },
+    {
+      "id": "dolphin-b",
+      "species": "dolphin",
+      "kind": "excerpt",
+      "location": {
+        "label": "Dolphin Reef, Eilat",
+        "lon": 34.94,
+        "lat": 29.52,
+        "precision": "approximate",
+        "map_point": 152,
+        "note": "Site anchor for the OpenWhistle corpus; clips carry no coordinates."
+      },
+      "file": "long-audio/openwhistle-long-0037.wav",
+      "start_s": 0.0,
+      "duration_s": 30.0,
+      "title": "Bottlenose dolphin whistles, OpenWhistle sequence 37",
+      "note": "Whistles are detected from the waveform, not annotated.",
+      "study": true
+    },
+    {
+      "id": "sperm-a",
+      "species": "sperm whale",
+      "kind": "assembled",
+      "location": {
+        "label": "Dominica, west-coast study region",
+        "lon": -61.4,
+        "lat": 15.3,
+        "precision": "approximate",
+        "map_point": 151,
+        "note": "Regional anchor; DSWP codas carry no GPS."
+      },
+      "dataset": "orrp/DSWP",
+      "rows": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "gap_s": 0.8,
+      "title": "Sperm-whale codas: DSWP rows 0–7 in sequence",
+      "note": "Separate coda clips placed one after another; the 0.8 s silences between clips are ours, not recorded.",
+      "study": true
+    },
+    {
+      "id": "sperm-b",
+      "species": "sperm whale",
+      "kind": "assembled",
+      "location": {
+        "label": "Dominica, west-coast study region",
+        "lon": -61.4,
+        "lat": 15.3,
+        "precision": "approximate",
+        "map_point": 151,
+        "note": "Regional anchor; DSWP codas carry no GPS."
+      },
+      "dataset": "orrp/DSWP",
+      "rows": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "gap_s": 0.8,
+      "title": "Sperm-whale codas: DSWP rows 8–15 in sequence",
+      "note": "Separate coda clips placed one after another; the 0.8 s silences between clips are ours.",
+      "study": true
+    },
+    {
+      "id": "orca-orcasound-lab",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Southern Resident call",
+      "dataset": "orcasound_lab",
+      "soundfile": "1562337136_0005.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/orcasound_lab/1562337136_0005.wav",
+      "generation": "1774987319445109",
+      "size": 4900058,
+      "start_s": 27.394,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Orcasound Lab, Haro Strait",
+        "lon": -123.16,
+        "lat": 48.52,
+        "precision": "published",
+        "note": "Hydrophone position from the DCLDE deployment table (rounded)."
+      },
+      "title": "Southern Resident killer whales, Orcasound Lab, July 2019",
+      "note": "20 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
+    },
+    {
+      "id": "orca-bush-point",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Southern Resident call",
+      "dataset": "bush_point",
+      "soundfile": "rpi-bush-point_2020_09_27_23_27_00.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/bush_point/rpi-bush-point_2020_09_27_23_27_00.wav",
+      "generation": "1774987317986663",
+      "size": 5761102,
+      "start_s": 17.603,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Bush Point, Whidbey Island",
+        "lon": -122.61,
+        "lat": 48.03,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Southern Resident killer whales, Bush Point, September 2020",
+      "note": "13 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
+    },
+    {
+      "id": "orca-port-townsend",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Southern Resident call",
+      "dataset": "port_townsend",
+      "soundfile": "rpi-port-townsend_2020_09_29_19_25_00.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/port_townsend/rpi-port-townsend_2020_09_29_19_25_00.wav",
+      "generation": "1774987324173140",
+      "size": 11518030,
+      "start_s": 15.685,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Port Townsend",
+        "lon": -122.76,
+        "lat": 48.14,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Southern Resident killer whales, Port Townsend, September 2020",
+      "note": "13 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
+    },
+    {
+      "id": "orca-tekteksen",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Southern Resident call",
+      "dataset": "Tekteksen",
+      "soundfile": "ICLISTENHF6156_20220804T230000.000Z_20220804T230459.996Z.flac",
+      "object": "dclde/2027/dclde_2027_killer_whales/simres/audio/eastpoint/ICLISTENHF6156_20220804T230000.000Z_20220804T230459.996Z.flac",
+      "generation": "1774987327784945",
+      "size": 44454287,
+      "start_s": 0.2,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Tekteksen, Saturna Island",
+        "lon": -123.05,
+        "lat": 48.78,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Southern Resident killer whales, Tekteksen, August 2022",
+      "note": "34 annotated killer-whale call rows in this window of the DCLDE 2027 table (SIMRES); certain identifications only."
+    },
+    {
+      "id": "orca-cape-elizabeth",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Bigg's transient call",
+      "dataset": "Cpe_Elz",
+      "soundfile": "OCNMS13CE_110604_202832_BCTransients.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/scripps/audio/ce/OCNMS13CE_110604_202832_BCTransients.wav",
+      "generation": "1774987324551698",
+      "size": 710000044,
+      "start_s": 85.935,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Cape Elizabeth, outer Washington coast",
+        "lon": -124.68,
+        "lat": 47.36,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Bigg's (transient) killer whales, Cape Elizabeth, June 2011",
+      "note": "10 annotated killer-whale call rows in this window of the DCLDE 2027 table (SIO); certain identifications only."
+    },
+    {
+      "id": "humpback-cape-elizabeth",
+      "species": "humpback",
+      "kind": "dclde",
+      "study": false,
+      "class": "HW",
+      "call_label": "Humpback call",
+      "dataset": "Cpe_Elz",
+      "soundfile": "OCNMS13CE_111009_070652_SouthernResident.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/scripps/audio/ce/OCNMS13CE_111009_070652_SouthernResident.wav",
+      "generation": "1774987324920840",
+      "size": 3422000044,
+      "start_s": 601.435,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Cape Elizabeth, outer Washington coast",
+        "lon": -124.68,
+        "lat": 47.36,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Humpback whale calls, Cape Elizabeth, October 2011",
+      "note": "13 annotated humpback call rows in this window of the DCLDE 2027 table (SIO); certain identifications only.",
+      "f0": {
+        "whiten": true,
+        "annotation_band": true,
+        "range_hz": [
+          80,
+          1200
+        ]
+      }
+    },
+    {
+      "id": "orca-kachemak",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Offshore killer whale call",
+      "dataset": "KB_67383303",
+      "soundfile": "67383303.220512170806.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/uaf/audio/kb/67383303.220512170806.wav",
+      "generation": "1774987331986861",
+      "size": 14398764,
+      "start_s": 173.523,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Kachemak Bay, Alaska",
+        "lon": -151.85,
+        "lat": 59.88,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Offshore killer whales, Kachemak Bay, May 2022",
+      "note": "28 annotated killer-whale call rows in this window of the DCLDE 2027 table (UAF_NGOS); certain identifications only."
+    },
+    {
+      "id": "orca-montague",
+      "species": "killer whale",
+      "kind": "dclde",
+      "study": false,
+      "class": "KW",
+      "call_label": "Offshore killer whale call",
+      "dataset": "MS_6897",
+      "soundfile": "6897.230428064011.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/uaf/audio/ms/6897.230428064011.wav",
+      "generation": "1774987332637868",
+      "size": 14393388,
+      "start_s": 43.441,
+      "duration_s": 30.0,
+      "location": {
+        "label": "Montague Strait, Alaska",
+        "lon": -147.82,
+        "lat": 60.18,
+        "precision": "published",
+        "note": "Deployment position from the DCLDE 2027 deployment table."
+      },
+      "title": "Offshore killer whales, Montague Strait, April 2023",
+      "note": "22 annotated killer-whale call rows in this window of the DCLDE 2027 table (UAF_NGOS); certain identifications only."
+    }
+  ],
+  "downloads": {
+    "humpback/OS_10_28_2021_1900_HB.flac": {
+      "url": "https://acoustic-sandbox.s3.amazonaws.com/humpbacks/Emily-Vierling-Orcasound-data/Em_HW_data/flac_files/OS_10_28_2021_1900_HB.flac",
+      "sha256": "83e4d62e13016169f3c54434deb6e7e6c19932ea8326e191abfb367b5b0ae65c",
+      "credit": "Orcasound Lab hydrophone, Salish Sea, 28 Oct 2021; annotations by Emily Vierling (Dec 2021), Orcasound acoustic-sandbox bucket.",
+      "license": "Orcasound open data; check https://www.orcasound.net/data/ terms (non-commercial reuse) before an installation release."
+    },
+    "humpback/OS_10_28_2021_1900_HB.selections.txt": {
+      "url": "https://acoustic-sandbox.s3.amazonaws.com/humpbacks/Emily-Vierling-Orcasound-data/Em_HW_data/Annotations/OS_10_28_2021_1900_HB.Table.1.selections.txt",
+      "sha256": "542b1a918e55fb53a60d896704013ef3be77e58ffb144c706020e96c789d97f4",
+      "credit": "Raven selection table by Emily Vierling: begin/end time, low/high frequency and call type per unit."
+    }
+  },
+  "species": {
+    "humpback": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 4096,
+        "hop": 441,
+        "band_hz": [
+          80,
+          3000
+        ],
+        "tonality_db": 12,
+        "bridge_frames": 6,
+        "max_jump_octaves": 0.3,
+        "valley_db": 14,
+        "valley_window_s": 0.1,
+        "min_segment_s": 0.12,
+        "median_frames": 9
+      },
+      "f0": {
+        "range_hz": [
+          60,
+          1200
+        ],
+        "harmonics": 6,
+        "decay": 0.84,
+        "n_fft": 4096,
+        "hop": 441,
+        "median_frames": 11
+      },
+      "target_median_hz": 262,
+      "instrument": {
+        "name": "bowed tone",
+        "harmonics": [
+          1,
+          0.5,
+          0.33,
+          0.25,
+          0.2,
+          0.16,
+          0.12,
+          0.1
+        ],
+        "attack_s": 0.06,
+        "release_s": 0.15,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        60,
+        4000
+      ],
+      "caption": "slow ambient chamber music, sustained strings and soft piano, spacious, sparse, instrumental",
+      "lego_track": "keyboard"
+    },
+    "dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 523,
+      "instrument": {
+        "name": "flute-like tone",
+        "harmonics": [
+          1,
+          0.3,
+          0.12,
+          0.05
+        ],
+        "attack_s": 0.02,
+        "release_s": 0.06,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "airy minimal ambient music, glassy marimba and soft synth pad, light and open, instrumental",
+      "lego_track": "keyboard"
+    },
+    "sperm whale": {
+      "material": "clicks",
+      "analysis": {},
+      "instrument": {
+        "name": "wood mallet",
+        "mallet_hz": 392,
+        "partials": [
+          1,
+          2.76,
+          5.4
+        ],
+        "partial_levels": [
+          1,
+          0.4,
+          0.15
+        ],
+        "decay_s": 0.07,
+        "accent": 1.6,
+        "level": 0.45
+      },
+      "spectrogram_hz": [
+        1000,
+        20000
+      ],
+      "caption": "sparse minimal percussion music, wooden mallets and low hand drum, dry room, instrumental",
+      "lego_track": "percussion"
+    },
+    "killer whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          300,
+          16000
+        ],
+        "tonality_db": 14,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.25,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "f0": {
+        "range_hz": [
+          300,
+          3000
+        ],
+        "harmonics": 6,
+        "decay": 0.84,
+        "n_fft": 2048,
+        "hop": 480,
+        "median_frames": 11,
+        "whiten": true,
+        "annotation_band": true
+      },
+      "target_median_hz": 392,
+      "instrument": {
+        "name": "reed tone",
+        "harmonics": [
+          1,
+          0.65,
+          0.45,
+          0.3,
+          0.2,
+          0.12
+        ],
+        "attack_s": 0.03,
+        "release_s": 0.08,
+        "level": 0.45
+      },
+      "spectrogram_hz": [
+        200,
+        16000
+      ],
+      "caption": "dark minimal ambient music, low reeds, bowed bass and soft metallic percussion, cold water, instrumental",
+      "lego_track": "synth"
+    }
+  },
+  "combination": {
+    "interpretation": "Parts keep their own measured events, instrument and register. Layered parts share one timeline at their offsets; sequenced parts follow one another with a gap. One gain scales the whole combination so relative levels stay as declared.",
+    "max_parts": 6,
+    "max_duration_s": 240,
+    "min_part_s": 1.0,
+    "gain_db": [
+      -24,
+      6
+    ],
+    "caption": "slow ambient music joining distant seas, sustained strings, soft mallets and pads, spacious, instrumental",
+    "audio_cover_strength": 0.6
+  },
+  "perturbation": "Event order mirrored in time (an event ending at t now starts at T − t) and each tonal contour inverted around its own median in semitones; click times mirrored. Instrument, register, loudness, duration, caption and seed stay fixed.",
+  "response": {
+    "interpretation": "A deterministic answer with no model: it follows the guide by construction and shows what following looks like in the metrics.",
+    "tonal": {
+      "chord_semitones": [
+        -12,
+        -5,
+        0
+      ],
+      "pad_harmonics": [
+        1,
+        0.4,
+        0.2,
+        0.1
+      ],
+      "pad_attack_s": 0.12,
+      "pad_release_s": 0.6,
+      "pad_level": 0.22,
+      "bass_semitones": -24,
+      "bass_decay_s": 0.5,
+      "bass_level": 0.35
+    },
+    "clicks": {
+      "drum_hz": [
+        140,
+        55
+      ],
+      "drum_decay_s": 0.18,
+      "drum_level": 0.6,
+      "tick_hz": 3200,
+      "tick_decay_s": 0.012,
+      "tick_level": 0.25
+    }
+  },
+  "ace_step": {
+    "repository": "https://github.com/ace-step/ACE-Step-1.5",
+    "model": "acestep-v15-base",
+    "model_repo": "ACE-Step/acestep-v15-base",
+    "model_revision": "e432212fec32b8965a14ffa57ae653438d6abd14",
+    "main_repo": "ACE-Step/Ace-Step1.5",
+    "main_revision": "19671f406d603126926c1b7e2adc169acbcade22",
+    "inference_steps": 50,
+    "guidance_scale": 7.0,
+    "conditions": {
+      "prompt": {
+        "task": "text2music",
+        "source": null,
+        "question": "What does the model invent from the caption alone?"
+      },
+      "raw": {
+        "task": "lego",
+        "source": "animal",
+        "question": "Does conditioning on the recording survive the domain mismatch?"
+      },
+      "guide": {
+        "task": "lego",
+        "source": "guide",
+        "question": "Does an explicit measured guide improve correspondence?"
+      },
+      "perturbed": {
+        "task": "lego",
+        "source": "perturbed",
+        "question": "Does the output follow the change?"
+      },
+      "cover-raw": {
+        "task": "cover",
+        "source": "animal",
+        "audio_cover_strength": 0.6,
+        "question": "Does a transformation of the recording keep its timing?"
+      },
+      "cover-guide": {
+        "task": "cover",
+        "source": "guide",
+        "audio_cover_strength": 0.6,
+        "question": "Does a transformation of the guide keep its timing and contour?"
+      },
+      "cover-perturbed": {
+        "task": "cover",
+        "source": "perturbed",
+        "audio_cover_strength": 0.6,
+        "question": "Does the transformation follow the change?"
+      }
+    }
+  },
+  "metrics": {
+    "frame_rate_hz": 100,
+    "onset_sigma_s": 0.04,
+    "tolerance_s": 0.075,
+    "min_null_shift_s": 1.0,
+    "chroma_hz": [
+      60,
+      4000
+    ],
+    "pitch_hz": [
+      55,
+      1800
+    ]
+  }
+}

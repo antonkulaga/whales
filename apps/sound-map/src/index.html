@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Phrase Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <span class="eyebrow">Whale and dolphin art experiments · follow the phrase</span>
+      <h1>Phrase Atlas</h1>
+      <p>Pick recordings where they were made, layer them or play them in sequence, and hear one piece built from their measured phrases. While it plays, each recording site pulses on its own onsets.</p>
+    </header>
+
+    <main class="atlas">
+      <section class="map-panel" aria-labelledby="map-title">
+        <div class="panel-head">
+          <h2 id="map-title">Recording sites</h2>
+          <div class="legend" id="legend"></div>
+        </div>
+        <div class="map-box" id="map-box">
+          <svg id="map" role="img" aria-label="World map of recording sites and dataset locations"></svg>
+          <div class="popover" id="popover" hidden></div>
+          <div class="map-hint" id="map-hint">Scroll or pinch to zoom. Select a site to add its recordings.</div>
+        </div>
+        <ul class="site-list" id="site-list" aria-label="Recording sites"></ul>
+      </section>
+
+      <aside class="composer" aria-labelledby="composer-title">
+        <div class="panel-head"><h2 id="composer-title">Combination</h2></div>
+        <label class="field"><span>Title</span><input id="title" type="text" placeholder="Haro Strait answers Dominica" maxlength="120"></label>
+        <fieldset class="segmented" id="arrangement">
+          <legend>Arrangement</legend>
+          <label><input type="radio" name="arrangement" value="layer" checked> Layer</label>
+          <label><input type="radio" name="arrangement" value="sequence"> Sequence</label>
+        </fieldset>
+        <label class="field" id="gap-field" hidden><span>Gap between parts</span><span class="inline"><input id="gap" type="number" min="0" max="30" step="0.5" value="1"> s</span></label>
+        <ol class="parts" id="parts"></ol>
+        <p class="empty" id="parts-empty">No recordings yet. Select a site on the map and add one.</p>
+        <div class="timeline" id="timeline" aria-label="Timeline preview"></div>
+        <details class="model" id="model" open>
+          <summary>ACE-Step on the combined guide</summary>
+          <label class="check"><input id="ace-on" type="checkbox" checked> Generate with ACE-Step 1.5</label>
+          <fieldset class="segmented" id="ace-task">
+            <legend>Task</legend>
+            <label><input type="radio" name="ace-task" value="cover" checked> Cover</label>
+            <label><input type="radio" name="ace-task" value="lego"> Lego track</label>
+          </fieldset>
+          <label class="field"><span>Cover strength <output id="strength-out">0.6</output></span><input id="strength" type="range" min="0.2" max="1" step="0.05" value="0.6"></label>
+          <label class="field"><span>Caption</span><textarea id="caption" rows="2" maxlength="400"></textarea></label>
+          <p class="small">Cover follows the guide's timing best in the first study. Lego tracks mostly ignore it.</p>
+        </details>
+        <div class="problems" id="problems" role="status"></div>
+        <button class="primary" id="combine" type="button">Combine</button>
+        <pre class="log" id="log" hidden></pre>
+      </aside>
+    </main>
+
+    <section class="result" id="result" hidden aria-labelledby="result-title">
+      <div class="result-head">
+        <div>
+          <span class="eyebrow" id="result-eyebrow"></span>
+          <h2 id="result-title"></h2>
+          <p class="small" id="result-note"></p>
+        </div>
+        <div class="transport">
+          <button class="play" id="play" type="button" aria-pressed="false">Play</button>
+          <span class="clock" id="clock">0.0 s</span>
+        </div>
+      </div>
+      <div class="mixer">
+        <fieldset class="stems" id="stems"><legend>Listen to</legend></fieldset>
+        <fieldset class="part-toggles" id="part-toggles"><legend>Parts</legend></fieldset>
+      </div>
+      <div class="lanes" id="lanes"></div>
+      <div class="scores" id="scores"></div>
+    </section>
+
+    <section class="saved" aria-labelledby="saved-title">
+      <h2 id="saved-title">Saved combinations</h2>
+      <ul id="saved"></ul>
+    </section>
+
+    <footer class="small">Engine: <code>main.py follow combine</code> (Python). Locations: published hydrophone positions are circles; approximate site anchors are diamonds. Dataset dots come from the world map catalogue and are not playable.</footer>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

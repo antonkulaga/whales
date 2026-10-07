@@ -1,0 +1,402 @@
+<title>Follow the Phrase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a hydrophone console. Species tabs above stacked track lanes that share one time axis and one playhead; each lane's scores sit at its right edge. */
+:root {
+  --bg: #edf2f3; --surface: #ffffff; --sunk: #e2eaec; --ink: #0f2930; --muted: #4f666d; --rule: #cfdbde;
+  --accent: #0a6c83; --accent-ink: #ffffff; --good: #17734a; --warn: #8a6410; --bad: #a83a3a; --neutral: #66777c;
+  --ov-contour: #7fe9ff; --ov-ref: rgba(127, 233, 255, .55); --ov-tick: rgba(255, 255, 255, .9); --ov-label-bg: rgba(8, 20, 24, .72); --ov-label: #e8f6f8; --playhead: #ffffff;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --step--1: .8125rem; --step-0: 1rem; --step-1: 1.25rem; --step-2: 1.6rem; --step-3: clamp(2.1rem, 5vw, 3.2rem);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b181c; --surface: #11242a; --sunk: #0e1f24; --ink: #d9e8eb; --muted: #8ea6ac; --rule: #24414a;
+  --accent: #4cc0d8; --accent-ink: #062027; --good: #4fc58d; --warn: #e0b04f; --bad: #ef8080; --neutral: #8c9da2; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b181c; --surface: #11242a; --sunk: #0e1f24; --ink: #d9e8eb; --muted: #8ea6ac; --rule: #24414a;
+  --accent: #4cc0d8; --accent-ink: #062027; --good: #4fc58d; --warn: #e0b04f; --bad: #ef8080; --neutral: #8c9da2; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.55 var(--body); margin: 0 }
+.wrap { max-width: 1320px; margin: 0 auto; padding-inline: max(16px, 3vw); padding-block: 28px 64px; display: grid; gap: 40px }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.12 }
+h1 { font-size: var(--step-3); letter-spacing: -.01em }
+h2 { font-size: var(--step-2) }
+h3 { font-size: var(--step-1) }
+p { margin: 0; max-width: 68ch }
+a { color: var(--accent) }
+small, .small { font-size: var(--step--1); color: var(--muted) }
+.mono, code { font-family: var(--mono); font-size: .92em; font-variant-numeric: tabular-nums }
+.eyebrow { font: 500 var(--step--1)/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+button { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.masthead { display: grid; gap: 14px }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font: 500 var(--step--1)/1.3 var(--mono) }
+.chain span { background: var(--sunk); border: 1px solid var(--rule); padding: 5px 9px; border-radius: 3px }
+.chain i { font-style: normal; color: var(--muted) }
+
+.verdicts { display: grid; gap: 10px }
+.verdict-list { display: grid; gap: 0; border-top: 1px solid var(--rule) }
+.verdict { display: grid; grid-template-columns: 3.2rem 8.5rem minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: start }
+.verdict .id { font: 600 var(--step-0) var(--mono) }
+.verdict .claim { min-width: 0 }
+.verdict .numbers { font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted); margin-top: 4px; overflow-wrap: anywhere }
+.caveat { font-size: var(--step--1); color: var(--warn); margin-top: 4px }
+.pill { display: inline-block; font: 500 .75rem/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap }
+.pill.good { color: var(--good) } .pill.bad { color: var(--bad) } .pill.neutral { color: var(--neutral) } .pill.warn { color: var(--warn) }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 18px }
+.tabgroup { display: grid; gap: 6px }
+.tabrow { display: flex; flex-wrap: wrap; gap: 6px }
+.tab { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 12px; cursor: pointer; font: 500 var(--step--1) var(--mono) }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+
+.console { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; display: grid }
+.source-head { padding: 20px; display: grid; gap: 10px; border-bottom: 1px solid var(--rule) }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 400 var(--step--1)/1.5 var(--mono); color: var(--muted) }
+.facts b { color: var(--ink); font-weight: 500 }
+.transport { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--rule); padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; font-size: var(--step--1) }
+.transport label { display: inline-flex; gap: 8px; align-items: center }
+.transport input[type="range"] { width: 120px; accent-color: var(--accent) }
+.clock { font: 500 var(--step-0) var(--mono); font-variant-numeric: tabular-nums; min-width: 9ch }
+.stop { border: 1px solid var(--rule); background: var(--sunk); border-radius: 4px; padding: 5px 10px; cursor: pointer }
+
+.stage { padding: 14px 20px 4px; display: flex; gap: 12px; align-items: baseline; border-top: 1px solid var(--rule) }
+.stage:first-of-type { border-top: 0 }
+.stage .eyebrow { color: var(--accent) }
+.lane { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) minmax(0, 15.5rem); gap: 16px; padding: 10px 20px 14px; align-items: start }
+.lane + .lane { border-top: 1px dashed var(--rule) }
+.lane-meta { display: grid; gap: 6px; min-width: 0 }
+.lane-meta h3 { font-size: var(--step-0); font-family: var(--body); font-weight: 600 }
+.play { display: inline-flex; align-items: center; gap: 8px; width: fit-content; border: 1px solid var(--accent); color: var(--accent); background: transparent; border-radius: 99px; padding: 5px 13px 5px 10px; cursor: pointer; font: 500 var(--step--1) var(--mono) }
+.play svg { width: 12px; height: 12px; fill: currentColor }
+.play[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink) }
+.view { display: grid; gap: 3px; min-width: 0 }
+.spec { position: relative; cursor: crosshair; border-radius: 3px; overflow: hidden; background: #000; aspect-ratio: 1200 / 140; max-width: 100% }
+.spec img { display: block; width: 100%; height: 100%; object-fit: fill; max-width: 100% }
+.spec svg { position: absolute; inset: 0; width: 100%; height: 100% }
+.spec .label { position: absolute; top: 3px; font: 500 .66rem/1.2 var(--mono); color: var(--ov-label); background: var(--ov-label-bg); padding: 1px 4px; border-radius: 2px; white-space: nowrap; pointer-events: none; transform: translateX(-1px) }
+.spec .hz { position: absolute; right: 4px; font: 400 .62rem/1 var(--mono); color: var(--ov-label); background: var(--ov-label-bg); padding: 1px 3px; border-radius: 2px; pointer-events: none }
+.spec .playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--playhead); box-shadow: 0 0 0 1px rgba(0,0,0,.35); left: 0; display: none; pointer-events: none }
+.env { width: 100%; height: 26px; display: block }
+.env polyline { fill: none; stroke: var(--muted); stroke-width: 1 }
+.env line { stroke: var(--accent); stroke-width: 1.5 }
+.axis { display: flex; justify-content: space-between; font: 400 .66rem var(--mono); color: var(--muted) }
+.scores { display: grid; gap: 6px; font: 400 var(--step--1)/1.35 var(--mono); font-variant-numeric: tabular-nums; min-width: 0 }
+.score { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline; border-bottom: 1px solid var(--rule); padding-bottom: 4px }
+.score span:first-child { color: var(--muted) }
+.score .good { color: var(--good); font-weight: 500 } .score .warn { color: var(--warn); font-weight: 500 } .score .bad { color: var(--bad); font-weight: 500 }
+.settings { font: 400 .72rem/1.45 var(--mono); color: var(--muted); overflow-wrap: anywhere }
+
+.matrix-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface) }
+table.matrix { border-collapse: collapse; font: 400 var(--step--1) var(--mono); font-variant-numeric: tabular-nums; min-width: 640px; width: 100% }
+.matrix th, .matrix td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap }
+.matrix th:first-child, .matrix td:first-child { text-align: left }
+.matrix thead th { font-weight: 500; color: var(--muted); vertical-align: bottom }
+.matrix td.own { outline: 2px solid var(--ink); outline-offset: -2px; font-weight: 600 }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: var(--step--1); color: var(--muted) }
+
+.method { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: 24px }
+.method div { display: grid; gap: 8px; align-content: start; min-width: 0 }
+.method p, .method li { font-size: .94rem }
+.method ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px }
+footer { font-size: var(--step--1); color: var(--muted); display: grid; gap: 6px }
+
+@media (max-width: 900px) {
+  .lane { grid-template-columns: minmax(0, 1fr) }
+  .verdict { grid-template-columns: 3rem minmax(0, 1fr) }
+  .verdict .claim { grid-column: 1 / -1 }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important } }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Whale and dolphin art experiments · idea 1</div>
+    <h1>Follow the Phrase</h1>
+    <p>Can generated music follow one particular humpback, dolphin or sperm-whale phrase, and can we show that it does? Each recording is measured into events and contours and played back as a <b>guide</b> in a human register. ACE-Step 1.5 then writes an accompaniment track in the context of nothing, the raw recording, the guide, or a <b>perturbed</b> guide, all under one caption and seed. Every output is scored against its own guide, the perturbed twin and the other recordings' guides.</p>
+    <div class="chain" aria-label="Pipeline"><span>recording</span><i>→</i><span>measured events + contours</span><i>→</i><span>guide in a declared register</span><i>→</i><span>music</span><i>→</i><span>alignment vs swapped + perturbed guides</span></div>
+  </header>
+
+  <section class="verdicts" aria-labelledby="verdicts-title">
+    <h2 id="verdicts-title">Registered predictions</h2>
+    <p class="small" id="registered"></p>
+    <div class="verdict-list" id="verdict-list"></div>
+  </section>
+
+  <section aria-labelledby="console-title" style="display:grid;gap:14px">
+    <h2 id="console-title">Listen and compare</h2>
+    <p class="small">Choose a recording. Press a lane's play button to hear that stem; tick <b>Layer the recording</b> to hear it over the animal sound. Click a spectrogram to start from that moment. White ticks along the top edge mark the guide's onsets; cyan lines are its contours.</p>
+    <nav class="tabs" id="tabs" aria-label="Recordings"></nav>
+    <div class="console" id="console"></div>
+  </section>
+
+  <section aria-labelledby="matrix-title" style="display:grid;gap:12px">
+    <h2 id="matrix-title">Swap test: <span id="matrix-species"></span></h2>
+    <p class="small">Timing z of every output against every guide of the same species. An output that follows its phrase scores highest in its own outlined cell. A row that is equally high everywhere reacts to music in general, not to this phrase.</p>
+    <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+    <div class="legend"><span>z = (r − mean of shifted r) / sd of shifted r</span><span>outlined: the output's own reference</span></div>
+  </section>
+
+  <section class="method" aria-label="Method">
+    <div>
+      <h3>What the scores mean</h3>
+      <ul>
+        <li><b>Timing z.</b> Correlation between the output's spectral-flux onset envelope and bumps at the guide's onsets (σ <span class="mono" id="m-sigma"></span>), against the same output circularly shifted by at least <span class="mono" id="m-shift"></span>.</li>
+        <li><b>Events F1.</b> Detected output onsets matched to guide onsets within ±<span class="mono" id="m-tol"></span>; "chance" is the mean F1 after shifting.</li>
+        <li><b>Pitch z.</b> Pitch-class agreement inside tonal events at the single best transposition, against shifted outputs. Tonal species only.</li>
+        <li><b>Rank.</b> Where the output's own guide falls when all same-species guides and perturbed twins are ranked by timing z.</li>
+        <li><b>Source leak.</b> Peak waveform correlation with the conditioning audio within ±100 ms. A high value means the output contains the source rather than answering it.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>What was held fixed</h3>
+      <p id="perturbation"></p>
+      <p id="response"></p>
+      <p class="settings" id="ace-settings"></p>
+    </div>
+    <div>
+      <h3>What this does not show</h3>
+      <ul>
+        <li>Register shifts, instruments, captions and response rules are our artistic choices, not properties of the animals.</li>
+        <li>Dolphin whistles and sperm-whale clicks are detected from the waveform, so detections can include noise. Humpback units come from an annotator's selection table.</li>
+        <li>The sperm-whale sequences join separate DSWP clips; the gaps between clips are ours.</li>
+        <li>A listener enjoying the mix says nothing about whale preference or meaning.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span id="stamp"></span>
+    <span>Code: <code>experiments/follow.py</code>, <code>follow_metrics.py</code>, <code>follow_gallery.py</code>. Config: <code>resources/follow-music.json</code>. Rebuild with <code>uv run --group art --group viz main.py follow run</code>.</span>
+  </footer>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const fmt = (v, d = 2) => v == null || Number.isNaN(v) ? "—" : (v > 0 ? "+" : "") + Number(v).toFixed(d);
+const zClass = z => z == null ? "" : z >= 3 ? "good" : z >= 2 ? "warn" : "bad";
+const STAGES = {input: "Input · the animal sound", schema: "Schema · what the music is given", output: "Output · the music"};
+
+let current = 0;
+try { const saved = localStorage.getItem("follow-source"); if (saved && D.sources.some(s => s.id === saved)) current = D.sources.findIndex(s => s.id === saved); } catch (e) {}
+const fromHash = location.hash.slice(1);
+if (fromHash && D.sources.some(s => s.id === fromHash)) current = D.sources.findIndex(s => s.id === fromHash);
+
+/* ---------- verdicts ---------- */
+function verdictNumbers(key, v) {
+  const d = v.detail || [];
+  const z = x => fmt(x, 1);
+  if (key === "P1") return d.map(r => `${r.source}: z ${z(r.timing_z)}, perturbed−original ${z(r.perturbed_minus_original_z)}`).join(" · ");
+  if (key === "P2") return d.map(r => `${r.source}: z ${z(r.timing_z)}`).join(" · ");
+  if (key === "P3") return d.map(r => `${r.species}: guide ${z(r.guide_mean_z)} vs raw ${z(r.raw_mean_z)}`).join(" · ");
+  if (key === "P4") return d.map(r => `${r.source}: rank ${r.rank}/${r.of}`).join(" · ");
+  if (key === "P6") return d.map(r => `${r.source}: z ${z(r.timing_z)}`).join(" · ");
+  if (key === "P5" || key === "P7") return d.map(r => `${r.source}: vs perturbed ${z(r.z_vs_perturbed)}, vs original ${z(r.z_vs_original)}`).join(" · ");
+  return "";
+}
+function renderVerdicts() {
+  const r = D.registration;
+  $("#registered").textContent = `P1–P5 were written into the code before the first evaluation (${r.registered_at_utc.slice(0, 16).replace("T", " ")} UTC). ${r.amendment} Evaluated ${D.evaluated.slice(0, 16).replace("T", " ")} UTC. Pass or fail follows the registered wording; amber notes are reading aids that do not change it.`;
+  $("#verdict-list").innerHTML = Object.entries(D.verdicts).map(([key, v]) => {
+    const state = v.supported === true ? ["good", "Supported"] : v.supported === false ? ["bad", "Not supported"] : ["neutral", "Not tested"];
+    return `<div class="verdict"><span class="id">${key}</span><span><span class="pill ${state[0]}">${state[1]}</span></span>
+      <div class="claim">${esc(v.prediction)}<div class="numbers">${esc(verdictNumbers(key, v))}</div>${(v.caveats || []).map(c => `<div class="caveat">${esc(c)}</div>`).join("")}</div></div>`;
+  }).join("");
+}
+
+/* ---------- tabs ---------- */
+function renderTabs() {
+  const groups = {};
+  D.sources.forEach((s, i) => (groups[s.species] ??= []).push([s, i]));
+  $("#tabs").innerHTML = Object.entries(groups).map(([species, list]) => `<div class="tabgroup"><span class="eyebrow">${esc(species)}</span><div class="tabrow" role="tablist">${
+    list.map(([s, i]) => `<button class="tab" role="tab" id="tab-${s.id}" aria-selected="${i === current}" data-i="${i}">${esc(s.id)}</button>`).join("")}</div></div>`).join("");
+  $("#tabs").querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => select(+b.dataset.i)));
+}
+function select(i) {
+  stop();
+  current = i;
+  try { localStorage.setItem("follow-source", D.sources[i].id); } catch (e) {}
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", String(+b.dataset.i === i)));
+  renderConsole();
+  renderMatrix();
+}
+
+/* ---------- overlays ---------- */
+const xOf = (t, src) => (t / src.duration) * 1000;
+const yOf = (hz, band) => 100 * (1 - Math.log(hz / band[0]) / Math.log(band[1] / band[0]));
+function contourPaths(events, band, factor, stroke, dash) {
+  return events.filter(e => e.k === "t").map(e => {
+    const pts = e.c.map(([t, hz]) => `${xOf(t, src()).toFixed(1)},${Math.max(0, Math.min(100, yOf(hz * factor, band))).toFixed(1)}`).join(" ");
+    return `<polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.6" ${dash ? 'stroke-dasharray="4 3"' : ""} vector-effect="non-scaling-stroke"/>`;
+  }).join("");
+}
+function onsetTicks(events) {
+  return events.map(e => e.k === "c" ? e.t : e.s).map(t => `<line x1="${xOf(t, src()).toFixed(1)}" x2="${xOf(t, src()).toFixed(1)}" y1="0" y2="9" stroke="var(--ov-tick)" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`).join("");
+}
+function src() { return D.sources[current]; }
+function overlay(track) {
+  const s = src(), factor = 2 ** s.shift;
+  const reference = track.name.endsWith("perturbed") ? s.perturbed : s.events;
+  let svg = "", labels = "";
+  if (track.name === "animal") {
+    svg += contourPaths(s.events, track.band, 1, "var(--ov-contour)", false);
+    if (s.material === "clicks") {
+      svg += onsetTicks(s.events);
+      (s.origin.clips || []).forEach(([a, b, row]) => {
+        svg += `<rect x="${xOf(a, s)}" y="88" width="${xOf(b, s) - xOf(a, s)}" height="12" fill="rgba(127,233,255,.18)"/>`;
+        labels += `<span class="label" style="left:${(a / s.duration * 100).toFixed(2)}%;top:auto;bottom:2px">row ${row}</span>`;
+      });
+    }
+    if (s.events.length <= 16) s.events.filter(e => e.k === "t").forEach(e => {
+      labels += `<span class="label" style="left:${(e.s / s.duration * 100).toFixed(2)}%">${esc(e.l)}</span>`;
+    });
+  } else {
+    svg += onsetTicks(reference);
+    svg += contourPaths(reference, track.band, factor, track.stage === "schema" ? "var(--ov-contour)" : "var(--ov-ref)", track.stage !== "schema");
+  }
+  const hz = b => b >= 1000 ? `${+(b / 1000).toFixed(1)} kHz` : `${Math.round(b)} Hz`;
+  labels += `<span class="hz" style="top:3px">${hz(track.band[1])}</span><span class="hz" style="bottom:3px">${hz(track.band[0])}</span>`;
+  return {svg, labels};
+}
+function envelope(track) {
+  const sc = track.score;
+  if (!sc) return "";
+  const s = src(), env = sc.envelope, n = env.length;
+  const pts = env.map((v, i) => `${(i / sc.envelope_rate / s.duration * 1000).toFixed(1)},${(26 - Math.max(0, Math.min(6, v + 1)) / 7 * 24).toFixed(1)}`).join(" ");
+  const reference = track.name.endsWith("perturbed") ? s.perturbed : s.events;
+  const ticks = reference.map(e => e.k === "c" ? e.t : e.s).map(t => `<line x1="${xOf(t, s).toFixed(1)}" x2="${xOf(t, s).toFixed(1)}" y1="22" y2="26" vector-effect="non-scaling-stroke"/>`).join("");
+  return `<svg class="env" viewBox="0 0 1000 26" preserveAspectRatio="none" aria-label="Onset envelope with guide onsets"><polyline points="${pts}" vector-effect="non-scaling-stroke"/>${ticks}</svg>`;
+}
+
+/* ---------- console ---------- */
+function scoreRows(track) {
+  const sc = track.score;
+  if (!sc) return `<div class="small">${track.stage === "input" ? "The source every lane below is measured from." : "Reference for the outputs below."}</div>`;
+  const rows = [];
+  const own = sc.alternative.endsWith("perturbed") ? "guide" : "perturbed guide";
+  const other = sc.alternative.endsWith("perturbed") ? "perturbed twin" : "original guide";
+  rows.push(["timing z vs " + own, `<span class="${zClass(sc.timing?.z)}">${fmt(sc.timing?.z, 1)}</span>`]);
+  if (sc.events) rows.push(["events F1 · chance", `${sc.events.value.toFixed(2)} · ${sc.events.null_mean.toFixed(2)}`]);
+  if (sc.pitch) rows.push(["pitch z", `<span class="${zClass(sc.pitch.z)}">${fmt(sc.pitch.z, 1)}</span>`]);
+  rows.push(["timing z vs " + other, fmt(sc.alt_timing_z, 1)]);
+  rows.push(["own guide rank", `${sc.rank}/${sc.of}`]);
+  if (sc.leak) rows.push([`source leak (${esc(sc.leak.source_stem)})`, `<span class="${sc.leak.value > .3 ? "bad" : ""}">${sc.leak.value.toFixed(2)}</span>`]);
+  let html = rows.map(([a, b]) => `<div class="score"><span>${a}</span><span>${b}</span></div>`).join("");
+  if (track.job) html += `<div class="settings">${esc(track.job.task)}${track.job.track ? " · " + esc(track.job.track) : ""} · seed ${track.job.seed} · ${track.job.inference_steps} steps · cfg ${track.job.guidance_scale}${track.job.seconds ? ` · ${Math.round(track.job.seconds)} s` : ""}</div>`;
+  return html;
+}
+function renderConsole() {
+  const s = src();
+  const o = s.origin;
+  const counts = Object.entries(s.counts).map(([k, v]) => `${k.replace(/_/g, " ")} <b>${v}</b>`).join(" · ");
+  let html = `<div class="source-head"><span class="eyebrow">${esc(s.species)} · ${esc(s.id)}</span><h3>${esc(s.title)}</h3>
+    <p class="small">${esc(s.note)} ${esc(o.credit)} <a href="${esc(o.url)}" target="_blank" rel="noopener">Source</a>. ${esc(o.license)}</p>
+    <div class="facts"><span>excerpt <b>${esc(o.excerpt)}</b></span><span>${counts}</span>${s.material === "tonal" ? `<span>register shift <b>${s.shift > 0 ? "+" : ""}${s.shift} octave${Math.abs(s.shift) === 1 ? "" : "s"}</b></span>` : ""}<span>guide instrument <b>${esc(s.instrument)}</b></span><span>lego track <b>${esc(s.lego_track)}</b></span></div>
+    <div class="facts"><span>caption <b>“${esc(s.caption)}”</b></span></div></div>
+    <div class="transport"><span class="clock" id="clock">0.0 / ${s.duration.toFixed(1)} s</span>
+      <label><input type="checkbox" id="layer"> Layer the recording</label>
+      <label>recording level <input type="range" id="layer-gain" min="0" max="1" step="0.05" value="0.5"></label>
+      <button class="stop" id="stop" type="button">Stop</button></div>`;
+  let stage = "";
+  s.tracks.forEach((t, i) => {
+    if (t.stage !== stage) { stage = t.stage; html += `<div class="stage"><span class="eyebrow">${STAGES[stage]}</span></div>`; }
+    const ov = overlay(t);
+    html += `<div class="lane" data-i="${i}">
+      <div class="lane-meta"><h3>${esc(t.title)}</h3><div class="small">${esc(t.caption)}</div>
+        <button class="play" type="button" aria-pressed="false" data-i="${i}" aria-label="Play ${esc(t.title)}"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg><span>Play</span></button></div>
+      <div class="view"><div class="spec" data-i="${i}"><img src="${esc(t.image)}" alt="Spectrogram of ${esc(t.title)}, ${t.band[0]}–${t.band[1]} Hz" loading="lazy">
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${ov.svg}</svg>${ov.labels}<div class="playhead"></div></div>
+        ${envelope(t)}<div class="axis"><span>0 s</span><span>${(s.duration / 2).toFixed(0)} s</span><span>${s.duration.toFixed(0)} s</span></div></div>
+      <div class="scores">${scoreRows(t)}</div></div>`;
+  });
+  $("#console").innerHTML = html;
+  $("#console").querySelectorAll(".play").forEach(b => b.addEventListener("click", () => toggle(+b.dataset.i)));
+  $("#console").querySelectorAll(".spec").forEach(el => el.addEventListener("click", ev => {
+    const r = el.getBoundingClientRect();
+    play(+el.dataset.i, (ev.clientX - r.left) / r.width * src().duration);
+  }));
+  $("#stop").addEventListener("click", stop);
+  $("#layer").addEventListener("change", () => { if (playing) play(playing.i, position()); });
+  $("#layer-gain").addEventListener("input", () => { if (playing?.under) playing.under.volume = +$("#layer-gain").value; });
+}
+
+/* ---------- audio ---------- */
+let playing = null, frame = 0;
+const elements = new Map();
+function media(url) {
+  if (!elements.has(url)) { const a = new Audio(url); a.preload = "auto"; elements.set(url, a); }
+  return elements.get(url);
+}
+function position() { return playing ? playing.main.currentTime : 0; }
+function toggle(i) { if (playing && playing.i === i) stop(); else play(i, 0); }
+async function play(i, offset) {
+  stop();
+  const s = src(), t = s.tracks[i];
+  const layer = $("#layer").checked && t.name !== "animal";
+  const main = media(t.audio), under = layer ? media(s.tracks.find(x => x.name === "animal").audio) : null;
+  playing = {i, main, under};
+  setPressed(i, true);
+  main.volume = layer ? .9 : 1;
+  main.currentTime = offset;
+  main.onended = () => stop();
+  if (under) { under.volume = +$("#layer-gain").value; under.currentTime = offset; }
+  try { await Promise.all([main.play(), under?.play()]); tick(); }
+  catch (err) { stop(); $("#clock").textContent = "Audio could not play"; console.error(err); }
+}
+function setPressed(i, on) {
+  const b = $(`#console .play[data-i="${i}"]`);
+  if (b) { b.setAttribute("aria-pressed", String(on)); b.querySelector("span").textContent = on ? "Stop" : "Play"; }
+}
+function stop() {
+  cancelAnimationFrame(frame);
+  if (playing) { [playing.main, playing.under].forEach(a => { if (a) { a.onended = null; a.pause(); } }); setPressed(playing.i, false); }
+  playing = null;
+  document.querySelectorAll(".playhead").forEach(p => p.style.display = "none");
+  const c = $("#clock"); if (c) c.textContent = `0.0 / ${src().duration.toFixed(1)} s`;
+}
+function tick() {
+  if (!playing) return;
+  const t = position(), pct = (t / src().duration * 100).toFixed(3) + "%";
+  document.querySelectorAll(".playhead").forEach(p => { p.style.display = "block"; p.style.left = pct; });
+  $("#clock").textContent = `${t.toFixed(1)} / ${src().duration.toFixed(1)} s`;
+  frame = requestAnimationFrame(tick);
+}
+
+/* ---------- swap matrix ---------- */
+function renderMatrix() {
+  const species = src().species, m = D.matrix[species];
+  $("#matrix-species").textContent = species;
+  const cell = (z, own) => {
+    const strength = Math.max(0, Math.min(1, Math.abs(z) / 8)) * 70;
+    const hue = z >= 0 ? "var(--accent)" : "var(--bad)";
+    return `<td class="${own ? "own" : ""}" style="background:color-mix(in srgb, ${hue} ${strength.toFixed(0)}%, var(--surface))">${fmt(z, 1)}</td>`;
+  };
+  $("#matrix").innerHTML = `<thead><tr><th>output ↓ · guide →</th>${m.cols.map(c => `<th>${esc(c.replace("/", " · "))}</th>`).join("")}</tr></thead><tbody>${
+    m.rows.map((r, i) => `<tr><td>${esc(r)}</td>${m.z[i].map((z, j) => cell(z, m.cols[j] === m.own[i])).join("")}</tr>`).join("")}</tbody>`;
+}
+
+/* ---------- method text ---------- */
+function renderMethod() {
+  $("#m-sigma").textContent = `${D.metrics.onset_sigma_s * 1000} ms`;
+  $("#m-shift").textContent = `${D.metrics.min_null_shift_s} s`;
+  $("#m-tol").textContent = `${D.metrics.tolerance_s * 1000} ms`;
+  $("#perturbation").textContent = "Perturbation: " + D.perturbation;
+  $("#response").textContent = "Deterministic response: " + D.response;
+  const a = D.ace, c = D.ace_config;
+  $("#ace-settings").textContent = `ACE-Step 1.5 ${c.model} (${c.model_repo}@${c.model_revision.slice(0, 10)}), code ${a.ace_git_revision ? a.ace_git_revision.slice(0, 10) : "—"}, ${a.quantization || "no quantization"}, offload ${a.offload ? "on" : "off"}, ${a.device || ""}. Lego tracks are generated in the context of the source; prompt-only uses text2music. The language model is not used.`;
+  $("#stamp").textContent = `Evaluated ${D.evaluated.slice(0, 19).replace("T", " ")} UTC.`;
+}
+
+renderVerdicts();
+renderTabs();
+renderConsole();
+renderMatrix();
+renderMethod();
+</script>

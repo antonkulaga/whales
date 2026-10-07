@@ -1,0 +1,827 @@
+{
+  "created_at_utc": "2026-10-07T16:12:08.600567+00:00",
+  "population": {
+    "input_sha256": "407f1c0f7d95a39c7bace99bbef40646e2fe62403c6237c20ddf374e88e21b15",
+    "killer_whale_rows_by_level_and_ecotype": [
+      {
+        "AnnotationLevel": "Call",
+        "Ecotype": null,
+        "len": 5900
+      },
+      {
+        "AnnotationLevel": "Call",
+        "Ecotype": "OKW",
+        "len": 1495
+      },
+      {
+        "AnnotationLevel": "Call",
+        "Ecotype": "SAR",
+        "len": 8078
+      },
+      {
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "len": 14240
+      },
+      {
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "len": 4121
+      },
+      {
+        "AnnotationLevel": "Detection",
+        "Ecotype": null,
+        "len": 550
+      },
+      {
+        "AnnotationLevel": "Detection",
+        "Ecotype": "NRKW",
+        "len": 8266
+      },
+      {
+        "AnnotationLevel": "Detection",
+        "Ecotype": "OKW",
+        "len": 1203
+      },
+      {
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "len": 6668
+      },
+      {
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "len": 8586
+      }
+    ],
+    "call_level_box_conventions_by_provider_and_ecotype": [
+      {
+        "Provider": "JASCO_VFPA",
+        "Ecotype": "SRKW",
+        "calls": 6858,
+        "days": 20,
+        "median_duration_s": 0.84,
+        "median_low_hz": 1254.0,
+        "median_high_hz": 5303.0
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "Ecotype": "TKW",
+        "calls": 104,
+        "days": 2,
+        "median_duration_s": 0.86,
+        "median_low_hz": 811.0,
+        "median_high_hz": 3185.0
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "Ecotype": "SRKW",
+        "calls": 1263,
+        "days": 17,
+        "median_duration_s": 1.0,
+        "median_low_hz": 776.0,
+        "median_high_hz": 7491.0
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "Ecotype": "TKW",
+        "calls": 248,
+        "days": 5,
+        "median_duration_s": 1.33,
+        "median_low_hz": 1184.0,
+        "median_high_hz": 7708.0
+      },
+      {
+        "Provider": "ONC",
+        "Ecotype": "OKW",
+        "calls": 325,
+        "days": 1,
+        "median_duration_s": 1.06,
+        "median_low_hz": 759.0,
+        "median_high_hz": 9937.0
+      },
+      {
+        "Provider": "ONC",
+        "Ecotype": "SRKW",
+        "calls": 128,
+        "days": 2,
+        "median_duration_s": 0.94,
+        "median_low_hz": 1141.0,
+        "median_high_hz": 5582.0
+      },
+      {
+        "Provider": "ONC",
+        "Ecotype": "TKW",
+        "calls": 350,
+        "days": 5,
+        "median_duration_s": 1.21,
+        "median_low_hz": 838.0,
+        "median_high_hz": 6276.0
+      },
+      {
+        "Provider": "OrcaSound",
+        "Ecotype": "SRKW",
+        "calls": 1730,
+        "days": 5,
+        "median_duration_s": 1.87,
+        "median_low_hz": null,
+        "median_high_hz": null
+      },
+      {
+        "Provider": "SIMRES",
+        "Ecotype": "SRKW",
+        "calls": 3418,
+        "days": 13,
+        "median_duration_s": 0.77,
+        "median_low_hz": 799.0,
+        "median_high_hz": 799.0
+      },
+      {
+        "Provider": "SIO",
+        "Ecotype": "OKW",
+        "calls": 347,
+        "days": 6,
+        "median_duration_s": 1.58,
+        "median_low_hz": 730.0,
+        "median_high_hz": 730.0
+      },
+      {
+        "Provider": "SIO",
+        "Ecotype": "SRKW",
+        "calls": 83,
+        "days": 5,
+        "median_duration_s": 2.23,
+        "median_low_hz": 451.0,
+        "median_high_hz": 451.0
+      },
+      {
+        "Provider": "SIO",
+        "Ecotype": "TKW",
+        "calls": 2207,
+        "days": 34,
+        "median_duration_s": 2.67,
+        "median_low_hz": 180.0,
+        "median_high_hz": 180.0
+      },
+      {
+        "Provider": "SMRUConsulting",
+        "Ecotype": "SRKW",
+        "calls": 760,
+        "days": 4,
+        "median_duration_s": 1.26,
+        "median_low_hz": 561.0,
+        "median_high_hz": 10713.0
+      },
+      {
+        "Provider": "UAF_NGOS",
+        "Ecotype": "OKW",
+        "calls": 823,
+        "days": 2,
+        "median_duration_s": 0.83,
+        "median_low_hz": 750.0,
+        "median_high_hz": 4932.0
+      },
+      {
+        "Provider": "UAF_NGOS",
+        "Ecotype": "SAR",
+        "calls": 8078,
+        "days": 35,
+        "median_duration_s": 0.78,
+        "median_low_hz": 782.0,
+        "median_high_hz": 7278.0
+      },
+      {
+        "Provider": "UAF_NGOS",
+        "Ecotype": "TKW",
+        "calls": 1212,
+        "days": 59,
+        "median_duration_s": 1.37,
+        "median_low_hz": 967.0,
+        "median_high_hz": 3051.0
+      }
+    ],
+    "frequency_box_conventions_by_provider": [
+      {
+        "Provider": "DFO_CRP",
+        "rows": 17501,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "rows": 7772,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "rows": 11605,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "rows": 1886,
+        "zero_bandwidth": 5,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "ONC",
+        "rows": 948,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "OrcaSound",
+        "rows": 1730,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 1730
+      },
+      {
+        "Provider": "SIMRES",
+        "rows": 3578,
+        "zero_bandwidth": 3578,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "SIO",
+        "rows": 2638,
+        "zero_bandwidth": 2638,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "SMRUConsulting",
+        "rows": 1336,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      },
+      {
+        "Provider": "UAF_NGOS",
+        "rows": 10113,
+        "zero_bandwidth": 0,
+        "no_frequency_bounds": 0
+      }
+    ],
+    "tkw_call_annotations_by_provider": [
+      {
+        "Provider": "JASCO_VFPA",
+        "len": 104,
+        "percent": 2.5
+      },
+      {
+        "Provider": "ONC",
+        "len": 350,
+        "percent": 8.5
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "len": 248,
+        "percent": 6.0
+      },
+      {
+        "Provider": "UAF_NGOS",
+        "len": 1212,
+        "percent": 29.4
+      },
+      {
+        "Provider": "SIO",
+        "len": 2207,
+        "percent": 53.6
+      }
+    ],
+    "same_dataset_srkw_and_tkw": [
+      {
+        "Provider": "DFO_CRP",
+        "Dataset": "WVanIsl",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 48,
+        "days": 4,
+        "files": 9
+      },
+      {
+        "Provider": "DFO_CRP",
+        "Dataset": "WVanIsl",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 5334,
+        "days": 56,
+        "files": 240
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "CarmanahPt",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 922,
+        "days": 5,
+        "files": 104
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "CarmanahPt",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 260,
+        "days": 3,
+        "files": 31
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoN1",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 1840,
+        "days": 4,
+        "files": 110
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoN1",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 246,
+        "days": 2,
+        "files": 37
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoS1",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 60,
+        "days": 1,
+        "files": 9
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoS1",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 168,
+        "days": 2,
+        "files": 32
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoS2",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 1293,
+        "days": 6,
+        "files": 106
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "StrGeoS2",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 51,
+        "days": 1,
+        "files": 8
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "SwanChan",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "SRKW",
+        "rows": 2505,
+        "days": 6,
+        "files": 125
+      },
+      {
+        "Provider": "DFO_WDLP",
+        "Dataset": "SwanChan",
+        "AnnotationLevel": "Detection",
+        "Ecotype": "TKW",
+        "rows": 24,
+        "days": 1,
+        "files": 11
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "Dataset": "BoundaryPass",
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "rows": 988,
+        "days": 7,
+        "files": 7
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "Dataset": "BoundaryPass",
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "rows": 47,
+        "days": 1,
+        "files": 1
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "Dataset": "HaroStraitSouth",
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "rows": 2658,
+        "days": 12,
+        "files": 41
+      },
+      {
+        "Provider": "JASCO_VFPA",
+        "Dataset": "HaroStraitSouth",
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "rows": 57,
+        "days": 1,
+        "files": 1
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "Dataset": "StraitofGeorgia",
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "rows": 1263,
+        "days": 17,
+        "files": 22
+      },
+      {
+        "Provider": "JASCO_VFPA_ONC",
+        "Dataset": "StraitofGeorgia",
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "rows": 248,
+        "days": 5,
+        "files": 9
+      },
+      {
+        "Provider": "ONC",
+        "Dataset": "BarkleyCanyon",
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "rows": 128,
+        "days": 2,
+        "files": 23
+      },
+      {
+        "Provider": "ONC",
+        "Dataset": "BarkleyCanyon",
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "rows": 350,
+        "days": 5,
+        "files": 25
+      },
+      {
+        "Provider": "SIO",
+        "Dataset": "Cpe_Elz",
+        "AnnotationLevel": "Call",
+        "Ecotype": "SRKW",
+        "rows": 83,
+        "days": 5,
+        "files": 5
+      },
+      {
+        "Provider": "SIO",
+        "Dataset": "Cpe_Elz",
+        "AnnotationLevel": "Call",
+        "Ecotype": "TKW",
+        "rows": 1928,
+        "days": 29,
+        "files": 41
+      }
+    ],
+    "interpretation": [
+      "SIO and SIMRES killer-whale boxes all have LowFreqHz == HighFreqHz; OrcaSound rows have no frequency bounds.",
+      "SIO supplies over half of call-level TKW annotations, so pooled box geometry or bandwidth confounds population with provider convention.",
+      "NRKW appears only at Detection level; SAR comes from one provider.",
+      "Independent units for population tests are encounter days, not calls."
+    ]
+  },
+  "spatial_das": {
+    "annotation_files": 120,
+    "picks": 11117,
+    "calls": 794,
+    "calls_by_batch_and_cable": [
+      {
+        "batch": "batch1",
+        "cable": "North",
+        "len": 98
+      },
+      {
+        "batch": "batch1",
+        "cable": "South",
+        "len": 89
+      },
+      {
+        "batch": "batch2",
+        "cable": "North",
+        "len": 43
+      },
+      {
+        "batch": "batch2",
+        "cable": "South",
+        "len": 59
+      },
+      {
+        "batch": "batch3",
+        "cable": "North",
+        "len": 66
+      },
+      {
+        "batch": "batch3",
+        "cable": "South",
+        "len": 116
+      },
+      {
+        "batch": "batch4",
+        "cable": "North",
+        "len": 68
+      },
+      {
+        "batch": "batch4",
+        "cable": "South",
+        "len": 134
+      },
+      {
+        "batch": "batch5",
+        "cable": "North",
+        "len": 47
+      },
+      {
+        "batch": "batch5",
+        "cable": "South",
+        "len": 74
+      }
+    ],
+    "calls_by_type": [
+      {
+        "call_type": "HF",
+        "len": 470
+      },
+      {
+        "call_type": "LF",
+        "len": 324
+      }
+    ],
+    "median_picks_per_call": 14.0,
+    "median_moveout_s": 6.798789704889732,
+    "median_cable_span_m": 16441.909512422393,
+    "utc_range": [
+      "2021-11-03 22:09:04",
+      "2021-11-04 16:16:21"
+    ],
+    "authors_batch1_localizations": {
+      "rows": 176,
+      "utc_range": [
+        "2021-11-04 02:00:04",
+        "2021-11-04 02:10:08"
+      ],
+      "by_sensor_and_type": [
+        {
+          "sensor": "hf",
+          "call_type": "pair",
+          "len": 56
+        },
+        {
+          "sensor": "lf",
+          "call_type": "pair",
+          "len": 41
+        },
+        {
+          "sensor": "north",
+          "call_type": "hf",
+          "len": 27
+        },
+        {
+          "sensor": "north",
+          "call_type": "lf",
+          "len": 16
+        },
+        {
+          "sensor": "south",
+          "call_type": "hf",
+          "len": 34
+        },
+        {
+          "sensor": "south",
+          "call_type": "lf",
+          "len": 2
+        }
+      ],
+      "depth_values_m": [
+        -30.0
+      ],
+      "note": "Research output from the authors' repository; deltax units undocumented; not the official scoring reference."
+    },
+    "interpretation": [
+      "Each call has ~14 arrival picks along a cable: distance\u2013time pairs that trace a moveout curve whose apex marks the closest cable point.",
+      "Arrival picks locate nothing by themselves; localization needs association across picks/cables and a propagation model."
+    ]
+  },
+  "abundance_aerial": {
+    "flights": 21,
+    "dates": [
+      "20-Feb-19",
+      "16-May-19"
+    ],
+    "total_individuals_per_flight": [
+      33,
+      45,
+      44,
+      32,
+      54,
+      66,
+      28,
+      66,
+      82,
+      28,
+      129,
+      65,
+      34,
+      52,
+      39,
+      29,
+      13,
+      11,
+      2,
+      2,
+      0
+    ],
+    "max_count": 129,
+    "note": "Aggregate counts per flight over surveyed track lines; no individual positions. Effort (lines surveyed, hours) varies per flight."
+  },
+  "dori_call_types": {
+    "rows": 59442,
+    "species": [
+      {
+        "species_label_clean": "orca",
+        "len": 31329
+      },
+      {
+        "species_label_clean": "humpback",
+        "len": 18601
+      },
+      {
+        "species_label_clean": "pacific white sided dolphin",
+        "len": 2968
+      },
+      {
+        "species_label_clean": null,
+        "len": 2748
+      },
+      {
+        "species_label_clean": "fin whale",
+        "len": 1991
+      },
+      {
+        "species_label_clean": "sea lion",
+        "len": 1070
+      },
+      {
+        "species_label_clean": "false killer whale",
+        "len": 244
+      },
+      {
+        "species_label_clean": "multiple classes",
+        "len": 235
+      },
+      {
+        "species_label_clean": "sperm whale",
+        "len": 126
+      },
+      {
+        "species_label_clean": "noise",
+        "len": 111
+      },
+      {
+        "species_label_clean": "gray",
+        "len": 7
+      },
+      {
+        "species_label_clean": "northern right whale dolphin",
+        "len": 7
+      },
+      {
+        "species_label_clean": "minke",
+        "len": 4
+      },
+      {
+        "species_label_clean": "uncertain",
+        "len": 1
+      }
+    ],
+    "ecotype": [
+      {
+        "ecotype_label_clean": null,
+        "len": 43988
+      },
+      {
+        "ecotype_label_clean": "srkw",
+        "len": 12352
+      },
+      {
+        "ecotype_label_clean": "transient",
+        "len": 2873
+      },
+      {
+        "ecotype_label_clean": "offshore",
+        "len": 184
+      },
+      {
+        "ecotype_label_clean": "nrkw",
+        "len": 41
+      },
+      {
+        "ecotype_label_clean": "multiple classes",
+        "len": 3
+      },
+      {
+        "ecotype_label_clean": "noise",
+        "len": 1
+      }
+    ],
+    "srkw_call_type_rows": 2775,
+    "srkw_call_types": 28,
+    "top_call_types": [
+      {
+        "call_annotation_clean": "s1",
+        "len": 1216
+      },
+      {
+        "call_annotation_clean": "s44",
+        "len": 242
+      },
+      {
+        "call_annotation_clean": "s19",
+        "len": 231
+      },
+      {
+        "call_annotation_clean": "s36",
+        "len": 216
+      },
+      {
+        "call_annotation_clean": "s16",
+        "len": 202
+      },
+      {
+        "call_annotation_clean": "s42",
+        "len": 133
+      },
+      {
+        "call_annotation_clean": "s12",
+        "len": 124
+      },
+      {
+        "call_annotation_clean": "s10",
+        "len": 104
+      },
+      {
+        "call_annotation_clean": "s3",
+        "len": 48
+      },
+      {
+        "call_annotation_clean": "s2",
+        "len": 47
+      },
+      {
+        "call_annotation_clean": "s13",
+        "len": 43
+      },
+      {
+        "call_annotation_clean": "s7",
+        "len": 29
+      },
+      {
+        "call_annotation_clean": "s18",
+        "len": 21
+      },
+      {
+        "call_annotation_clean": "s17",
+        "len": 17
+      },
+      {
+        "call_annotation_clean": "s33",
+        "len": 14
+      }
+    ],
+    "license_values": [
+      {
+        "license": null,
+        "len": 33021
+      },
+      {
+        "license": "CC BY 4.0",
+        "len": 24611
+      },
+      {
+        "license": "CC BY-NC-SA 4.0",
+        "len": 1808
+      },
+      {
+        "license": "CC-BY 4.0",
+        "len": 2
+      }
+    ],
+    "note": "Prerelease, partially verified labels; per-row license values differ from the card; possible overlap with DCLDE sources."
+  },
+  "scope": "Metadata only. No audio, no model evaluation, no official scoring rules."
+}

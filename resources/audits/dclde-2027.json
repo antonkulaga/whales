@@ -1,0 +1,977 @@
+{
+  "verified_on": "2026-10-04",
+  "scope": "DCLDE 2027 Google Storage listings, selected metadata files, and public model-package metadata. Facts from file inspection are separate from paper claims. Listings were live; selected object generations and hashes are retained.",
+  "challenge_url": "https://www.dclde.org/challenges-and-data-sets",
+  "bucket": "noaa-passive-bioacoustic",
+  "bucket_prefix": "dclde/2027/",
+  "listings": [
+    {
+      "prefix": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_acoustic_monitoring_in_cape_cod_bay%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/audio/",
+        "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/metadata/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_narw_detections_in_cape_cod_bay%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/",
+        "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/docs/",
+        "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/metadata/",
+        "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/other/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/geometry/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_killer_whales/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_killer_whales%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 2,
+      "total_bytes": 50505018,
+      "subdirectories": [
+        "dclde/2027/dclde_2027_killer_whales/dfo_crp/",
+        "dclde/2027/dclde_2027_killer_whales/dfo_wdlp/",
+        "dclde/2027/dclde_2027_killer_whales/onc/",
+        "dclde/2027/dclde_2027_killer_whales/orcasound/",
+        "dclde/2027/dclde_2027_killer_whales/scripps/",
+        "dclde/2027/dclde_2027_killer_whales/simres/",
+        "dclde/2027/dclde_2027_killer_whales/smru/",
+        "dclde/2027/dclde_2027_killer_whales/uaf/",
+        "dclde/2027/dclde_2027_killer_whales/vfpa/"
+      ],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_killer_whales/Annotations.csv",
+          "generation": "1774987199567470",
+          "size": "50484452",
+          "md5Hash": "IoP/1+5taDSeXI8D2mEmXA==",
+          "updated": "2026-03-31T19:59:59.629Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_killer_whales/CC-BY-4.0.txt",
+          "generation": "1774987199654894",
+          "size": "20566",
+          "md5Hash": "nHt4IiG+md9fX5TtsLwTWA==",
+          "updated": "2026-03-31T19:59:59.714Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/audio/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_acoustic_monitoring_in_cape_cod_bay%2Faudio%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 12,
+      "object_count": 11249,
+      "total_bytes": 57440258039,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/audio/85941ORSUCCB01_002K_M05_multi_20190215_155344Z.flac",
+          "generation": "1774631317132811",
+          "size": "294269",
+          "md5Hash": "WlEXjcVhoKvlKxJMZTRTtA==",
+          "updated": "2026-03-27T17:08:37.169Z"
+        },
+        {
+          "name": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/audio/85941ORSUCCB01_002K_M05_multi_20190215_160000Z.flac",
+          "generation": "1774631317246365",
+          "size": "1493267",
+          "md5Hash": "TFfLFXXX9PDELKiAhJ7Clg==",
+          "updated": "2026-03-27T17:08:37.280Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/metadata/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_acoustic_monitoring_in_cape_cod_bay%2Fmetadata%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 1,
+      "total_bytes": 12125,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_acoustic_monitoring_in_cape_cod_bay/metadata/DCLDE2026_Acoustic_Monitoring_in_Cape_Cod_Bay.json",
+          "generation": "1774651626804496",
+          "size": "12125",
+          "md5Hash": "zk/Gt6WZSSfs1I+/L/30+w==",
+          "updated": "2026-03-27T22:47:06.831Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_narw_detections_in_cape_cod_bay%2Fdata%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 118,
+      "total_bytes": 336298857,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/20190215.selections.txt",
+          "generation": "1774652385002308",
+          "size": "434751",
+          "md5Hash": "4yj5QHSosKl3brpXpkWYXw==",
+          "updated": "2026-03-27T22:59:45.036Z"
+        },
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/20190216.selections.txt",
+          "generation": "1774652385396929",
+          "size": "2290125",
+          "md5Hash": "v3pWbzYyJfaA0BVl+Ge1Aw==",
+          "updated": "2026-03-27T22:59:45.430Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/docs/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_narw_detections_in_cape_cod_bay%2Fdocs%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 2,
+      "total_bytes": 3068950,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/docs/Manuscript.pdf",
+          "generation": "1774652383728723",
+          "size": "1859614",
+          "md5Hash": "F3YjoVlfFOP1b95bSUPyPg==",
+          "updated": "2026-03-27T22:59:43.756Z"
+        },
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/docs/SupplementaryMaterials.pdf",
+          "generation": "1774652384050603",
+          "size": "1209336",
+          "md5Hash": "jIND98AbeaxaqkxN6Gv02w==",
+          "updated": "2026-03-27T22:59:44.077Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/metadata/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_narw_detections_in_cape_cod_bay%2Fmetadata%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 1,
+      "total_bytes": 8589,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/metadata/DCLDE2026_NARW_Detections_in_Cape_Cod_Bay.json",
+          "generation": "1774652383517848",
+          "size": "8589",
+          "md5Hash": "FykajFs4i0s/Q/eRiQ2PQA==",
+          "updated": "2026-03-27T22:59:43.545Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/other/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde2027_narw_detections_in_cape_cod_bay%2Fother%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 1,
+      "total_bytes": 1335,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/other/AerialSurvey.csv",
+          "generation": "1774652383651983",
+          "size": "1335",
+          "md5Hash": "C4ez0vqdkNveuvavNItDdQ==",
+          "updated": "2026-03-27T22:59:43.680Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch2/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch3/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch4/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch5/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_1/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_2/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_3/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_4/",
+        "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_5/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/geometry/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fgeometry%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 2,
+      "total_bytes": 10199995,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/geometry/north_DAS_multicoord.csv",
+          "generation": "1777409512394808",
+          "size": "4126126",
+          "md5Hash": "6kquCXcZw+9ulv2MsvxosQ==",
+          "updated": "2026-04-28T20:51:52.516Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/geometry/south_DAS_multicoord.csv",
+          "generation": "1777409511934089",
+          "size": "6073869",
+          "md5Hash": "x32tn7PyB9TzYH0x7QoaFg==",
+          "updated": "2026-04-28T20:51:52.052Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_killer_whales/orcasound/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_killer_whales%2Forcasound%2F&delimiter=%2F&fields=prefixes%2CnextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 0,
+      "total_bytes": 0,
+      "subdirectories": [
+        "dclde/2027/dclde_2027_killer_whales/orcasound/annotations/",
+        "dclde/2027/dclde_2027_killer_whales/orcasound/audio/"
+      ],
+      "example_objects": []
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2Fbatch1%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 358424,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/annotated_calls_north_2021-11-04_02_00_02.csv",
+          "generation": "1777409527202968",
+          "size": "23550",
+          "md5Hash": "WPmxtI9z62YQXUvytS9fzA==",
+          "updated": "2026-04-28T20:52:07.319Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/annotated_calls_north_2021-11-04_02_00_52.csv",
+          "generation": "1777409523517813",
+          "size": "10092",
+          "md5Hash": "lSoImdYaG41AhMGDbJOxqw==",
+          "updated": "2026-04-28T20:52:03.635Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch2/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2Fbatch2%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 157778,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch2/annotated_calls_north_2021-11-03_22_09_02.csv",
+          "generation": "1777409516645155",
+          "size": "8264",
+          "md5Hash": "pey/LXxBC1mQ3NGzKtqNSA==",
+          "updated": "2026-04-28T20:51:56.764Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch2/annotated_calls_north_2021-11-03_22_09_52.csv",
+          "generation": "1777409513077851",
+          "size": "8650",
+          "md5Hash": "yj7Ci90t8DgqzbY6nSYnZw==",
+          "updated": "2026-04-28T20:51:53.194Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch3/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2Fbatch3%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 315855,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch3/annotated_calls_north_2021-11-04_16_06_02.csv",
+          "generation": "1777409516204510",
+          "size": "6420",
+          "md5Hash": "NC+ZRjXJg1X0zoC2mjUIRw==",
+          "updated": "2026-04-28T20:51:56.325Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch3/annotated_calls_north_2021-11-04_16_06_52.csv",
+          "generation": "1777409518715588",
+          "size": "5543",
+          "md5Hash": "FygDHC0Ou9+X7Bc+FKZUjQ==",
+          "updated": "2026-04-28T20:51:58.832Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch4/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2Fbatch4%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 423999,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch4/annotated_calls_north_2021-11-04_08_00_02.csv",
+          "generation": "1777409518431530",
+          "size": "8919",
+          "md5Hash": "6Q5ccIqp78dRN0MUexNmvw==",
+          "updated": "2026-04-28T20:51:58.548Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch4/annotated_calls_north_2021-11-04_08_00_52.csv",
+          "generation": "1777409515366679",
+          "size": "8927",
+          "md5Hash": "oZ6NdJhBKOTWEIxIZ6ycfQ==",
+          "updated": "2026-04-28T20:51:55.483Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch5/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fannotations%2Fbatch5%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 198253,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch5/annotated_calls_north_2021-11-04_12_00_02.csv",
+          "generation": "1777409523237529",
+          "size": "10082",
+          "md5Hash": "VDnoPg3OC1oJ9PNOLVZHLQ==",
+          "updated": "2026-04-28T20:52:03.354Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch5/annotated_calls_north_2021-11-04_12_00_52.csv",
+          "generation": "1777409519897796",
+          "size": "8037",
+          "md5Hash": "o9ObMB7xMGqCN/Cj7jioAg==",
+          "updated": "2026-04-28T20:52:00.020Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_1/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2Fbatch_1%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 20146114007,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_1/Denoised_SNR_North_2021-11-04_02-00-02.nc",
+          "generation": "1777410356340149",
+          "size": "560459407",
+          "md5Hash": "3XUIIG8RXhbl/9ws+Xvbqg==",
+          "updated": "2026-04-28T21:05:56.458Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_1/Denoised_SNR_North_2021-11-04_02-00-52.nc",
+          "generation": "1777410482525015",
+          "size": "658838566",
+          "md5Hash": "GPTAeD5SgcNB/k8E7j9xuw==",
+          "updated": "2026-04-28T21:08:02.643Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_2/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2Fbatch_2%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 19068652966,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_2/Denoised_SNR_North_2021-11-03_22-09-02.nc",
+          "generation": "1777409965705430",
+          "size": "584906983",
+          "md5Hash": "em3Bhbdw010lKxYfFTPUnQ==",
+          "updated": "2026-04-28T20:59:25.823Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_2/Denoised_SNR_North_2021-11-03_22-09-52.nc",
+          "generation": "1777410075371682",
+          "size": "583429259",
+          "md5Hash": "Hx5UvwfPZ8b/s+FgSm9VUg==",
+          "updated": "2026-04-28T21:01:15.491Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_3/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2Fbatch_3%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 21228061142,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_3/Denoised_SNR_North_2021-11-04_16-06-02.nc",
+          "generation": "1777409759432556",
+          "size": "722025642",
+          "md5Hash": "1AHfetEa2roiz5JaSRh4bw==",
+          "updated": "2026-04-28T20:55:59.553Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_3/Denoised_SNR_North_2021-11-04_16-06-52.nc",
+          "generation": "1777409818809513",
+          "size": "730414742",
+          "md5Hash": "qmcgvAEQg2ZjapGtrgHfhw==",
+          "updated": "2026-04-28T20:56:58.930Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_4/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2Fbatch_4%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 21357406418,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_4/Denoised_SNR_North_2021-11-04_08-00-02.nc",
+          "generation": "1777409560889038",
+          "size": "725900352",
+          "md5Hash": "N4GYx9e4w3agl4UXabHhlQ==",
+          "updated": "2026-04-28T20:52:41.015Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_4/Denoised_SNR_North_2021-11-04_08-00-52.nc",
+          "generation": "1777409645407597",
+          "size": "732475898",
+          "md5Hash": "PF5ciDN6EkFzanqbusXQxA==",
+          "updated": "2026-04-28T20:54:05.528Z"
+        }
+      ]
+    },
+    {
+      "prefix": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_5/",
+      "listing_url": "https://storage.googleapis.com/storage/v1/b/noaa-passive-bioacoustic/o?prefix=dclde%2F2027%2Fdclde_2027_das-finwhale-localization%2Fdetections%2Fbatch_5%2F&fields=nextPageToken%2Citems%28name%2Csize%2Cgeneration%2Cmd5Hash%2Cupdated%29",
+      "complete": true,
+      "pages": 1,
+      "object_count": 24,
+      "total_bytes": 21297903047,
+      "subdirectories": [],
+      "example_objects": [
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_5/Denoised_SNR_North_2021-11-04_12-00-02.nc",
+          "generation": "1777410206194213",
+          "size": "711737693",
+          "md5Hash": "gWwn1PPEPxammyDzJa5R5w==",
+          "updated": "2026-04-28T21:03:26.322Z"
+        },
+        {
+          "name": "dclde/2027/dclde_2027_das-finwhale-localization/detections/batch_5/Denoised_SNR_North_2021-11-04_12-00-52.nc",
+          "generation": "1777410299275800",
+          "size": "702439225",
+          "md5Hash": "NSUUXTP1iVz6Ttz6/pcbCw==",
+          "updated": "2026-04-28T21:04:59.406Z"
+        }
+      ]
+    }
+  ],
+  "file_inspections": [
+    {
+      "object": {
+        "name": "dclde/2027/dclde_2027_killer_whales/CC-BY-4.0.txt",
+        "generation": "1774987199654894",
+        "size": "20566",
+        "md5Hash": "nHt4IiG+md9fX5TtsLwTWA==",
+        "updated": "2026-03-31T19:59:59.714Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde_2027_killer_whales/CC-BY-4.0.txt",
+      "inspection": "complete",
+      "sha256": "0bdfb0201d1803634f268cdff0993b8349d2c70e956a06dbb667c8dd65254ec5",
+      "columns": [],
+      "rows": null,
+      "license_verified": "Ambiguous: filename CC-BY-4.0.txt; body Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)."
+    },
+    {
+      "object": {
+        "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/other/AerialSurvey.csv",
+        "generation": "1774652383651983",
+        "size": "1335",
+        "md5Hash": "C4ez0vqdkNveuvavNItDdQ==",
+        "updated": "2026-03-27T22:59:43.680Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/other/AerialSurvey.csv",
+      "inspection": "complete",
+      "sha256": "e9e414d6d45e79de16e651cdc7ce61bc2a9c164a6bb2fd5008d201a016eced96",
+      "columns": [
+        "FLIGHT #",
+        "DATE",
+        "SURVEY AREA",
+        "START TIME",
+        "END TIME",
+        "FLIGHT DURATION OVER AREA",
+        "Track lines surveyed",
+        "Num track lines surveyed",
+        "Total # of Individuals"
+      ],
+      "rows": 21
+    },
+    {
+      "object": {
+        "name": "dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/20190215.selections.txt",
+        "generation": "1774652385002308",
+        "size": "434751",
+        "md5Hash": "4yj5QHSosKl3brpXpkWYXw==",
+        "updated": "2026-03-27T22:59:45.036Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde2027_narw_detections_in_cape_cod_bay/data/20190215.selections.txt",
+      "inspection": "complete",
+      "sha256": "00ab0fddc697f9e55401819244645c122ae315f18b971fa5d2ebfbc5bd5e9e8c",
+      "columns": [
+        "Selection",
+        "Channel",
+        "Begin Time (s)",
+        "End Time (s)",
+        "Begin File",
+        "File Offset (s)",
+        "Score",
+        "Tags"
+      ],
+      "rows": 4186
+    },
+    {
+      "object": {
+        "name": "dclde/2027/dclde_2027_das-finwhale-localization/geometry/north_DAS_multicoord.csv",
+        "generation": "1777409512394808",
+        "size": "4126126",
+        "md5Hash": "6kquCXcZw+9ulv2MsvxosQ==",
+        "updated": "2026-04-28T20:51:52.516Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde_2027_das-finwhale-localization/geometry/north_DAS_multicoord.csv",
+      "inspection": "prefix only",
+      "sha256": "9120ef24825171baf3a738bcbc342d77c3cf367dba299080301d03ea6031604f",
+      "columns": [
+        "chan_idx",
+        "lat",
+        "lon",
+        "depth",
+        "chan_m",
+        "utm_x",
+        "utm_y",
+        "x",
+        "y"
+      ],
+      "rows": null
+    },
+    {
+      "object": {
+        "name": "dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/annotated_calls_north_2021-11-04_02_00_02.csv",
+        "generation": "1777409527202968",
+        "size": "23550",
+        "md5Hash": "WPmxtI9z62YQXUvytS9fzA==",
+        "updated": "2026-04-28T20:52:07.319Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde_2027_das-finwhale-localization/annotations/batch1/annotated_calls_north_2021-11-04_02_00_02.csv",
+      "inspection": "complete",
+      "sha256": "208560e40033bfd5ef156181b35801ff5f8271a3f69615f95838fa1c1bc9efdc",
+      "columns": [
+        "call_id",
+        "segment_id",
+        "utc_time",
+        "time",
+        "dist",
+        "call_type",
+        "cable",
+        "snr",
+        "filename"
+      ],
+      "rows": 180
+    },
+    {
+      "object": {
+        "name": "dclde/2027/dclde_2027_killer_whales/Annotations.csv",
+        "generation": "1774987199567470",
+        "size": "50484452",
+        "md5Hash": "IoP/1+5taDSeXI8D2mEmXA==",
+        "updated": "2026-03-31T19:59:59.629Z"
+      },
+      "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde_2027_killer_whales/Annotations.csv",
+      "inspection": "complete",
+      "sha256": "407f1c0f7d95a39c7bace99bbef40646e2fe62403c6237c20ddf374e88e21b15",
+      "columns": [
+        "",
+        "Soundfile",
+        "Dataset",
+        "LowFreqHz",
+        "HighFreqHz",
+        "FileEndSec",
+        "UTC",
+        "FileBeginSec",
+        "ClassSpecies",
+        "KW",
+        "KW_certain",
+        "Ecotype",
+        "Provider",
+        "AnnotationLevel",
+        "FilePath",
+        "FileOk"
+      ],
+      "rows": 207574,
+      "counts": {
+        "ClassSpecies": {
+          "AB": 11669,
+          "HW": 124977,
+          "KW": 59107,
+          "UndBio": 11821
+        },
+        "Ecotype": {
+          "NA": 154917,
+          "TKW": 12707,
+          "NRKW": 8266,
+          "OKW": 2698,
+          "SRKW": 20908,
+          "SAR": 8078
+        },
+        "AnnotationLevel": {
+          "Detection": 169282,
+          "File": 668,
+          "Call": 37624
+        },
+        "Provider": {
+          "DFO_CRP": 158874,
+          "DFO_WDLP": 10408,
+          "OrcaSound": 2398,
+          "ONC": 2706,
+          "SIO": 2795,
+          "SIMRES": 4018,
+          "JASCO_VFPA": 12517,
+          "JASCO_VFPA_ONC": 2078,
+          "SMRUConsulting": 1667,
+          "UAF_NGOS": 10113
+        },
+        "KW_certain": {
+          "NA": 149415,
+          "0": 841,
+          "1": 57318
+        }
+      }
+    }
+  ],
+  "model_packages": [
+    {
+      "key": "acoustics__detector__orca-detector-dclde2026-v5.zip",
+      "size": 145390371,
+      "checksum": "md5:a142139cb4caf3386d173b32a74a02fa",
+      "url": "https://zenodo.org/api/records/22018132/files/acoustics__detector__orca-detector-dclde2026-v5.zip/content",
+      "record_date": "2026-08-19",
+      "inspection": "ZIP metadata members via HTTP byte ranges; weights not downloaded, upstream checksum not independently verified",
+      "members": [
+        "orca-detector-dclde2026-v5/1/model.onnx",
+        "orca-detector-dclde2026-v5/LICENSE.md",
+        "orca-detector-dclde2026-v5/MODEL_CARD.md",
+        "orca-detector-dclde2026-v5/labels.txt",
+        "orca-detector-dclde2026-v5/manifest.toml",
+        "orca-detector-dclde2026-v5/upstream/PROVENANCE.json",
+        "orca-detector-dclde2026-v5/upstream/first_stage_v5.ckpt"
+      ],
+      "manifest": {
+        "model": {
+          "id": "orca-detector-dclde2026-v5",
+          "format": "onnx",
+          "file": "1/model.onnx",
+          "description": "DCLDE 2026 orca cascade — Stage 1 v5 checkpoint (3-class NonBio/Bio/Orca screener, 3class_sparrow_ft_v5, exposed as binary Orca-vs-rest sigmoid; ResNet18 / mel-spectrogram / 3-s windows @ 24 kHz)",
+          "onnx_sha256": "5bfb0a3cdf2e9bd34781450aa258d58e344c4fc8f78e735be4844d3b351b3249",
+          "onnx_size_bytes": 44682687,
+          "domain": "acoustics",
+          "task": "detector",
+          "family": [
+            "DCLDE-orca"
+          ],
+          "version": "v5",
+          "status": "active",
+          "alias": [
+            "orca-detector-dclde2026-v3"
+          ],
+          "license": "MIT",
+          "commercial_use": true,
+          "species_direct": false,
+          "detector_gate_class": "Orca",
+          "geo_scope": "regional",
+          "geo_regions": [
+            "north_pacific"
+          ],
+          "geo_locality": "Pacific Northwest and Salish Sea",
+          "reference": "Microsoft AI for Good Lab (AI4G) and Microsoft Pytorch-Wildlife project. Sparrow Engine model zoo v0.21.0: orca-detector-dclde2026-v5. Zenodo. https://doi.org/10.5281/zenodo.21346269. Upstream/challenge context: DCLDE 2026 killer whale detection and ecotype classification dataset/challenge."
+        },
+        "preprocessing": {
+          "method": "mel_spectrogram",
+          "sample_rate": 24000,
+          "n_fft": 1024,
+          "hop_length": 128,
+          "n_mels": 256,
+          "fmin": 200,
+          "fmax": 12000,
+          "top_db": 80,
+          "window": "hann_symmetric",
+          "mel_scale": "slaney",
+          "filter_norm": "slaney",
+          "fill_highfreq": true
+        },
+        "inference": {
+          "strategy": "sliding_window",
+          "segment_duration_s": 3.0,
+          "segment_stride_s": 1.5,
+          "precision": "fp32",
+          "trt": {
+            "mode": "on_demand"
+          }
+        },
+        "postprocessing": {
+          "method": "sigmoid",
+          "confidence_threshold": 0.7
+        },
+        "labels": {
+          "file": "labels.txt",
+          "format": "name_index_csv"
+        }
+      },
+      "observed_license": "MIT",
+      "label_lines": [
+        "Orca,0"
+      ],
+      "model_card_reference_set": {
+        "windows": 180,
+        "recall": 0.3333,
+        "precision": 0.8696,
+        "note": "Upstream reported; not reproduced here"
+      }
+    },
+    {
+      "key": "acoustics__classifier__orca-ecotype-dclde2026-v1.zip",
+      "size": 169247143,
+      "checksum": "md5:2186f7027c931952ad1107c35944891f",
+      "url": "https://zenodo.org/api/records/22018132/files/acoustics__classifier__orca-ecotype-dclde2026-v1.zip/content",
+      "record_date": "2026-08-19",
+      "inspection": "ZIP metadata members via HTTP byte ranges; weights not downloaded, upstream checksum not independently verified",
+      "members": [
+        "orca-ecotype-dclde2026-v1/1/model.onnx",
+        "orca-ecotype-dclde2026-v1/LICENSE.md",
+        "orca-ecotype-dclde2026-v1/MODEL_CARD.md",
+        "orca-ecotype-dclde2026-v1/labels.txt",
+        "orca-ecotype-dclde2026-v1/manifest.toml",
+        "orca-ecotype-dclde2026-v1/upstream/PROVENANCE.json",
+        "orca-ecotype-dclde2026-v1/upstream/second_stage.ckpt"
+      ],
+      "manifest": {
+        "model": {
+          "id": "orca-ecotype-dclde2026-v1",
+          "format": "onnx",
+          "file": "1/model.onnx",
+          "description": "DCLDE 2026 orca cascade — Stage 2 (5-class ecotype classifier SRKW/TKW/SAR/NRKW/OKW; ResNet18, in-graph mel, temperature-calibrated T=5.4254)",
+          "onnx_sha256": "2d9cd25fe2d703626713c026bc8ff1e2f60cf03e6bc7582cd7bc1008b856f0d7",
+          "onnx_size_bytes": 49738945,
+          "domain": "acoustics",
+          "task": "classifier",
+          "family": [
+            "DCLDE-orca"
+          ],
+          "version": "v1",
+          "status": "active",
+          "license": "MIT",
+          "commercial_use": true,
+          "geo_scope": "regional",
+          "geo_regions": [
+            "north_pacific"
+          ],
+          "geo_locality": "Pacific Northwest and Salish Sea",
+          "reference": "Microsoft AI for Good Lab (AI4G) and Microsoft Pytorch-Wildlife project. Sparrow Engine model zoo v0.5.0: orca-ecotype-dclde2026-v1. Zenodo. https://doi.org/10.5281/zenodo.20563673. Upstream/challenge context: DCLDE 2026 killer whale detection and ecotype classification dataset/challenge."
+        },
+        "preprocessing": {
+          "method": "raw_audio",
+          "sample_rate": 24000,
+          "window_samples": 72000,
+          "pass_orig_sample_rate": true
+        },
+        "inference": {
+          "strategy": "sliding_window",
+          "segment_duration_s": 3.0,
+          "segment_stride_s": 3.0,
+          "precision": "fp32",
+          "trt": {
+            "mode": "off"
+          }
+        },
+        "postprocessing": {
+          "method": "softmax"
+        },
+        "labels": {
+          "file": "labels.txt",
+          "format": "name_index_csv"
+        }
+      },
+      "observed_license": "MIT",
+      "label_lines": [
+        "SRKW,0",
+        "TKW,1",
+        "SAR,2",
+        "NRKW,3",
+        "OKW,4"
+      ],
+      "onnx_inputs_from_card": {
+        "audio": {
+          "dtype": "float32",
+          "shape": [
+            "B",
+            72000
+          ]
+        },
+        "orig_sample_rate": {
+          "dtype": "int64",
+          "shape": [
+            1
+          ]
+        }
+      },
+      "temperature_baked_into_graph": 5.4254,
+      "abstention_probability_threshold": 0.9401
+    },
+    {
+      "key": "acoustics__cascade__orca-cascade.zip",
+      "size": 857,
+      "checksum": "md5:3a3b92300ddae07b88057065e7555005",
+      "url": "https://zenodo.org/api/records/22018132/files/acoustics__cascade__orca-cascade.zip/content",
+      "record_date": "2026-08-19",
+      "inspection": "ZIP metadata members via HTTP byte ranges; weights not downloaded, upstream checksum not independently verified",
+      "members": [
+        "orca-cascade/pipeline.toml"
+      ],
+      "pipeline_manifest": {
+        "pipeline": {
+          "id": "orca-cascade",
+          "domain": "acoustics",
+          "task": "cascade",
+          "format": "cascade",
+          "family": [
+            "DCLDE-orca"
+          ],
+          "status": "active",
+          "license": "MIT",
+          "commercial_use": true,
+          "geo_scope": "regional",
+          "geo_regions": [
+            "north_pacific"
+          ],
+          "geo_locality": "Pacific Northwest and Salish Sea",
+          "reference": "Pipeline descriptor combining orca-detector-v5-fp16-tflite and orca-ecotype-melinput-fp16-tflite. Cite both component model references; updated for Sparrow Engine model zoo v0.21.0, https://doi.org/10.5281/zenodo.21346269.",
+          "steps": [
+            {
+              "role": "detector",
+              "model": "orca-detector-v5-fp16-tflite"
+            },
+            {
+              "role": "classifier",
+              "model": "orca-ecotype-melinput-fp16-tflite"
+            }
+          ]
+        },
+        "provenance": {
+          "developer": "Microsoft AI for Good Lab (AI4G)",
+          "ai4g_relationship": "first_party"
+        }
+      }
+    }
+  ],
+  "supplementary_dori": {
+    "url": "https://huggingface.co/datasets/DORI-SRKW/DORI-ONC/resolve/main/DORI.csv",
+    "inspection": "First 1500 bytes only; no corpus-scale counts or exhaustive license audit",
+    "columns": [
+      "",
+      "filename",
+      "license",
+      "lat",
+      "lon",
+      "depth",
+      "date",
+      "doi",
+      "species_label",
+      "species_label_clean",
+      "species_label_source",
+      "ecotype_label_clean",
+      "ecotype_label_source",
+      "segment_start",
+      "segment_end",
+      "call_annotation",
+      "call_annotation_clean",
+      "call_annotation_source",
+      "sighting_annotation",
+      "sighting_annotation_source"
+    ],
+    "first_rows_license_values": [
+      "CC BY-NC-SA 4.0"
+    ],
+    "sha256_of_inspected_prefix": "cc447ed9d69ab65d720677c497708090e79416a2fa983602575c7ed07c9872cc"
+  },
+  "limitations": [
+    "No complete orca audio size audit",
+    "No NetCDF variable/dimension inspection",
+    "No model inference or benchmark reproduction",
+    "No uniform unambiguous data license established",
+    "Author localization table header inspected separately; official scoring-reference identity and coordinate validity unverified"
+  ]
+}

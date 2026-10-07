@@ -1,0 +1,226 @@
+[
+  {
+    "provider": "JASCO/VPFA",
+    "location": "Haro Strait Northbound",
+    "dataset": "HaroStraitNorth",
+    "lat": "48.52",
+    "lon": "\u2212123.19"
+  },
+  {
+    "provider": "JASCO/VPFA",
+    "location": "Haro Strait Southbound",
+    "dataset": "HaroStraitSouth",
+    "lat": "48.52",
+    "lon": "\u2212123.21"
+  },
+  {
+    "provider": "JASCO/VPFA",
+    "location": "Boundary Pass",
+    "dataset": "BoundaryPass",
+    "lat": "48.76",
+    "lon": "\u2212123.07"
+  },
+  {
+    "provider": "JASCO/VPFA/ONC",
+    "location": "Strait of Georgia",
+    "dataset": "StraitofGeorgia",
+    "lat": "49.04",
+    "lon": "\u2212123.32"
+  },
+  {
+    "provider": "SMRU",
+    "location": "Lime Kiln",
+    "dataset": "LmKln",
+    "lat": "48.51",
+    "lon": "\u2212123.15"
+  },
+  {
+    "provider": "ONC",
+    "location": "Berkley Canyon",
+    "dataset": "BerkleyCanyon",
+    "lat": "48.43",
+    "lon": "\u2212126.17"
+  },
+  {
+    "provider": "Orca Sound",
+    "location": "Orcasound Lab",
+    "dataset": "orcasound_lab",
+    "lat": "48.52",
+    "lon": "\u2212123.16"
+  },
+  {
+    "provider": "Orca Sound",
+    "location": "Bush Point",
+    "dataset": "bush_point",
+    "lat": "48.03",
+    "lon": "\u2212122.61"
+  },
+  {
+    "provider": "Orca Sound",
+    "location": "Port Townsand",
+    "dataset": "port_townsend",
+    "lat": "48.14",
+    "lon": "\u2212122.76"
+  },
+  {
+    "provider": "SIO",
+    "location": "Cape Elizabeth",
+    "dataset": "Cpe_Elz",
+    "lat": "47.36",
+    "lon": "\u2212124.68"
+  },
+  {
+    "provider": "SIO",
+    "location": "Quinault Canyon",
+    "dataset": "Quin_Can",
+    "lat": "47.50",
+    "lon": "\u2212125.35"
+  },
+  {
+    "provider": "SIMRES",
+    "location": "Tekteksen",
+    "dataset": "Tekteksen",
+    "lat": "48.78",
+    "lon": "\u2212123.05"
+  },
+  {
+    "provider": "DFO CRP",
+    "location": "West Vancouver Island",
+    "dataset": "WVanIsl",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO CRP",
+    "location": "Northern Mainland British Colombia",
+    "dataset": "NorthBC",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Carmanah Point",
+    "dataset": "CarmanahPt",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Strait of Georgia North 1",
+    "dataset": "StrGeoN1",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Strait of Georgia North 2",
+    "dataset": "StrGeoN1",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Strait of Georgia South 1",
+    "dataset": "StrGeoS1",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Strait of Georgia South 2",
+    "dataset": "StrGeosS2",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "DFO WDLP",
+    "location": "Swansen Channel",
+    "dataset": "SwanChan",
+    "lat": "NA",
+    "lon": "NA"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Hinchinbroook Entrance",
+    "dataset": "HE_67391498",
+    "lat": "60.31",
+    "lon": "\u2212146.97"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Hinchinbroook Entrance",
+    "dataset": "HE_67424266",
+    "lat": "60.31",
+    "lon": "\u2212146.97"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Kachemak Bay",
+    "dataset": "KB_5354",
+    "lat": "59.88",
+    "lon": "\u2212151.85"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Kachemak Bay",
+    "dataset": "KB_67424266",
+    "lat": "59.88",
+    "lon": "\u2212151.85"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Kachemak Bay",
+    "dataset": "KB_67383303",
+    "lat": "59.88",
+    "lon": "\u2212151.85"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Montague Strait",
+    "dataset": "MS_5360",
+    "lat": "60.18",
+    "lon": "\u2212147.82"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Montague Strait",
+    "dataset": "MS_6897",
+    "lat": "60.18",
+    "lon": "\u2212147.82"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Montague Strait",
+    "dataset": "MS_671879205",
+    "lat": "60.18",
+    "lon": "\u2212147.82"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Resurrection Bay",
+    "dataset": "RB_335826997",
+    "lat": "59.73",
+    "lon": "\u2212149.53"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Resurrection Bay",
+    "dataset": "RB_67424266",
+    "lat": "59.733",
+    "lon": "149.53"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Kenai Fjords and Prince William Sound*",
+    "dataset": "Field_HTI",
+    "lat": "60.15",
+    "lon": "\u2212147.59"
+  },
+  {
+    "provider": "UAF_NGOS",
+    "location": "Kenai Fjords and Prince William Sound*",
+    "dataset": "Field_SondTrap",
+    "lat": "60.15",
+    "lon": "\u2212147.59"
+  }
+]

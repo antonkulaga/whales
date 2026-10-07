@@ -5,8 +5,10 @@
 Checked **4 October 2026** · [Model guide](models.md) · [Research plan](research.md)
 
 Datasets supply examples and annotations. The [model guide](models.md) describes
-the trained systems that consume those examples. This guide covers the 14
+the trained systems that consume those examples. This guide covers the 16
 resources in the [machine-readable inventory](../resources/datasets.json).
+The [DCLDE 2027 guide](dclde-2027.md) details the workshop tracks, current
+download contents, actual inspected schemas, and challenge-specific models.
 
 ## Choose by artistic question
 
@@ -16,7 +18,8 @@ resources in the [machine-readable inventory](../resources/datasets.json).
 | How does sound relate to observed activity? | Madeira, then DOLPHINFREE | Group behavior is observed and recorded | Madeira's 36 KB metadata workbook |
 | How do whales organize rhythm and exchanges? | Sperm-whale timing/dialogue tables | Click intervals, group codes, and ordered timing | Two CSVs, about 1.25 MB together |
 | How do sounds vary across populations? | DCLDE orca annotations | Population/ecotype labels and acoustic bounds | Authors' 4.9 MB annotation/code archive |
-| Can sound organize a spatial artwork? | Fin-whale DAS localization | Derived call locations are supplied | Inspect challenge files; schema still unverified |
+| Can sound organize a spatial artwork? | Fin-whale DAS localization | Arrival picks and cable geometry support localization | One 23.55 KB annotation CSV; source-coordinate reference needs alignment |
+| How does acoustic activity relate to abundance? | Cape Cod Bay detections and aerial surveys | Candidate calls plus survey effort and aggregate whale counts | Aerial CSV, 1.335 KB / 21 rows |
 | Can a model learn to generate whale sound? | DSWP or SanctSound DAC9 | Coda waveforms or humpback codec tokens | One DSWP WAV; one compatible DoLittle token prompt |
 
 These are project choices, rather than biological claims. The tables below
@@ -39,10 +42,12 @@ of the same release overlap; their counts should not be added together.
 | [Sarasota whistle database](https://doi.org/10.3389/fmars.2022.923046) | Bottlenose dolphins | Known-individual whistles and longitudinal records | 2022 description: 926 sessions, 293 dolphins | Research database; raw access by request | Caller identity and familial/social context |
 | [Watkins archive](https://www.whalingmuseum.org/research/digital/watkins-marine-mammal-sound-recording/) | Many marine-mammal species | Historical recordings, cuts, observation metadata | Large archive; counts depend on the selected collection | Audio + archive metadata; sample rates vary | Cross-species acoustic comparison |
 | [Sperm-whale timing/dialogue tables](https://github.com/pratyushasharma/sw-combinatoriality) | Sperm whales | Click intervals, grouping and exchange timing | Actual CSVs: 8,719 coda rows; 3,840 dialogue rows | Two CSVs; about 1.25 MB combined | Rhythm, grouping, and dialogue geometry |
-| [DCLDE orca annotations](https://zenodo.org/records/15743034) | Orcas, humpbacks, and other sound classes | Audio-linked species/ecotype annotations | Actual combined CSV: 207,574 rows; associated audio about 1.6 TB | CSV + provider audio; rates vary | Detection and ecotype classification |
+| [DCLDE orca annotations](https://doi.org/10.25921/15ey-mh50) | Orcas, humpbacks, and other sound classes | Audio-linked species/ecotype annotations | Current NOAA CSV re-counted: 207,574 rows / 50.48 MB; paper audio estimate about 1.6 TB | CSV + provider audio; rates vary | Detection and ecotype classification |
 | [Killer-whale HFM](https://datadryad.org/dataset/doi:10.5061/dryad.8cz8w9h7f) | Killer whales | Audio and traced time/frequency/amplitude contours | 5.99 GB archive | Audio, CSV, location/specification workbook | Direct high-frequency sound-to-curve mapping |
 | [SanctSound humpback DAC9](https://huggingface.co/datasets/cairninstitute/mmc-sanctsound-humpback-dac9) | Humpbacks | Audio-codec token arrays and quality scores | 488,320 arrays; 29 TAR shards | NPY in WebDataset; DAC 44.1 kHz, nine codebooks | DoLittle training and audio continuation |
-| [Fin-whale DAS localization](https://doi.org/10.25921/v2vh-8w16) | Fin whales | Fiber-optic recordings, arrival picks, derived call locations | Release scale not audited here | File schema not yet inspected | Spatial sound experiments |
+| [Fin-whale DAS localization](https://doi.org/10.25921/v2vh-8w16) | Fin whales | Arrival picks, cable geometry, denoised/SNR detection products | 120 annotation CSVs / 1.45 MB; 120 NetCDFs / 103.10 GB; geometry / 10.20 MB | CSV headers inspected; NetCDF variables unverified | Association and localization |
+| [Cape Cod Bay array audio](https://doi.org/10.25921/ab3a-c842) | North Atlantic right whales | Synchronized hydrophone recordings | Complete listing: 11,249 FLACs / 57.44 GB | Five channels; NOAA describes 2 kHz, 16 bit, normally 15-minute files | Cross-sensor call matching and abundance analysis |
+| [Cape Cod Bay detections/aerial surveys](https://doi.org/10.25921/x68p-cj94) | North Atlantic right whales | Candidate detection tables, survey effort and aggregate sightings | 118 selection tables / 336.30 MB; aerial CSV / 21 rows | TSV + CSV; selected actual schemas inspected | Density/abundance modeling |
 
 The first five schemas were inspected directly and saved in
 [resources/audits](../resources/audits/). Actual-file inspections and primary
@@ -69,7 +74,9 @@ an entire recording, a group observation, or a whole corpus.
 | DCLDE orcas | Broad sound class, ecotype, uncertainty | `Detection`, `Call`, or `File` | Population/ecotype; provider originals may contain finer labels | UTC and deployment context; spectral boxes are not spatial positions |
 | Killer-whale HFM | Traced time, frequency, amplitude | Signal contour | Proposed function remains a hypothesis | Regional folders and recording locations |
 | SanctSound DAC9 | Machine-derived detector and quality scores | Tokenized chunk | No human song-meaning labels | Source file and chunk provenance |
-| Fin-whale DAS | Arrival picks and derived Lat/Lon/UTM | Localized acoustic event, per challenge description | Acoustic events rather than semantic labels | Derived source locations; schema inspection still needed |
+| Fin-whale DAS | Call/segment IDs, UTC, pick time/distance, call type, cable, SNR | Multiple arrival picks per call | Acoustic events rather than semantic labels | Inspected geometry locates sensors; source-coordinate reference not found in bucket |
+| Cape Cod Bay audio | Synchronized recording channels | Multichannel recording | No individual identity or behavior labels verified | Sensor array; localization requires processing |
+| Cape Cod Bay detections/aerial | Candidate call scores/timing and daily flight effort/counts | Detection candidate / survey flight | Calling rate not supplied; detections are not animal counts | No individual whale positions in inspected aerial CSV |
 
 A signature whistle has experimentally supported identity-related function.
 That does not make every named whistle a confirmed recording of its owner:
@@ -129,10 +136,12 @@ Dataset licenses are distinct from paper, software, and model-weight licenses.
 | Sarasota | Raw database by research request | Resource paper and access statement | Access/use terms need agreement | Request linked records needed for the chosen question |
 | Watkins | Original archive and mirrors | One best-of cut with metadata | WHOI permits personal/academic use; commercial use prohibited | Check original and selected mirror terms |
 | Sperm-whale tables | Public GitHub CSVs | Both tables, about 1.25 MB | No repository data license verified | Resolve reuse terms, filtering, and audio linkage |
-| DCLDE orcas | Small author archive; large provider audio | Annotation/code ZIP, about 4.9 MB | Author software MIT; uniform audio terms unverified | Read deposited audio/provider terms |
+| DCLDE orcas | Small author archive; NOAA combined CSV and provider audio | Annotation/code ZIP, about 4.9 MB | Author software MIT; NOAA license filename says CC BY but body is CC BY-SA 4.0 | Resolve license discrepancy; preserve provider provenance |
 | Killer-whale HFM | One 5.99 GB ZIP | README, about 1.78 KB | CC0 1.0, per Dryad API | Inspect actual CSV headers and selected matched audio |
 | SanctSound DAC9 | 29 token TAR shards | `chunk_scores.csv` and terms | Custom Project DoLittle Dataset Terms | Retain source attribution and token/audio provenance |
-| Fin-whale DAS | Challenge-linked deposited release | Challenge description and file list | Not verified | Schema, scale, and data license |
+| Fin-whale DAS | CSV annotations/geometry + large detection NetCDFs | One annotation CSV, 23,550 bytes | Uniform data license not established | NetCDF schema, reference positions, coordinate system |
+| Cape Cod Bay audio | Public multichannel FLACs | Metadata and one selected file | Uniform data license not established | Setup dates and channel/time alignment |
+| Cape Cod Bay detections/aerial | Daily selection tables and aerial CSV | Aerial CSV, 1,335 bytes | Uniform data license not established; detailed sightings require agreement | False positives, call rate and visual detectability |
 
 Source details: [Dolphin access audit](dolphin-datasets.md),
 [whale access audit](whale-datasets.md),
@@ -148,8 +157,19 @@ Source details: [Dolphin access audit](dolphin-datasets.md),
 | OpenWhistle CNN | OpenWhistle CNN-VGG16 | Supervised binary detector dataset |
 | OpenWhistle Classification / Detection | OpenWhistle Wav2Vec2.0 + task head | Downstream fine-tuning/evaluation datasets |
 | DOLPHINFREE / Madeira / Watkins / DCLDE | Candidate encoders in the model guide | New experiments; no automatic guarantee of transfer |
+| DCLDE orcas | SPARROW orca detector + ecotype classifier; Perch + probe | Public trained task packages or a transfer-learning comparison; assess held-out providers |
+| Fin-whale DAS | DAS4Whales + association/localization code | Physical spatial inference from arrival times and geometry |
+| Cape Cod Bay | Candidate detection correction + abundance model | Requires cross-channel matching, detectability and calling-rate assumptions |
 
 ## Explore in this repository
+
+The [metadata-only world map](world-map.md) covers **44 mapped species** and
+**172 coordinate/region entries** across this catalogue. It combines published
+deployment and sighting positions with clearly marked archive approximations
+and regional anchors. The complete Watkins metadata mirror, Madeira spreadsheet,
+SanctSound chunk-scores CSV, and NOAA deployment/cable geometry were inspected
+without downloading audio. Eleven additional species have no coordinate join;
+missing/withheld coordinates and overlapping dataset configurations remain explicit.
 
 ```bash
 uv run main.py catalog
@@ -160,4 +180,6 @@ uv run --group viz main.py contours --limit 6
 Further leads, with more limited access verification, are documented in the
 focused reports: Oltremare activity labels, the HydroMoth metadata example, and
 MBARI humpback song-unit categories. They are not counted in this guide's
-14-resource inventory.
+16-resource inventory. DORI is an additional prerelease domain-adaptation lead
+in the [DCLDE guide](dclde-2027.md#additional-data-that-may-help); it is not counted
+as another fully audited corpus here.

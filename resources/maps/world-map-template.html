@@ -1,0 +1,155 @@
+<div id="marine-world-coverage">
+  <style>
+    #marine-world-coverage { color: var(--foreground); }
+    #marine-world-coverage .world-plot { display:block; width:100%; touch-action:none; }
+    #marine-world-coverage .world-land { fill:var(--muted-foreground); fill-opacity:.13; stroke:var(--muted-foreground); stroke-opacity:.5; stroke-width:.6; }
+    #marine-world-coverage .world-ocean { fill:var(--muted); fill-opacity:.25; stroke:var(--border); }
+    #marine-world-coverage .world-grid { fill:none; stroke:var(--border); stroke-width:.4; }
+    #marine-world-coverage .world-mark { stroke:var(--background); stroke-width:.65; }
+    #marine-world-coverage .world-published { fill:var(--viz-series-1); }
+    #marine-world-coverage .world-archive { fill:var(--viz-series-2); }
+    #marine-world-coverage .world-regional { fill:var(--viz-series-3); }
+    #marine-world-coverage .world-selected { fill:none; stroke:var(--foreground); stroke-width:1.5; }
+    #marine-world-coverage .world-detail { margin-top:12px; overflow-wrap:anywhere; }
+    #marine-world-coverage .world-key { display:inline-flex; align-items:center; gap:5px; }
+    #marine-world-coverage .world-key svg { width:14px; height:14px; }
+    #marine-world-coverage summary { margin-top:12px; }
+    #marine-world-coverage .world-head { padding-right:90px; }
+  </style>
+  <h2 class="world-head">Marine-mammal dataset coverage</h2>
+  <div class="text-small text-muted" data-world-total></div>
+  <svg class="world-plot" role="img" aria-label="World map of marine-mammal dataset locations. Published coordinates are circles; archive approximations and regional anchors are diamonds."></svg>
+  <div class="viz-row text-small" aria-label="Coordinate provenance">
+    <span class="world-key"><svg aria-hidden="true"><circle cx="7" cy="7" r="4" class="world-published"/></svg>Published position</span>
+    <span class="world-key"><svg aria-hidden="true"><path d="M7 2L12 7L7 12L2 7Z" class="world-archive"/></svg>Archive approximation</span>
+    <span class="world-key"><svg aria-hidden="true"><path d="M7 2L12 7L7 12L2 7Z" class="world-regional"/></svg>Regional anchor / cable center</span>
+  </div>
+  <div class="text-small text-muted">Dataset coverage, not species ranges or animal abundance · drag / pinch to explore</div>
+  <div class="viz-controls">
+    <label class="form-label">Species <select class="form-select" data-world-species></select></label>
+    <label class="form-label">Location <select class="form-select" data-world-region></select></label>
+  </div>
+  <div class="world-detail" data-world-detail aria-live="polite"></div>
+  <details>
+    <summary class="cursor-interaction" data-world-inventory-title>All mapped species</summary>
+    <table class="table table-sm"><thead><tr><th>Species</th><th class="text-end">Mapped locations</th></tr></thead><tbody data-world-inventory></tbody></table>
+  </details>
+  <details>
+    <summary class="cursor-interaction">Coverage &amp; sources</summary>
+    <div class="text-small" data-world-audit></div>
+  </details>
+  <script type="application/json" data-world-data>__WORLD_DATA__</script>
+  <script type="application/json" data-world-geography>__WORLD_GEOGRAPHY__</script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script>
+  (() => {
+    const root = document.getElementById('marine-world-coverage');
+    const data = JSON.parse(root.querySelector('[data-world-data]').textContent);
+    const geography = JSON.parse(root.querySelector('[data-world-geography]').textContent);
+    const taxon = new Map(data.species.map(s => [s.scientific,s]));
+    const speciesSelect = root.querySelector('[data-world-species]');
+    const regionSelect = root.querySelector('[data-world-region]');
+    const detail = root.querySelector('[data-world-detail]');
+    const svg = d3.select(root.querySelector('.world-plot'));
+    const format = new Intl.NumberFormat('en-US');
+    let chosenSpecies = '', chosenRegion = '', projection, transform = d3.zoomIdentity;
+    const short = (s,n=125) => s.length>n?s.slice(0,n-1)+'…':s;
+    const text = (tag,value,parent,className) => {
+      const e=document.createElement(tag);e.textContent=value;if(className)e.className=className;parent.append(e);return e;
+    };
+    const option=(label,value,parent)=>{const o=document.createElement('option');o.value=value;o.textContent=label;parent.append(o);};
+    const link=(label,url,parent)=>{const a=text('a',label,parent);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a;};
+    option('All '+data.summary.species+' species','',speciesSelect);
+    data.species.forEach(s=>option(s.common+' · '+s.scientific,s.scientific,speciesSelect));
+    const visible = () => data.points.filter(p=>!chosenSpecies||p.species.includes(chosenSpecies));
+    const save = () => {
+      if(window.openai?.setWidgetState) window.openai.setWidgetState({modelContent:{species:chosenSpecies||'all',location:data.points.find(p=>String(p.id)===chosenRegion)?.label||'all'},privateContent:{species:chosenSpecies,region:chosenRegion}}).catch(()=>{});
+    };
+    const updateOptions=()=>{
+      regionSelect.replaceChildren();option('All '+visible().length+' mapped locations','',regionSelect);
+      [...visible()].sort((a,b)=>a.label.localeCompare(b.label)).forEach(p=>option(short(p.label)+' · '+p.dataset,String(p.id),regionSelect));
+      if(!visible().some(p=>String(p.id)===chosenRegion))chosenRegion='';
+      regionSelect.value=chosenRegion;
+    };
+    const showDetail=()=>{
+      detail.replaceChildren();const p=data.points.find(p=>String(p.id)===chosenRegion);
+      if(!p){text('div',visible().length+' mapped locations · '+(chosenSpecies?taxon.get(chosenSpecies).common:data.summary.species+' species'),detail);return;}
+      text('h3',p.label,detail);
+      text('div',p.dataset,detail);
+      const labels={published:'Published position',archive:'Archive approximation',regional:'Regional anchor / cable center'};
+      text('div',labels[p.kind]+' · '+p.lat.toFixed(p.kind==='published'?4:2)+'°, '+p.lon.toFixed(p.kind==='published'?4:2)+'°',detail,'text-small text-muted');
+      const table=document.createElement('table');table.className='table table-sm';
+      const thead=document.createElement('thead');const hr=document.createElement('tr');
+      text('th','Species',hr);text('th',p.units||'Dataset presence',hr,'text-end');thead.append(hr);table.append(thead);
+      const body=document.createElement('tbody');
+      p.species.forEach(name=>{const row=document.createElement('tr');const cell=document.createElement('td');
+        text('div',taxon.get(name).common,cell);text('div',name,cell,'text-small text-muted');row.append(cell);
+        text('td',p.counts[name]===undefined?'Reported':format.format(p.counts[name]),row,'text-end tabular-nums');body.append(row);});
+      table.append(body);detail.append(table);
+      if(p.sound_classes){const other=Object.entries(p.sound_classes).filter(([k])=>!['KW','HW'].includes(k));
+        if(other.length)text('div',other.map(([k,v])=>(k==='AB'?'Abiotic sounds':'Unidentified biological sounds')+': '+format.format(v)+' annotation rows').join(' · '),detail,'text-small');}
+      if(p.sensors)text('div',format.format(p.sensors)+' cable geometry sensors',detail,'text-small');
+      text('div',p.note,detail,'text-small');
+      if(p.location_names?.length>1){const names=document.createElement('details');text('summary','Archive location labels ('+p.location_names.length+')',names,'cursor-interaction');text('div',p.location_names.join(' · '),names,'text-small');detail.append(names);}
+      const links=document.createElement('div');links.className='viz-row text-small';
+      link('Source',p.source,links);if(p.coordinate_source)link('Coordinate source',p.coordinate_source,links);if(p.dataset_source)link('Dataset',p.dataset_source,links);detail.append(links);
+    };
+    const redrawMarks=()=>{
+      const marks=svg.select('.world-marks');if(marks.empty())return;
+      marks.selectAll('path').data(visible(),p=>p.id).join('path')
+        .attr('class',p=>'world-mark world-'+p.kind)
+        .attr('d',p=>d3.symbol().type(p.kind==='published'?d3.symbolCircle:d3.symbolDiamond).size(30/transform.k**2)())
+        .attr('transform',p=>{const xy=projection([p.lon,p.lat]);return 'translate('+xy.join(',')+')';})
+        .attr('data-world-point',p=>p.id);
+      const chosen=data.points.find(p=>String(p.id)===chosenRegion);
+      svg.select('.world-selected').attr('display',chosen?null:'none');
+      if(chosen){const xy=projection([chosen.lon,chosen.lat]);svg.select('.world-selected').attr('cx',xy[0]).attr('cy',xy[1]).attr('r',8/transform.k);}
+    };
+    const draw=()=>{
+      const width=root.clientWidth, height=Math.max(220,Math.round(width*.54));
+      projection=d3.geoNaturalEarth1().fitExtent([[8,8],[width-8,height-8]],{type:'Sphere'});
+      const path=d3.geoPath(projection);svg.attr('viewBox','0 0 '+width+' '+height).attr('height',height);svg.selectAll('*').remove();
+      svg.append('title').text(data.summary.species+' species at '+data.summary.location_entries+' dataset locations');
+      const layer=svg.append('g').attr('class','world-layer').attr('transform',transform);
+      layer.append('path').datum({type:'Sphere'}).attr('d',path).attr('class','world-ocean');
+      layer.append('path').datum(d3.geoGraticule10()).attr('d',path).attr('class','world-grid');
+      layer.selectAll('.world-land').data(geography.features).join('path').attr('d',path).attr('class','world-land');
+      layer.append('g').attr('class','world-marks');layer.append('circle').attr('class','world-selected');redrawMarks();
+      svg.call(d3.zoom().scaleExtent([1,12]).extent([[0,0],[width,height]]).on('zoom',event=>{
+        transform=event.transform;layer.attr('transform',transform);redrawMarks();}));
+      svg.on('click',event=>{
+        if(event.defaultPrevented)return;
+        const xy=transform.invert(d3.pointer(event,svg.node()));
+        const ordered=visible().map(p=>({p,dist:Math.hypot(...projection([p.lon,p.lat]).map((v,i)=>v-xy[i]))})).sort((a,b)=>a.dist-b.dist);
+        if(ordered[0]&&ordered[0].dist*transform.k<24){chosenRegion=String(ordered[0].p.id);regionSelect.value=chosenRegion;redrawMarks();showDetail();save();}
+      });
+    };
+    speciesSelect.addEventListener('change',()=>{chosenSpecies=speciesSelect.value;updateOptions();redrawMarks();showDetail();save();});
+    regionSelect.addEventListener('change',()=>{chosenRegion=regionSelect.value;redrawMarks();showDetail();save();});
+    root.querySelector('[data-world-total]').textContent=data.summary.species+' species · '+data.summary.location_entries+' coordinate / region entries · metadata only';
+    root.querySelector('[data-world-inventory-title]').textContent='All '+data.summary.species+' mapped species';
+    const inventory=root.querySelector('[data-world-inventory]');
+    data.species.forEach(s=>{const row=document.createElement('tr');const cell=document.createElement('td');
+      text('div',s.common,cell);text('div',s.scientific,cell,'text-small text-muted');row.append(cell);text('td',s.locations,row,'text-end tabular-nums');inventory.append(row);});
+    const audit=root.querySelector('[data-world-audit]');
+    const lines=[data.summary.species_groups['Whales, dolphins & porpoises']+' whale, dolphin & porpoise species; '+data.summary.species_groups['Seals, sea lions & walrus']+' seal, sea-lion & walrus species.',
+      'Watkins: '+format.format(data.summary.watkins_mapped_animal_records)+' unique animal-labelled records mapped of '+format.format(data.summary.watkins_total_records)+' total records. Counts across locations/species overlap.',
+      'DCLDE CSV: orca + humpback; unidentified biological and abiotic sounds remain separate. '+format.format(38287)+' annotation rows have usable coordinates. '+format.format(169282)+' rows have withheld coordinates; 5 have an inconsistent longitude.',
+      'Madeira: 35 recordings with initial-sighting GPS. SanctSound: '+format.format(data.summary.sanctsound_metadata_entries)+' metadata entries at 4 sites; model card declares 488,320.',
+      'Catalogue regions without downloaded annotations show reported species presence, including challenge targets. No combined animal or recording total.',
+      'Taxonomy: GBIF species-level synonym normalization; original labels retained. Historical assignments have not been reidentified. Retrieved '+data.summary.retrieved+'.'];
+    lines.push(data.summary.unmapped_species_without_coordinate_join.length+' additional species have no coordinate join and are excluded.');
+    lines.forEach(s=>text('div',s,audit));
+    const sources=document.createElement('div');sources.className='viz-row';
+    link('Watkins mirror','https://marine-mammal.soundwave.cl/data.html',sources);
+    link('DCLDE','https://www.dclde.org/challenges-and-data-sets',sources);
+    link('GBIF taxonomy','https://www.gbif.org/species/search',sources);
+    link('Natural Earth basemap','https://www.naturalearthdata.com/',sources);audit.append(sources);
+    const restore=state=>{const saved=state?.privateContent;if(!saved)return;
+      chosenSpecies=taxon.has(saved.species)?saved.species:'';chosenRegion=String(saved.region??'');speciesSelect.value=chosenSpecies;updateOptions();redrawMarks();showDetail();};
+    updateOptions();showDetail();draw();restore(window.openai?.widgetState);
+    window.addEventListener('openai:set_globals',event=>restore(event.detail?.globals?.widgetState));
+    new ResizeObserver(draw).observe(root);
+  })();
+  </script>
+</div>

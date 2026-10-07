@@ -2,8 +2,18 @@
 
 Start with the [dataset guide](datasets.md) and [model guide](models.md) for
 comparison tables; this overview connects them to the artistic questions.
-The [artistic experiment brainstorm](artistic-experiments.md) proposes ten
-combinations with existing visual and sound models, including three first prototypes.
+The [artistic experiment brainstorm](artistic-experiments.md) records implemented
+prototypes, observations and proposed sound-to-form experiments.
+The **7 October investigation** connects [existing art and interaction projects](cetacean-art-precedents.md)
+to [five further ideas](2026-art-ideas.md), with a [2026 model and evidence audit](2026-art-models.md).
+It covers music following animal phrases, sound-operated drawing, echo/image
+claims and map-linked annotations; these extensions remain proposed experiments.
+The [DCLDE 2027 guide](dclde-2027.md) adds a concrete route into orca population
+classification, fin-whale spatial experiments, and right-whale abundance data,
+with inspected download contents and public model baselines.
+[Eight further proposals](novel-projects.md) are ranked against these resources,
+with a [label audit for DCLDE](dclde-opportunities.md) and a completed
+[Hardata II pilot](hardata-ii-pilot.md).
 
 Verified 4 October 2026. Scope: public data, explicit annotations, available
 model releases, and feasible sound-to-form experiments. The focused reports

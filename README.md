@@ -8,17 +8,31 @@ and images. Start with the data and context before choosing a training task.
 
 - [Dataset guide — contents, exact labels, context, scale, and access](docs/datasets.md)
 - [Model guide — inference readiness, papers, GitHub/HF, dates, sizes, dependencies, and licenses](docs/models.md)
-- [Artistic experiments — ten combinations of audio, visual, and sound models](docs/artistic-experiments.md)
+- [DCLDE 2027 — challenge tasks, inspected downloads, useful models, and starting experiments](docs/dclde-2027.md)
+- [Artistic experiments — implemented outputs and revised brainstorming](docs/artistic-experiments.md)
+- [Existing art projects — whale music, sound-driven visuals, dolphin painting and CHAT](docs/cetacean-art-precedents.md)
+- [Five ideas investigated — music, sound drawing, dolphin images and annotated maps](docs/2026-art-ideas.md)
+- [2026 art models — actual interfaces, release evidence, explanatory figures and limitations](docs/2026-art-models.md)
+- [CHAT in detail — hardware pictures, shared sound/action interfaces and the drawing proposal](docs/chat-sound-interface.md)
+- [Sound brush — keyboard → emitted waveform → recognized contour → stroke, with replay checks and an OpenWhistle comparison](docs/sound-brush.md)
+- [Follow the phrase — measured guides, ACE-Step 1.5 accompaniment and covers, and swap/perturbation tests of whether music follows an animal phrase](docs/follow-the-phrase.md)
+- [Eight new science-and-art proposals — ranking, recommended pilot and reading map](docs/novel-projects.md) · [experimental plans](docs/novel-experimental-plans.md) · [prior art](docs/novel-prior-art.md) · [novelty assessment](docs/novel-novelty-assessment.md)
+- [Hardata II pilot — how many inscribed bits keep a dolphin whistle's type, and a simulated silver groove](docs/hardata-ii-pilot.md)
+- [DCLDE label audit — what population, spatial and abundance labels actually support](docs/dclde-opportunities.md)
 - [Research overview and experiment plan](docs/research.md)
 - [Dolphin datasets and social context](docs/dolphin-datasets.md)
 - [Whale datasets and annotations](docs/whale-datasets.md)
 - [Detailed model audit and visual conditioning notes](docs/audio-models.md)
 - [Machine-readable dataset inventory](resources/datasets.json)
 - [Observed Hugging Face schemas](resources/audits/)
+- [DCLDE file and model-package audit](resources/audits/dclde-2027.json)
 
 The inventory was checked on **4 October 2026**. A source's public availability
 does not establish its reuse license. Unknown fields and terms are identified
-in the reports.
+in the reports. The linked art investigation was checked on **7 October 2026**.
+Its proposed experiments have not been locally benchmarked, except the human sound
+brush, which is implemented and measured in [docs/sound-brush.md](docs/sound-brush.md),
+and the music experiment, measured in [docs/follow-the-phrase.md](docs/follow-the-phrase.md).
 
 ## Run
 
@@ -79,6 +93,70 @@ that revision. `resources/audits` records schemas, not audio or model evaluation
 
 ## Next experiments
 
+### Hardata II: inscribed whistles and a simulated silver groove
+
+```bash
+# Pinned OpenWhistle `balanced` parquet (audio, labels, F0): about 1.2 GB
+uv run --group art main.py inscription fetch
+# Encode, decode, engrave, probe; writes data/output/inscription/
+uv run --group art main.py inscription run
+# Exploratory: probe trained on decoded audio (domain shift versus lost information)
+uv run --group art main.py inscription matched
+uv run --group art python -m unittest tests.test_inscription
+```
+
+The gallery `data/output/inscription/index.html` plays each whistle, its decoded
+versions and the encoder probe's answers, with unrolled band heightmaps and STL
+ring bands. Predictions were registered in the code before the first run. See
+the [pilot report](docs/hardata-ii-pilot.md) and the [proposal ranking](docs/novel-projects.md).
+
+### Follow the phrase: music conditioned on a measured animal phrase
+
+```bash
+# Humpback FLAC + selection table (12.5 MB) and 16 DSWP codas
+uv run --group art --group viz main.py follow fetch
+uv run --group art --group viz main.py follow prepare
+# ACE-Step 1.5 lives in its own uv environment under data/interim/tools/ACE-Step-1.5
+uv run --group art --group viz main.py follow generate --no-offload
+uv run --group art --group viz main.py follow evaluate
+uv run --group art --group viz main.py follow page
+```
+
+`data/output/follow/index.html` plays each recording, its guide, the perturbed
+guide, a deterministic response and seven ACE-Step conditions on one playhead,
+with timing and pitch scores against swapped and perturbed guides. Predictions
+were registered in the code before the first run. See the
+[report](docs/follow-the-phrase.md).
+
+To combine several recordings and hear them on the map, run `main.py follow catalog`,
+then `bun install && bun run dev` in [apps/sound-map](apps/sound-map/README.md).
+
+### DCLDE label audit for population, spatial and abundance questions
+
+```bash
+uv run python dclde_opportunities.py fetch   # ~15 MB of small tables, no audio
+uv run python dclde_opportunities.py audit   # resources/audits/dclde-opportunities.json
+```
+
+### DCLDE metadata and public orca models
+
+```bash
+# Full ~50 MB annotation CSV, with source generation and checksum verification
+uv run main.py dclde metadata
+uv run main.py dclde summary
+uv run --group viz main.py dclde charts
+
+# Only the detector/classifier ONNX weights and small metadata (~94 MB local)
+uv run main.py dclde models
+```
+
+The CSV is saved in `data/input/dclde/`, reports and charts in
+`data/output/dclde/`, and model weights in `models/dclde/`; these downloads are
+ignored by Git. This workflow downloads no DCLDE audio. See the
+[local results and isolated CPU model check](docs/dclde-2027.md#download-metadata-and-the-public-models-locally).
+
+### Artistic experiments
+
 The first two [artistic experiments](docs/artistic-experiments.md) now have a
 local inference implementation. The visual model is **FLUX.2 klein 4B** (January
 2026), replacing the proposed SDXL-Turbo checkpoint. The latest compatible
@@ -120,6 +198,14 @@ uv run --group art main.py art jewelry
 uv run --group art --group viz main.py art explain
 # Longer actual sequences, 5s/15s/full comparisons and direct geometry controls
 uv run --group art --group viz main.py art long-forms
+# Sound brush: keyboard map, a typed phrase, any WAV, the full study + gallery
+uv run --group art --group viz main.py art brush keys
+uv run --group art --group viz main.py art brush play "C4:0.8@100 E4:1.0 rest:0.4 F4:0.9"
+uv run --group art --group viz main.py art brush draw path/to/sound.wav
+uv run --group art --group viz main.py art brush study
+# MIDI file or live keyboard (phrase-level loop)
+uv run --group art --group viz --group midi main.py art brush play --midi phrase.mid
+uv run --group art --group viz --group midi main.py art brush live --list-ports
 # Optional local browser preview at http://localhost:8765
 uv run --group art python -m http.server 8765 --bind 127.0.0.1 --directory data/output
 
@@ -201,6 +287,14 @@ redesign series, the gallery shows the geometry study; `art gallery --include-ba
 the earlier CLAP/FLUX series for comparison. WhAM is an available separate
 route for synthetic sperm-whale codas; no synthetic whale audio was generated
 in this run.
+`art brush` is a human-operated, CHAT-style sound brush:
+
+- **Keys:** white keys synthesize explicit whistle contours (rise, dip, hump, wave, clicks, plus a falling sweep and a steady tone that are not commands). Black keys play the local OpenWhistle and DSWP recordings.
+- **Analysis:** the brush reads only the emitted WAV. It measures the ridge contour and click onsets and recognizes four designed contours by DTW with rejection. The recognized contour selects grow, branch, fold or open around one of Livia's stones; clicks lay beads.
+- **Continuous controls:** pitch change turns the stroke (90° per octave), duration sets length, level sets width, and silence lifts the brush.
+- **Replay:** identical audio reproduces the identical stroke hash.
+- **Study:** `art brush study` writes keys, performances, one-feature comparisons, replay checks and an OpenWhistle-versus-contour comparison to `data/output/brush/index.html`. It needs `art fetch` and `art long-forms` inputs.
+
 Listen controls sit beside the input audio and use louder playback copies. Half
 speed lowers pitch to make high frequencies easier to hear; original speed and
 pitch remain selectable. A common gain is used for all prefixes of one long
@@ -215,8 +309,13 @@ playback gains and hashes are recorded.
    provenance separate from the audio-only DSWP Hugging Face release.
 4. **Visual controls:** compare direct acoustic features, CLAP/BioLingual text
    alignment, and a learned mapping to Livia's chosen visual parameters.
+5. **Orca populations and spatial sound:** follow the [DCLDE starting sequence](docs/dclde-2027.md#recommended-starting-sequence-for-this-repository),
+   beginning with annotation metadata and the public orca cascade; compare
+   population patterns across held-out recording deployments.
 
-No audio model has been trained or benchmarked here yet. Raw data, checkpoints,
+No audio model has been trained or benchmarked here yet. The downloaded DCLDE
+ONNX models passed synthetic CPU graph checks; this does not evaluate audio
+preprocessing or biological accuracy. Raw data, checkpoints,
 and generated experiments are ignored by Git; the uv lockfile and schema audits
 are retained.
 

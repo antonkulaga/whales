@@ -1,0 +1,118 @@
+{
+  "interpretation": "A human-operated sound brush adapted from CHAT's designed-signal loop: sound → recognition → consequence. Keys choose recorded whistles or explicitly synthesized contours. The drawing reads only the emitted waveform; it never reads the key events. Contour families, commands and stroke effects are our design choices, not decoded dolphin meanings or rules authored by Livia.",
+  "sample_rate": 44100,
+  "keyboard": {
+    "pitch_classes": {
+      "C": {"family": "rise"},
+      "D": {"family": "dip"},
+      "E": {"family": "hump"},
+      "F": {"family": "wave"},
+      "G": {"family": "clicks"},
+      "A": {"family": "fall"},
+      "B": {"family": "flat"},
+      "C#": {"recording": "openwhistle-0000"},
+      "D#": {"recording": "openwhistle-0001"},
+      "F#": {"recording": "openwhistle-0002"},
+      "G#": {"recording": "dswp-0000"},
+      "A#": {"recording": "dswp-0001"}
+    },
+    "reference_octave": 4,
+    "register_octaves_per_keyboard_octave": 0.5,
+    "bend_range_octaves": 0.5,
+    "click_bend_rate_factor": 2.0,
+    "velocity_peak_dbfs": [-36, -6],
+    "frequency_limits_hz": [3000, 20000],
+    "attack_s": 0.015,
+    "release_s": 0.025,
+    "lead_in_s": 0.25,
+    "tail_s": 0.4,
+    "recording_highpass_hz": 2000,
+    "notes": "White keys synthesize explicit contours; black keys play recorded clips. Keyboard octave changes the synthesized register by half an octave. Hold stretches a synthesized contour; a recording is truncated by an early release and is never extended. Velocity sets peak level. Pitch bend adds a declared tilt of up to half an octave to synthesized contours, or changes a click train's rate; it does not alter recordings."
+  },
+  "families": {
+    "rise": {"shape": "ramp", "extent_octaves": 1.0, "base_hz": 7000, "title": "Rising sweep"},
+    "dip": {"shape": "arch", "extent_octaves": -0.7, "base_hz": 12000, "title": "Dip (down, then up)"},
+    "hump": {"shape": "arch", "extent_octaves": 0.7, "base_hz": 7500, "title": "Hump (up, then down)"},
+    "wave": {"shape": "wave", "extent_octaves": 0.25, "cycles": 2, "base_hz": 10000, "title": "Wavering tone"},
+    "fall": {"shape": "ramp", "extent_octaves": -1.0, "base_hz": 14000, "title": "Falling sweep · not a command"},
+    "flat": {"shape": "flat", "extent_octaves": 0.0, "base_hz": 10000, "title": "Steady tone · not a command"},
+    "clicks": {"shape": "clicks", "click_rate_hz": 14, "pulse_center_hz": 9000, "pulse_sigma_s": 0.00004, "title": "Click train"}
+  },
+  "commands": {
+    "rise": "grow",
+    "dip": "branch",
+    "hump": "fold",
+    "wave": "open"
+  },
+  "effects": {
+    "grow": {"title": "Grow", "description": "Extend every active tip outward.", "livia": "A continuous silver arm leaving the stone, like Mitoring's outward folds rather than an enclosing rib."},
+    "branch": {"title": "Branch", "description": "Fork every active tip into mirrored children, then grow them with the same contour.", "livia": "Mycelium's drainage channels and the Roots ring, which Livia derived algorithmically from the Mushroom ring."},
+    "fold": {"title": "Fold", "description": "Draw a broad folded ribbon whose crease flips where the pitch turns: rising faces are lit, falling faces are shaded.", "livia": "Mitoring's folded silver, read in Livistone as mitochondrial cristae."},
+    "open": {"title": "Open", "description": "Leave an opening: a ring whose diameter is half the stroke length and whose scalloped edge follows the waver.", "livia": "Nanot's open cells and the openings that drain porous opal in Mycelium."},
+    "beads": {"title": "Beads", "description": "Place one bead per detected click; spacing follows the inter-click intervals and size follows click level.", "livia": "Granular surface growth, as in the Brain ring; the rhythm of the clicks stays visible."},
+    "none": {"title": "Continuous only", "description": "No command was recognized. The tip still grows with the measured continuous controls.", "livia": "The same outward gesture without a discrete effect."}
+  },
+  "analysis": {
+    "n_fft": 1024,
+    "hop": 220,
+    "band_hz": [3000, 20000],
+    "tonality_db": 18,
+    "absolute_floor_dbfs": -100,
+    "max_jump_octaves": 0.2,
+    "bridge_frames": 3,
+    "valley_db": 12,
+    "valley_window_s": 0.04,
+    "min_segment_s": 0.04,
+    "median_frames": 5,
+    "click_highpass_hz": 2000,
+    "click_short_s": 0.00025,
+    "click_long_s": 0.02,
+    "click_ratio_db": 9,
+    "click_min_separation_s": 0.0025,
+    "click_group_gap_s": 0.25,
+    "click_min_count": 3
+  },
+  "recognition": {
+    "points": 48,
+    "band_fraction": 0.2,
+    "accept_semitones": 1.0,
+    "margin_semitones": 0.5,
+    "min_duration_s": 0.12,
+    "min_extent_semitones": 1.0
+  },
+  "drawing": {
+    "speed_units_per_s": 190,
+    "turn_degrees_per_octave": 90,
+    "width_units": [4, 26],
+    "width_level_dbfs": [-42, -9],
+    "bead_radius_units": [3, 12],
+    "lift_gap_s": 0.25,
+    "branch_degrees": 32,
+    "branch_width_factor": 0.75,
+    "max_tips": 6,
+    "fold_width_factor": 2.4,
+    "open_scallop_fraction": 0.35,
+    "open_diameter_fraction": 0.5,
+    "open_max_radius_units": 140,
+    "start_angle_degrees": 90,
+    "lift_angle_degrees": 137.50776,
+    "canvas_half_size": 500,
+    "stones": {
+      "mitoring": {"rx": 92, "ry": 70, "inner": "#f2b54a", "outer": "#8f4f0c", "title": "Mitoring amber"},
+      "mycelium": {"rx": 78, "ry": 78, "inner": "#b9cdbf", "outer": "#557567", "title": "Mycelium opal"}
+    }
+  },
+  "performances": {
+    "mitoring-folds": {"phrase": "C4:0.9@100 E4:1.0@110 C4:0.6@90 rest:0.4 C5:0.8@120 E4:1.2@100~-0.6 rest:0.4 F4:1.1@100 C4:0.7@96", "stone": "mitoring", "title": "Mitoring · grow, fold, open", "description": "Three gestures leave the amber. Holds and rests are part of the score: each rest lifts the brush to a new position on the stone."},
+    "mycelium-channels": {"phrase": "C4:0.9@110~-1 D4:0.7@100 C4:0.6@90~-1 D4:0.6@84 F4:0.8@84 rest:0.4 G4:0.8@96 C4:0.6@100~-1 D4:0.6@90 C4:0.5@80~-1 F4:0.7@80", "stone": "mycelium", "title": "Mycelium · branching drainage", "description": "Alternating rise and dip keys fork the brush into channels; bending the rises down halves their turning so the channels spread instead of knotting. Wavering tones open drainage holes at every tip; after a rest, a click train lays a beaded stem to a second root."},
+    "recorded-whistles": {"phrase": "F#4:1.0@110 rest:0.4 D#4:0.8@110 rest:0.4 C#4:0.7@110 rest:0.4 G#4:2.3@100", "stone": "mitoring", "title": "Recorded sounds through the same brush", "description": "Black keys play real OpenWhistle whistles and a DSWP sperm-whale coda. They are analyzed exactly like the synthesized keys; unrecognized whistles still draw through the continuous controls."}
+  },
+  "perturbations": [
+    {"id": "bend", "feature": "Pitch bend on a rising sweep", "base": "C4:0.9@100", "changed": "C4:0.9@100~+1", "expect": "Same length and width; the extra half octave of rise adds 45° of turning."},
+    {"id": "hold", "feature": "Hold duration", "base": "C4:0.6@100", "changed": "C4:1.2@100", "expect": "Same total turning; the stroke becomes twice as long."},
+    {"id": "velocity", "feature": "Velocity", "base": "C4:0.9@50", "changed": "C4:0.9@120", "expect": "Same path; measured level widens the stroke."},
+    {"id": "key", "feature": "Key E (hump) → F (wave)", "base": "C4:0.6@100 E4:1.0@100", "changed": "C4:0.6@100 F4:1.0@100", "expect": "A different recognized command: fold becomes an opening."},
+    {"id": "rest", "feature": "Legato → rest", "base": "C4:0.6@100 D4:0.7@100", "changed": "C4:0.6@100 rest:0.4 D4:0.7@100", "expect": "The rest lifts the brush; the branch starts from a new point on the stone."},
+    {"id": "register", "feature": "Octave transposition", "base": "C4:0.8@100 E4:0.9@100", "changed": "C5:0.8@100 E5:0.9@100", "expect": "Register is deliberately not mapped: recognition and stroke should be nearly identical."}
+  ]
+}

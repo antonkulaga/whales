@@ -1,0 +1,152 @@
+{
+  "retrieved": "2026-10-07",
+  "files": {
+    "data/input/world-map/watkins.json.xz": {
+      "bytes": 292156,
+      "sha256": "d2399a2a9738d9a4161112aff15e9c2f1a25ed2ba4867e7c43919f41f73f5e1e"
+    },
+    "data/input/world-map/penmarch.html": {
+      "bytes": 187948,
+      "sha256": "7102f6bece3b4e8c036c565166cf7632d4dc469a3f1d9927b7cc813e9ab646a9"
+    },
+    "data/input/world-map/cape-cod.json": {
+      "bytes": 12125,
+      "sha256": "0c93ff721c91bb7e8e021aeaf1f7b8c70e2bf7c8997dd03a5f2a97a76b634a99"
+    },
+    "data/input/world-map/sanctsound-site-counts.json": {
+      "bytes": 71,
+      "sha256": "6cb7baa7e3d81c2eb25711631e56ece57ebc80dfb250f17dd74f32316b9e8f71"
+    },
+    "data/input/world-map/atlas-world.mjs": {
+      "bytes": 108734,
+      "sha256": "27cdb506ced81110995ebec0e6a127f5626dd55fd0e063ba3f95a3e6e25f8e18"
+    },
+    "data/input/world-map/sanctsound.md": {
+      "bytes": 2603,
+      "sha256": "63a794119fef2199f1c4ea0eda41aadc9b033c3d4607e53a13b3f39a36e4b6c3"
+    },
+    "data/input/world-map/sanctsound-chunk-scores.csv": {
+      "bytes": 53875749,
+      "sha256": "db9430e79f544e386111bdf783d362f2c94114786363b3740893fc5aeaae541b"
+    },
+    "data/input/world-map/watkins-source.html": {
+      "bytes": 19154,
+      "sha256": "66af42ccdea5b114e5a7c99bccd48e2fcf7c6b19c1709c4ef3c2c01f74d45f62"
+    },
+    "data/input/world-map/noaa-cape-metadata.json": {
+      "bytes": 229,
+      "sha256": "95ea834c2c7a5f645c26983d171ebef53890a689fd5fc4b3ffbedbc1a8fefd88"
+    },
+    "data/input/world-map/topojson-client.cjs": {
+      "bytes": 7169,
+      "sha256": "25cd02ae486cc5063e0215a4e4cfb15de83700c87ac48bac4d57dc6aaf3ebb89"
+    },
+    "data/input/world-map/taxonomy-accepted.json": {
+      "bytes": 76764,
+      "sha256": "75f44d6b71bc4da614a359e93a0509f2a2b912bcdacb11fc14cc379519da5654"
+    },
+    "data/input/world-map/sanctsound-sites.html": {
+      "bytes": 2832321,
+      "sha256": "cae3688c509b93a9dfe0c23b446caaa32f24ee77fbfcf473976e1f7f94dffbea"
+    },
+    "data/input/world-map/hf-metadata-tree.json": {
+      "bytes": 733,
+      "sha256": "311534f6b4333d7a4f78c21bd6b90326f778a325716826ba4837d68ab42ac219"
+    },
+    "data/input/world-map/dswp.md": {
+      "bytes": 2970,
+      "sha256": "8c54b9f2ba60fc4d7ffede0590552a89fd234de676783a248cd4635730227f7d"
+    },
+    "data/input/world-map/openwhistle.html": {
+      "bytes": 188694,
+      "sha256": "3cf1392730042b60ff15451e7743d12df0712497b658321550f94cf3f6af0905"
+    },
+    "data/input/world-map/watkins.geojson": {
+      "bytes": 4027064,
+      "sha256": "d48dbd58abce9cfdbd28c239e137871370253d09d79320b95ed9e118a5eac7b6"
+    },
+    "data/input/world-map/sanctsound-hawaii-markers.json": {
+      "bytes": 1386,
+      "sha256": "389148a22cdd0cde7d6d8998b7602d04e156a73dc6cc152dfcfeec0ee627cf37"
+    },
+    "data/input/world-map/das-region-centers.json": {
+      "bytes": 854,
+      "sha256": "b28cdf244461ff5f42181e3273b72b1d701d74f34a7b29d847e306f4e48671fb"
+    },
+    "data/input/world-map/taxonomy-common.json": {
+      "bytes": 266576,
+      "sha256": "17c47cc0fb434e9fb055518dd553ecb4ce89680ca732db923ea54bce01a24764"
+    },
+    "data/input/world-map/sarasota.html": {
+      "bytes": 1117410,
+      "sha256": "d23c27a938a99a0ff212f96c75323cd7066a3afa49495e7d4123cb2a31af6add"
+    },
+    "data/input/world-map/madeira.xlsx": {
+      "bytes": 36345,
+      "sha256": "4bfc8ab00652112a15c84049cd4d85a0cdb469565e55cc72dba2d01493b3f844"
+    },
+    "data/input/world-map/taxonomy-gbif.json": {
+      "bytes": 36824,
+      "sha256": "35c07ac01721e9f822f57378f8b1fe0b118fa582354c43fe4f2b5432ec237931"
+    },
+    "data/input/world-map/watkins-rows.json": {
+      "bytes": 11412877,
+      "sha256": "8ffcf4bbb789293102d762c8e19cb1a134844b263251e8dfbe6209bf5acde1a0"
+    },
+    "data/input/world-map/sanctsound-hawaii.html": {
+      "bytes": 716298,
+      "sha256": "12953fd14367b83c2154bf148084e505d6a1622e7d689e971c1f1aed2694fc35"
+    },
+    "data/input/world-map/madeira-rows.json": {
+      "bytes": 22448,
+      "sha256": "65ebcc1d0a9e00b510dc05eff64013bb1e822a2f845d95d4635e97da2b8bc920"
+    },
+    "data/input/world-map/atlas-module.js": {
+      "bytes": 239,
+      "sha256": "f814ee42239553c90687451d44517f6d5ff7ecae1aebc2155e578dae0f4e0ce1"
+    },
+    "data/input/world-map/north_DAS_multicoord.csv": {
+      "bytes": 4126126,
+      "sha256": "29a1bd00cb02ca6f018f62d253e6247aeb814998719ec10b1cb03f26662fb333"
+    },
+    "data/input/world-map/watkins.geojson.xz": {
+      "bytes": 87836,
+      "sha256": "be6415e56752d46346f1e2eb64f891aefe76e2646c99c4d72aada4064e2fc9fa"
+    },
+    "data/input/world-map/watkins.json": {
+      "bytes": 16569912,
+      "sha256": "8767d4d25001e3781752d964b6e353a837b2463ff38f1526d2de8d6137c44175"
+    },
+    "data/input/world-map/noaa-das-metadata.json": {
+      "bytes": 372,
+      "sha256": "5bba32c06d832a3749e47b25c69a665cf8f2774dbeaf68d3501a5133d31531f0"
+    },
+    "data/input/world-map/dryad.html": {
+      "bytes": 40527,
+      "sha256": "143ec1e147a566045a0701d4c8808b50af36c6accdb1b499df3a24e9c10afea5"
+    },
+    "data/input/world-map/south_DAS_multicoord.csv": {
+      "bytes": 6073869,
+      "sha256": "27bb28b588c1fe493640ca2c34a97ca03e2cdc8e1ed61e1beea79641cf2358bc"
+    },
+    "data/input/dclde/Annotations.csv": {
+      "bytes": 50484452,
+      "sha256": "407f1c0f7d95a39c7bace99bbef40646e2fe62403c6237c20ddf374e88e21b15"
+    },
+    "resources/maps/world-countries-110m.geojson": {
+      "bytes": 442623,
+      "sha256": "0cc5d00bddbd02befd013baf2b328638e84f6b3621b22fb71833bfc25f7aa5c8"
+    },
+    "resources/maps/dclde-deployment-table.json": {
+      "bytes": 4703,
+      "sha256": "a7d42ad3507744c4d25e1849242a8c1db3c634cafa630c726334e2da02f1234e"
+    }
+  },
+  "taxonomy_match_api": "https://api.gbif.org/v1/species/match",
+  "taxonomy_usage_api": "https://api.gbif.org/v1/species/",
+  "world_basemap": "https://esm.sh/@d3-maps/atlas@1.0.0/world/countries/countries-110m",
+  "watkins_metadata": "https://marine-mammal.soundwave.cl/wmmsdb.20190601.b32a76a.json.xz",
+  "watkins_geography": "https://marine-mammal.soundwave.cl/wmmsdb.v20190517.geojson.xz",
+  "madeira_metadata": "https://zenodo.org/api/records/17952229/files/Metadata.xlsx/content",
+  "sanctsound_metadata": "https://huggingface.co/datasets/cairninstitute/mmc-sanctsound-humpback-dac9/resolve/main/metadata/chunk_scores.csv"
+}

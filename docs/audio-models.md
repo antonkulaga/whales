@@ -7,6 +7,10 @@ Verified against public model cards, code, configurations and release metadata o
 
 The strongest initial artwork is a transparent mapping from acoustic structure to visual structure. Neural embeddings can add another layer of variation, but neither an embedding nor a generated coda establishes what an animal is communicating.
 
+For DCLDE monitoring tasks, see the [challenge-specific model audit](dclde-2027.md#models-and-methods-worth-testing):
+public orca ONNX detector/ecotype packages and DAS localization code address
+different outputs from the generators and artistic encoders discussed here.
+
 ## Model comparison
 
 | Model | Released capability | Exact input / representation | Useful role | License / practical caveat |

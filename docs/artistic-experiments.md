@@ -1,320 +1,370 @@
 # Artistic experiments from cetacean sound
 
-**Small experiments using public audio models with existing visual or sound models.**
-
-Prepared **4 October 2026** for Livia's marine residency exploration.
-[Model guide](models.md) · [Dataset guide](datasets.md) · [Research context](research.md)
-
-Yes: there are useful combinations that need **no neural-network training**.
-My first choices are **CLAP → descriptions → images**, **audio features → edits
-of Livia's artwork**, and **audio features → drawn forms → ControlNet images**.
-The connecting step can be a vocabulary, an image, or a few numerical controls.
-We can choose that correspondence ourselves and make it part of the work.
-
-**Implementation update, 4 October 2026:** ideas 1 and 2 now run through
-`uv run --group art main.py art`. Following the preference for current models,
-the implementation uses [FLUX.2 klein 4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B)
-(released January 2026) instead of SDXL-Turbo. Idea 1 keeps the CLAP-to-material
-mapping; idea 2 uses a jewelry photo as the reference, with CLAP-selected material
-instructions and shared-reference RMS mapped to bounded edit wording. FLUX's
-native reference editing has no denoising-strength argument, so the actual edit
-prompt varies while its template, reference image and seed stay fixed. The
-earlier SDXL designs below remain proposals for comparison. See the
-[run instructions](../README.md#next-experiments) and [data layout](../data/README.md).
-
-The revised [Livia brief](livia-experiment-brief.md) uses her actual Nanot and
-Mitoring photographs as model inputs. Idea 1 now compares silver/amber jewelry
-with pavilion concepts at Livistone's architectural scale; idea 2 changes the
-silver setting of Mitoring. The HTML includes Mycelium's drainage rationale
-and Livistone's source scene, so the acoustic geometry choices are visibly
-connected to her practice. The earlier generic paper/thread/glass trial is
-preserved under ignored `data/interim/superseded-generic/`.
-
-These are proposed artworks and engineering designs. Model capabilities and
-loading routes are grounded in the linked releases. Beyond the two implemented
-prototypes above, these combinations have not been run in this repo. “Low effort” assumes that the chosen checkpoints load
-successfully. It does not mean a tiny download or real-time CPU generation.
-
-## Shortlist
-
-Effort: **S** = standard inference plus simple mapping; **M** = an extra
-representation, retrieval bank, or custom rendering step; **L** = a legacy or
-multi-generator stack. All ideas below use frozen weights. PCA and artist-set
-reference ranges may be fitted, but no new neural model is required.
-
-| Idea | Audio model + non-marine model | Optional extra input | Artifact | Effort / first-test priority |
-|---|---|---|---|---|
-| 1. Acoustic material studies | CLAP + SDXL-Turbo or SDXL | Livia's material vocabulary and style prompt | Print series: sound interpreted as glass, thread, ink, stone | S · **Start here** |
-| 2. A painting listening to the sea | CLAP or AVES + SDXL image-to-image | One of Livia's paintings or photographs | Variations of one work driven by different clips | S · **Start here** |
-| 3. A gallery chosen by sound | ImageBind + SDXL image-to-image | Small library of her images | Retrieved image, altered counterpart, listening gallery | M · Good for a personal visual language |
-| 4. Whistle forms become objects | AVES or OpenWhistle + scribble ControlNet + SD 1.5 | Existing F0 tracks, object/material prompt | Ceramic-like forms, textile motifs, imagined sculptures | M · Strong link to the repo's contour baseline |
-| 5. Acoustic counterparts on land | CLAP + AudioLDM2 | Artist-chosen environmental sound vocabulary | Paired whale/dolphin and invented terrestrial sound pieces | S/M · First sound experiment |
-| 6. A score selected by a call | CLAP + MusicGen-small | Instrument palette or short written score | Short music studies accompanying source recordings | S/M · Simple bridge, loose acoustic preservation |
-| 7. A whistle becomes a melody | OpenWhistle/AVES + MusicGen-melody | Annotated F0 track, instrument prompt | Mapped whistle melody and generated musical response | M · More experimental |
-| 8. Sound, image, and one word | ImageBind + SDXL image-to-image | A personal image + a word such as “thread” | Interactive three-input collage or print grid | M · No adapter training |
-| 9. Two models disagree | CLAP + BioLingual + SDXL | Shared descriptor palette | Diptychs comparing two machine interpretations | M · Interesting research/art interface |
-| 10. An imagined song and its landscape | DoLittle + CLAP + SDXL | Real humpback token prompt, visual theme | Real/synthetic audio with associated image sequences | L · Later, after simpler pipelines work |
-
-For ideas 1, 2, 5, and 6, replace CLAP with BioLingual only after its loading
-path is checked. CLAP is a general audio model; we do not need a marine-specific
-encoder for every first experiment. For dolphin structure, AVES or OpenWhistle
-offers a separate comparison, with the bandwidth limits in the [model guide](models.md).
-
-## 1. Acoustic material studies
-
-**Pipeline:** recording → CLAP scores against acoustic descriptions → explicit
-artist mapping → SDXL-Turbo text prompt → image.
-
-Give CLAP descriptions such as “a series of short dry clicks,” “a sustained
-high-pitched whistle,” and “a slowly wavering tonal sound.” Associate those
-descriptions with Livia's chosen visual materials: perforated paper, drawn
-threads, layered translucent glass. CLAP ranks the acoustic descriptions;
-the material association is our design. It is not evidence that CLAP understands
-glass as the biological meaning of a call.
-
-Keep composition and random seed fixed across clips. Produce a contact sheet
-with the source sound, chosen description, mapping, and image. Optional input:
-one short instruction from Livia, such as “everything should resemble an ink
-study.” **First test:** six distinct clips, three descriptors, two visual styles.
-Compare with randomly assigned descriptions to see whether sound adds a useful
-structure.
-
-[CLAP similarity interface](https://huggingface.co/docs/transformers/en/model_doc/clap) ·
-[SDXL-Turbo text/image inference](https://huggingface.co/stabilityai/sdxl-turbo)
-
-## 2. A painting listening to the sea
-
-**Pipeline:** recording → CLAP scores or AVES features → bounded controls →
-SDXL image-to-image with Livia's original image.
-
-Start with one painting. Use an explicitly selected audio feature to control
-the amount of alteration; use another to select a material prompt. With AVES,
-pool features and project them onto a small fixed PCA basis. Scale the controls
-using the same reference clips, rather than normalizing each clip independently.
-The coordinates are artistic controls, not named biological attributes.
-
-Hold the original image, prompt template, and seed constant. **First test:**
-four clips and a deliberately narrow edit-strength range. Output an original
-plus four variations, with their audio and control values. Higher image-to-image
-strength generally permits larger changes; there is no guarantee that a chosen
-control yields a smooth or monotonic visual effect.
-
-[AVES features](https://github.com/earthspecies/aves) ·
-[SDXL image-to-image interface](https://huggingface.co/docs/diffusers/main/en/using-diffusers/sdxl#image-to-image)
-
-## 3. A gallery chosen by sound
-
-**Pipeline:** recording + Livia's image collection → ImageBind audio/image
-similarity → selected image → SDXL image-to-image.
-
-ImageBind already compares audio and images in one learned space. Encode perhaps
-20–50 images once, retrieve a few for each recording, and let Livia select a
-match before generating its altered counterpart. No paired training corpus is
-needed. The personal collection supplies the visual vocabulary.
-
-**First test:** ten clips, twenty images, top-three retrieval per clip; generate
-only the selections she finds interesting. Artifact: a small web gallery or
-printed triptychs of source image, retrieved association, and altered image.
-ImageBind's general training may favor literal marine imagery or fail on abstract
-art. Try a collection of textures and drawings as well as figurative work.
-
-[Official ImageBind retrieval example](https://github.com/facebookresearch/ImageBind#usage) ·
-[SDXL image-to-image](https://huggingface.co/docs/diffusers/main/en/using-diffusers/sdxl#image-to-image)
-
-## 4. Whistle forms become objects
-
-**Pipeline:** recording → AVES/OpenWhistle features → drawn geometry → scribble
-ControlNet + compatible Stable Diffusion 1.5 → image of an imagined object.
-
-Render a two-dimensional trajectory from projected framewise features, or use
-an existing annotated F0 contour for the outline and the encoder for additional
-controls. Feed a clean drawing to ControlNet with prompts such as “a porcelain
-vessel,” “a folded paper sculpture,” or “woven linen.” The encoder does not
-itself extract a validated whistle contour; these two inputs have different
-provenance.
-
-**First test:** the six contours already used by `main.py contours`, without axes,
-text, or a plot legend. Compare contour-only images with encoder-controlled
-variants. Artifact: six contour prints and six imagined objects. The supplied
-ControlNet is for SD 1.5; it cannot simply be attached to SDXL. This creates
-images of objects, not watertight 3D models for printing.
-
-[OpenWhistle backbone](https://huggingface.co/dolphinteam/OpenWhistle-Wav2Vec2.0) ·
-[Scribble ControlNet](https://huggingface.co/lllyasviel/control_v11p_sd15_scribble) ·
-[Compatible SD 1.5 weights](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5)
-
-## 5. Acoustic counterparts on land
-
-**Pipeline:** recording → CLAP ranking of terrestrial sound descriptions →
-artist-selected prompt → AudioLDM2 → generated sound.
-
-Compare the marine clip with descriptions such as rustling paper, rubbing glass,
-or repetitive wooden knocks. Generate the selected counterpart with AudioLDM2
-and present it beside the original. Livia can add a material or place: “inside
-a resonant wooden room.” This makes a sonic analogy rather than an attempted
-reconstruction of the animal signal.
-
-**First test:** three recordings and three short generated counterparts. Keep
-the originals available as separate tracks, then make a stereo dialogue or a
-listening installation. The standard AudioLDM2 pipeline receives **text**;
-we are not inserting an arbitrary CLAP audio vector into its text-conditioning
-slots. Timing and pitch contours will not automatically survive this bridge.
-
-[AudioLDM2 weights](https://huggingface.co/cvssp/audioldm2) ·
-[Documented text-to-audio pipeline](https://huggingface.co/docs/diffusers/en/api/pipelines/audioldm2)
-
-## 6. A score selected by a call
-
-**Pipeline:** recording → CLAP acoustic descriptions → written musical mapping
-→ MusicGen-small → music.
-
-For example, repeated clicks can select a prompt for sparse wooden percussion;
-a sustained whistle can select bowed strings. Livia supplies the instrument
-palette and decides whether the music is a response, an accompaniment, or a
-deliberate contrast. The musical interpretation comes from that mapping.
-
-**First test:** four clips, one instrument palette, short pieces at a consistent
-duration. Artifact: an EP of paired recordings, or a projection with a musical
-response. MusicGen-small is the smaller starting checkpoint. This text bridge
-does not impose the original rhythm; if exact event timing matters, render
-notes/percussion from annotations and compare that baseline separately.
-
-[MusicGen-small weights and loading](https://huggingface.co/facebook/musicgen-small) ·
-[AudioCraft source](https://github.com/facebookresearch/audiocraft)
-
-## 7. A whistle becomes a melody
-
-**Pipeline:** recording → OpenWhistle/AVES similarity → chosen musical treatment;
-annotated F0 → musical-register resynthesis → MusicGen-melody + treatment prompt.
-
-Use an available F0 track to render a simple musical guide, explicitly mapping
-the whistle's frequency range into an audible instrument register. Preserve
-the annotation's time coordinates and gaps in the guide. An encoder can compare
-the clip with artist-chosen reference sounds to select the instrument prompt;
-it is optional, and does not supply the F0 annotation.
-
-**First test:** three contours, each with a sine-wave guide and one generated
-musical response. Artifact: original whistle, mapped guide, generated music,
-and a drawn score. MusicGen-melody uses chroma conditioning, which folds octave
-information; it may ignore details of the guide. Feeding raw ultrasonic dolphin
-audio into it is a much less controlled starting point. This is experimental
-musical composition, not dolphin-to-music translation.
-
-[Melody checkpoint](https://huggingface.co/facebook/musicgen-melody) ·
-[Melody/chroma input documentation](https://huggingface.co/docs/transformers/en/model_doc/musicgen_melody)
-
-## 8. Sound, image, and one word
-
-**Pipeline:** audio + image + text → normalized ImageBind embeddings → weighted
-retrieval from an image library → SDXL edit.
-
-Let a visitor choose a recording, a drawing, and a word. Combine the three
-normalized embeddings with user-set weights, normalize the result, and retrieve
-an image from Livia's collection. Use that retrieved image as the visual model's
-starting image. A weighted blend is our heuristic; the library and weights
-determine whether it produces interesting matches.
-
-**First test:** a fixed grid of three sounds × three words with one drawing.
-Artifact: nine images, or an interactive installation with sliders. ImageBind
-supports comparable modality representations, but the blended vector is used
-for **retrieval**, not assumed to be SDXL's conditioning format. This keeps all
-neural models frozen while making the extra input artistically consequential.
-
-[ImageBind modalities and embedding arithmetic](https://github.com/facebookresearch/ImageBind) ·
-[SDXL image editing](https://huggingface.co/docs/diffusers/main/en/using-diffusers/sdxl)
-
-## 9. Two models disagree
-
-**Pipeline:** the same recording → CLAP and BioLingual → rank the same acoustic
-descriptions → identical visual mapping and SDXL seed → diptych.
-
-Use a general audio model and a bioacoustic model as two ways of organizing the
-same sound. The interest is in their divergence: one print might become a dense
-field of marks, another a thin thread. Display both chosen descriptions alongside
-the clip. Optional extra input: a single painting used as both initial images.
-
-**First test:** six clips, a shared vocabulary, paired outputs with fixed seeds.
-Compare ranks rather than raw scores across models, because their score scales
-need not be calibrated alike. Both models are related to CLAP, so this is not
-a comparison of wholly independent architectures. BioLingual's card has a
-checkpoint-ID issue described in the [model guide](models.md); verify loading
-before treating this as a quick extension.
-
-[BioLingual weights](https://huggingface.co/davidrrobinson/BioLingual) ·
-[BioLingual paper](https://arxiv.org/abs/2308.04978)
-
-## 10. An imagined song and its landscape
-
-**Pipeline:** humpback DAC9 prompt → DoLittle continuation → decoded audio →
-CLAP descriptions → SDXL images, using the same mapping for real and synthetic audio.
-
-Make a short passage in which the recording becomes a generated continuation,
-and the visual world develops with it. Optional extra input: one recurring
-material or a drawing from Livia. Clearly mark the boundary between source
-recording and synthetic continuation in the accompanying material.
-
-**First test:** one compatible token prompt, one checkpoint, one short
-continuation, and three representative stills. Assemble the stills and audio
-into a storyboard before attempting a film. This is a later experiment because
-DoLittle adds tokenization, codec decoding, and a separate generator setup.
-Independent diffusion stills may flicker and do not establish video coherence.
-
-[DoLittle public weights](https://huggingface.co/cairninstitute/mmc-humpback-dac9-models) ·
-[Generation/codec code](https://github.com/cairninstitute/cairn_marine_mammals_communication)
-
-## Models needed beyond the marine catalogue
-
-| Model / checkpoint | What it accepts | Why choose it | Loading route / dependencies | Access and terms from release |
-|---|---|---|---|---|
-| [SDXL-Turbo](https://huggingface.co/stabilityai/sdxl-turbo) | Text; optionally an initial image | Rapid visual iteration, 1–4 denoising steps | Diffusers, PyTorch, Transformers, Accelerate; official text/image pipelines | Public weights; card lists `sai-nc-community` and separate commercial-use guidance |
-| [SDXL base 1.0](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0) | Text; optionally initial image through img2img | More flexible image studies; base can run without refiner | Diffusers, PyTorch, Transformers, Accelerate, Safetensors | Public weights; Open RAIL++-M |
-| [Scribble ControlNet](https://huggingface.co/lllyasviel/control_v11p_sd15_scribble) + [SD 1.5](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5) | Drawing + text | Explicit geometry input for idea 4 | Diffusers ControlNet pipeline; both compatible checkpoints needed | Public weights; CreativeML OpenRAIL-M terms on linked releases |
-| [AudioLDM2](https://huggingface.co/cvssp/audioldm2) | Text | Non-marine sound generation for idea 5 | Diffusers `AudioLDM2Pipeline`, PyTorch, Transformers, Accelerate, SciPy for WAV export | Public weights; CC BY-NC-SA 4.0 |
-| [MusicGen-small](https://huggingface.co/facebook/musicgen-small) | Text; supports audio continuation in documented workflows | Smaller first music model; 300 M music decoder | Transformers MusicGen or AudioCraft; PyTorch and audio I/O | Public weights; CC BY-NC 4.0; AudioCraft code MIT |
-| [MusicGen-melody](https://huggingface.co/facebook/musicgen-melody) | Text + audio-derived melody conditioning | Actual musical guide input for idea 7 | Transformers MusicGen Melody or AudioCraft; preprocessing of guide audio | Public weights; CC BY-NC 4.0 |
-
-This is a public-checkpoint shortlist, not a claim that these are the newest or
-best generators. Run audio analysis and generation sequentially and cache the
-features; there is no need to keep both large models on the GPU simultaneously.
-Exact download size, memory use, and runtime for these new combinations have
-not been audited. Few sampling steps do not imply small GPU memory requirements.
-
-## What I would prototype first
-
-1. **Six acoustic material studies:** CLAP + SDXL-Turbo, with a fixed vocabulary,
-   explicit material mapping, and one seed. This is the clearest first
-   two-model demonstration.
-2. **One painting, four sounds:** reuse the visual stack for image-to-image;
-   vary bounded controls, keeping the painting and prompt fixed.
-3. **Three land/sea sound pairs:** reuse CLAP descriptors with AudioLDM2, adding
-   an auditory artifact without training a marine generator.
-
-If Livia prefers geometry over verbal descriptions, move **idea 4** ahead of
-the first two. The existing contour output gives us a head start. Render a
-condition image from its raw annotations rather than feeding the full plotted
-figure into ControlNet.
-
-Use a handful of actual clips from [DSWP](https://huggingface.co/datasets/orrp/DSWP)
-and [OpenWhistle](https://huggingface.co/datasets/dolphinteam/OpenWhistle-Classification-Finetuning),
-or Livia's recordings. An annotation-only contour demo does not yet run an
-audio encoder. Small clip downloads and model inference are separate next steps;
-this brainstorm did not download recordings or checkpoints.
-
-## Make the contribution of sound visible
-
-For every artifact, save the source clip/offset, preprocessing, model revision,
-descriptor scores or feature controls, artist mapping, optional input, prompt,
-seed, and output. Three quick comparisons are useful: same audio with different
-seeds, different audio with the same seed, and shuffled audio-to-control
-assignments. They show whether the audio makes a consistent contribution.
-
-Keep prompts materially specific if the aim is abstract work; repeatedly adding
-“whale” or “ocean” may make the visual model's familiar marine imagery dominate
-the differences between recordings. Optional time, location, or observed group
-behavior can shape a separate visual layer when the dataset actually supplies
-those fields. Keep that metadata separate from anything inferred from sound.
-
-The residency framing could be: **an encounter between animal acoustic structure,
-machine representations, and an artist's material vocabulary**. Labels may
-support comparison of recurring forms or observed contexts. These experiments
-do not establish the intention, emotion, or per-call meaning of the animal.
+Brainstorm revised **4 October 2026**, after generating and reviewing the first
+experiments with Livia's jewelry photographs and real cetacean recordings.
+[Artist brief](livia-experiment-brief.md) · [Model guide](models.md) ·
+[Dataset guide](datasets.md) · [Run instructions](../README.md#next-experiments)
+
+The **7 October investigation** extends this brainstorm with
+[existing art and interaction projects](cetacean-art-precedents.md),
+[five new ideas and their first experiments](2026-art-ideas.md), and
+[a strict 2026 model audit](2026-art-models.md). It covers music accompaniment,
+sound-operated drawing, the dolphin-image claim and map-linked listening.
+The observations below describe the earlier runs; the new experiments are
+proposals with explicit comparisons and success criteria.
+
+The starting point is Livia's actual practice: digitally modeled, printed and
+cast silver settings around natural materials. Mitoring combines amber with
+folded silver; Mycelium addresses drainage around porous opal; Nanot explores
+an open lattice. Livistone enlarges jewelry into inhabited spaces. Sound can
+change a setting, select a material gesture, organize a sequence, or answer an
+object acoustically. These are our proposed correspondences, not rules authored
+by Livia or decoded animal meanings.
+
+## What the first outputs taught us
+
+| Experiment actually run | Observation | Consequence for the next experiment |
+|---|---|---|
+| Generic paper/thread/glass images | The visual vocabulary had little connection to Livia | Begin with an actual piece and its material or functional problem |
+| CLAP → jewelry/pavilion prompts | Three winning descriptions gave only three directions; repeated winner/reference/seed combinations produced identical images | More recordings alone do not add expressive range to a three-way mapping |
+| Bounded Mitoring edits | “Very subtle,” “subtle,” and “moderate” instructions produced changes the user found too small | Give the silver permission to change silhouette substantially; retain a no-sound comparison |
+| Whole-recording silver/amber meshes | Duration, centroid and RMS visibly changed numerical geometry, but the ribs felt like imprisonment | Measurable influence is not sufficient artistic justification; use outward surfaces, growth, folds or relief when those suit the piece |
+| Substantial CLAP-directed jewelry redesigns | Terraces, a crest and opening petals produced clear differences on both Mitoring and Mycelium | This is the current visual starting point; test richer controls and source fidelity next |
+| The same substantial edits | Some results changed stone shape or details despite preservation instructions | A photograph is a reference, not a geometric constraint; distinguish concept images from faithful edits and fabrication models |
+| Listening gallery | Quiet/high-frequency audio was difficult to hear; audio in the output column confused the relationship | Put jewelry and playable audio in Input; show scores/instructions in Schema; put generated images in Output |
+| [Sound brush](sound-brush.md) (7 Oct) | Keyboard sounds measured from the emitted WAV gave legible, replayable effects. Bend added 44° of turn, hold doubled length, velocity widened the stroke, and a key switched fold to open. Recorded whistles were rejected as commands and drew thin continuous lines | Explicit contour controls make sound influence substantial and explainable. Next: a human performer, then a FLUX concept stage that swaps guides at a fixed seed |
+
+The current `art jewelry` run contains **six sound-directed images and two
+no-sound redesigns**, from two photographs and three selected recordings. The
+no-sound redesign uses the same photo, seed, generation settings and substantial
+edit template; only the operation text differs. It is a generated comparison,
+not an unchanged copy of the original.
+
+The implemented visual model is
+[FLUX.2 klein 4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B), through
+`Flux2KleinPipeline`. Reuse this working reference-editing stack for initial
+visual tests. SDXL-Turbo, SD 1.5 and their ControlNets are historical alternatives,
+not prerequisites for the ideas below. Diffusers is the inference library;
+the selected checkpoint determines the visual model.
+
+### What CLAP does in our implementation
+
+A recording is mixed to mono and anti-aliased to 48 kHz. The current analyzer
+reads its first ten seconds at most; shorter inputs are repeat-padded by the
+checkpoint's processor. Its log-mel frontend covers 50 Hz–14 kHz in 64 bands.
+The model produces a projected audio embedding and compares it with embeddings
+of supplied acoustic sentences. Cosine scores rank those candidates; they are
+not probabilities, a free caption, or validated call labels.
+
+Currently, the winning sentence selects one of three instructions:
+**clicks → terraces**, **whistle → crest**, **wavering → petals**. FLUX receives
+the jewelry photograph and the instruction text. It receives neither the
+waveform nor the CLAP vector. Stronger edits changed the artistic instruction,
+not this connection between models. A broader or temporal connection remains
+future work. [CLAP interface](https://huggingface.co/docs/transformers/en/model_doc/clap)
+· [Audited checkpoint frontend](https://huggingface.co/laion/clap-htsat-unfused/blob/main/preprocessor_config.json)
+
+Longer actual inputs are already available locally: two OpenWhistle pretraining
+recordings of **30.8 and 36 seconds at 96 kHz**. `art long-forms` analyzed their
+whole waveforms and compared 5-second, 15-second and full prefixes. That does
+not mean our CLAP analyzer now processes a whole recording. Its crop must be
+replaced by an explicit windowing scheme for a temporal CLAP experiment.
+
+## Revised shortlist
+
+Effort is relative to our working environment: **S** reuses the current stack;
+**M** adds a representation, renderer or interaction; **L** needs another model
+or substantial geometry work. These are estimates, not completed runtime tests.
+
+| Idea | Inputs and connection | First artifact | Status / effort |
+|---|---|---|---|
+| 1. A richer acoustic vocabulary | Sound → several CLAP axes → a substantial silver instruction | Same piece across a wider family of forms | Three-way baseline exists; extension S |
+| 2. A piece substantially reimagined | Jewelry photo + sound → CLAP-selected operation → FLUX reference edit | Source, sound-directed redesign and no-sound comparison | Implemented; refinement S |
+| 3. Sound chooses from Livia's own material library | Sound → CLAP scores for artist-tagged references → selected reference + edit | Retrieval/edit triptychs | Proposed; M |
+| 4. A whistle leaves a silver gesture | Annotated F0/time → outline, relief or fold guide → rendered concept | Contour, guide and outward silver form | Contour baseline exists; next M |
+| 5. Jewelry answers the recording | Source timing + recorded material sound → resynthesis or convolution | Original and a silver/wood/glass response | Proposed; next S/M |
+| 6. A call becomes a written score | Onsets/intervals → artist's instrument mapping → rendered notes | Timeline, score and playable response | Proposed; S/M |
+| 7. A whistle becomes an audible melody | Annotated F0 → declared register mapping → instrument guide | Original, mapped guide and optional accompaniment | Proposed; M |
+| 8. A visitor changes the correspondence | Jewelry + sound + a word/gesture → controllable edit instruction | Small interactive gallery | Proposed; M |
+| 9. Two representations disagree | Same audio → CLAP vs another encoder or explicit features → same design vocabulary | Explained diptychs | Proposed; M/L |
+| 10. Real and imagined whale phrases | Real prompt → WhAM or DoLittle → separately labeled visual responses | Paired audio and storyboard | Proposed; L |
+| 11. A recording unfolds through one piece | Long audio → windowed CLAP/feature trajectory → reference-anchored states | Synchronized six-state storyboard | Proposed; next M |
+| 12. Jewelry becomes an inhabited sound space | Jewelry + Livistone context + sound → architectural operation | Ring/pavilion pair or room sequence | Pavilion baseline exists; refinement M/L |
+
+Most first tests can use frozen neural weights. Feature ranges, retrieval tags,
+windowing and artistic correspondences still need design. A learned direct
+CLAP-to-image adapter would be a separate training project, not a parameter
+we can switch on in the current pipeline.
+
+## 1. A richer acoustic vocabulary
+
+**Pipeline:** recording → CLAP scores within several acoustic candidate groups
+→ explicit silver operations → FLUX edit of a source piece.
+
+The current winner removes most distinctions between recordings. Instead, try
+separate groups for temporal character, tonal movement and texture: for example
+isolated/repeated/dense events, steady/rising/falling/wavering tones, and smooth/
+rough/noisy sound. Keep the sentences acoustic; Livia's proposed design vocabulary
+belongs in the following mapping layer.
+
+A temporal choice could select plate spacing, tonal movement could select a
+rising or falling sweep, and texture could select polished versus deeply worked
+surfaces. Do not force an applicable label in every group: small score margins
+should remain visible and can trigger a simpler instruction. Several similar
+sentences may rank unstably. Score-derived blends would be artistic heuristics,
+not measured proportions of acoustic properties.
+
+**First test:** two photographs, six recordings, three small candidate groups.
+Compare the richer instructions with the existing three-way mapping under the
+same seed. A useful result is more variety that can still be explained by the
+scores; a longer prompt alone is not success. **Not implemented yet.**
+
+## 2. A piece substantially reimagined
+
+**Pipeline:** actual jewelry photograph + recording → CLAP-selected substantial
+silver transformation → FLUX reference-image editing.
+
+This is the implemented `art jewelry` experiment. Terraces respond to the
+click description; a continuous crest responds to the whistle description;
+opening petals respond to the wavering description. The mapping asks the metal
+to open outward and substantially change the silhouette. RMS no longer limits
+these edits to subtle wording.
+
+**Next test:** keep the same three recordings and compare two degrees of design
+freedom, with two seeds per condition. Inspect the exposed stone, its inclusions,
+the band and the setting's support as well as the silhouette. Stronger wording
+is not a calibrated deformation strength. If faithful stone preservation is
+required, test a real segmentation/compositing or geometry workflow; do not
+assume this pipeline offers a hard mask or exact preservation.
+
+Save the original alongside every comparison. The no-sound redesign distinguishes
+the effect of the chosen operation from the model's general tendency to redesign
+a ring. **Implemented baseline, proposed refinement.**
+
+## 3. Sound chooses from Livia's own material library
+
+**Pipeline:** recording → CLAP similarity to descriptions attached to Livia's
+reference photographs → retrieved references → FLUX redesign.
+
+Build a small library of whole pieces and details: a Mitoring fold, an exposed
+opal, a Nanot joint, an Ammonite curve, a walnut/metal transition. Attach short
+acoustic analogies chosen for the experiment to each reference. CLAP compares
+audio with those descriptions; it does not inspect the photographs on this
+route. The selected photographs then become consequential image-model inputs.
+
+**First test:** 12–20 references, three recordings, top-three matches shown
+before generation. Compare sound-selected references with randomly assigned
+ones. A useful library should reveal relationships within Livia's work rather
+than repeatedly selecting a generic ocean image.
+
+Direct audio/image retrieval with ImageBind remains an optional alternative.
+It adds another environment and a different learned correspondence; our
+[model audit](models.md) records its setup. It is not needed for the tagged
+library's first test. **Proposed.**
+
+## 4. A whistle leaves a silver gesture
+
+**Pipeline:** an existing F0 annotation with time coordinates → artist-defined
+2D guide or geometric surface → rendered jewelry concept.
+
+Let a rising contour lift a silver shoulder, a wavering contour shape the edge
+of a broad petal, or a phrase leave a groove across a plate. Treat gaps as gaps
+rather than bridging them with enclosing bars. The stone remains an exposed
+reference anchor. This explores a surface or gesture instead of adding another
+cage around the object.
+
+Use the actual annotated pitch track when available. Spectral centroid measures
+frequency-energy distribution and must not be presented as whistle pitch. An
+encoder trajectory also has different provenance from an F0 annotation.
+
+**First test:** three annotated contours, each mapped into a line engraving and
+an outward fold. Show the source curve, clean guide and resulting object. Start
+with deterministic SVG/surface previews; try a guide image as an additional
+FLUX reference afterward. Whether it follows that guide closely is a test, not
+a guaranteed ControlNet-style constraint. Parametric CAD is a separate route
+when exact shape control matters. **Contour baseline exists; object mapping proposed.**
+
+## 5. Jewelry answers the recording
+
+**Pipeline:** recording's event times or amplitude envelope + material sound
+samples/impulse responses → a constructed acoustic response.
+
+Use taps on silver, rubbing glass or wooden resonance as a proposed sonic
+counterpart to a piece. With actual material recordings, onset-triggered
+resynthesis can retain event timing; convolution can give an existing signal a
+recorded resonance. Without samples, a declared synthetic resonator is a useful
+first baseline. It should not be presented as the measured sound of a jewel.
+
+**First test:** three marine clips, one fixed material palette, three separate
+response tracks. Present a timing-preserving version before adding a free
+text-to-audio interpretation. The listener should be able to compare the
+original and response, and identify which timing survived. A later generative
+sound model needs a current inference check; the former AudioLDM2 suggestion
+is not automatically the best next dependency. **Proposed.**
+
+## 6. A call becomes a written score
+
+**Pipeline:** verified annotations or proposed onset detections → intervals and
+event groups → an artist-chosen instrumental score → rendered sound.
+
+Repeated events can become percussive strikes with their original spacing;
+pauses can remain silence. Livia chooses the timbre and whether the score is an
+answer or an accompaniment. Save the detected events and allow inspection:
+noise can also trigger an onset detector, and detection is not call annotation.
+
+**First test:** one click-rich recording, its event timeline, one rhythm-preserving
+score and a deliberately regularized score for comparison. This gives a concrete
+contrast between source rhythm and composition. MusicGen or another music
+model can later provide a freer response after its current loader is checked;
+a text prompt alone does not impose the original intervals. **Proposed.**
+
+## 7. A whistle becomes an audible melody
+
+**Pipeline:** annotated F0/time → explicit register mapping → sine/instrument
+guide, optionally followed by generated accompaniment.
+
+Translate frequency into a declared musical register while retaining annotation
+times and gaps. Show the mapping and octave changes rather than calling the
+result an unmodified whistle. A playable guide and drawn score already form an
+artifact; a music generator is optional.
+
+**First test:** three contours, each with its original clip and two different
+register mappings. Listen before selecting a melody-conditioned generator.
+The earlier MusicGen-melody route is a comparison candidate, not a default:
+its chroma conditioning may discard octave information or other guide details.
+These are musical compositions, not translations of animal intention.
+[Melody/chroma interface](https://huggingface.co/docs/transformers/en/model_doc/musicgen_melody)
+**Proposed.**
+
+## 8. A visitor changes the correspondence
+
+**Pipeline:** visitor-selected jewelry photograph + sound + a word or gesture
+→ an explicit editable correspondence → FLUX result.
+
+A word such as “unfurl,” “erode,” or “step” can modify the sound-selected
+operation. Keep separate controls for the sound, the visitor's instruction and
+the amount of artistic freedom. Expose those choices in the gallery so a word
+does not silently dominate the recording. The current model does not accept a
+mixture of arbitrary audio/image/text embeddings as its editing input.
+
+**First test:** one photo, three sounds and three words, then the same word with
+sound disabled. Cache the nine combinations for a responsive installation.
+Use buttons for real audio playback; source audio belongs with the inputs.
+**Proposed.**
+
+## 9. Two representations disagree
+
+**Pipeline:** the same recording → two representations → the same artist-defined
+vocabulary and visual generator → an explained diptych.
+
+A useful first pair is CLAP's candidate description and a transparent acoustic
+rule based on measured events or an annotated contour. This asks whether semantic
+ranking loses a structure that remains visible in the source. A later encoder
+comparison could use BioLingual or dolphin-oriented features after the loader
+is verified. A feature encoder need not provide text similarity scores.
+
+**First test:** three clips where the two methods choose different operations,
+plus one agreement case. Hold the photograph, seed and instruction templates
+fixed. Explain both choices, and compare within-model ranks rather than treating
+raw scores from unrelated models as calibrated alike. **Proposed.**
+
+## 10. Real and imagined whale phrases
+
+**Two separate routes:** sperm-whale coda prompt → WhAM pseudocoda variation;
+or compatible humpback codec-token prompt → DoLittle continuation.
+
+The species and generation task matter. WhAM is the sperm-whale candidate;
+DoLittle continues humpback material. Its current unified script documents
+`--prompt-seconds` and `--max-new-seconds`, as well as token-count controls.
+Neither generator has been run in our art pipeline. Test those duration controls
+with the chosen checkpoint and codec before promising arbitrary output lengths;
+a seconds option does not establish unlimited continuation. Looping or concatenating real
+clips must not masquerade as a newly recorded long phrase.
+
+**First test:** one real prompt and one synthetic response, with the boundary
+clearly marked. Use the same jewelry reference and visual mapping for both.
+Then compare sequences or durations supported by that generator; a storyboard
+comes before a film. Longer sound is useful only if the visual bridge retains
+its temporal development.
+
+WhAM's published setup needs separate dependency work, and its weight terms
+differ from its code terms. DoLittle needs compatible codec tokens and decoding.
+See the [audited setup and terms](models.md#checkpoints-runtime-and-licenses),
+[WhAM release](https://github.com/Project-CETI/wham) and
+[DoLittle generation code](https://github.com/cairninstitute/cairn_marine_mammals_communication).
+**Proposed; separate setup required.**
+
+## 11. A recording unfolds through one piece
+
+**Pipeline:** whole 30–40-second recording → declared overlapping analysis
+windows → evolving CLAP choices and/or measured features → reference-anchored
+jewelry states.
+
+Start with the 30.8/36-second real recordings already downloaded. Use explicit
+windows no longer than CLAP's current ten-second input, save start/end times,
+and show the scores at each position. Shorter windows are a proposed artistic
+timescale whose stability needs testing. Do not let repeat-padding imply that
+a short event is a continuous ten-second phrase.
+
+Let the metal expand, fold, unfurl or soften across the sequence. Use a common
+reference range for numerical features. Duration determines how much of the
+score we see, not automatically how many bars enclose a stone. Frames should
+initially refer back to the original photo; test chained edits separately
+because their errors may accumulate.
+
+**First test:** six timestamped stills from each of two recordings, synchronized
+with playback and a cursor over the control timeline. Compare against six
+states driven by one constant instruction. This is a storyboard or slideshow;
+independent diffusion edits do not establish coherent video. **Proposed; next visual experiment.**
+
+## 12. Jewelry becomes an inhabited sound space
+
+**Pipeline:** jewelry reference + Livistone scene + recording → a chosen spatial
+operation → architectural concept or controlled room geometry.
+
+Carry a specific setting gesture into a space: a silver crest can become a
+roof opening, Mycelium's drainage can become a rain channel, or terraces can
+organize a route. Sound might select that operation or unfold its arrangement
+in time. Identify the source piece and the spatial function; a larger decorative
+ring is not yet an inhabitable design.
+
+**First test:** three sound-selected versions of one piece, each paired with a
+small pavilion concept. Use the same scale cues, camera and Livistone reference.
+Show a human-sized entrance, walkable ground and the material connection. A
+second test can make the room acoustically answer its source via idea 5.
+Rendered architectural images and direct CAD models are different outputs.
+**Jewelry/pavilion baseline exists; these operations are proposed refinements.**
+
+## What to explore next
+
+1. **A recording unfolds through one piece (11):** use longer data we already
+   have, and make time consequential without returning to rib cages.
+2. **A whistle leaves a silver gesture (4):** use an actual contour to explore
+   engraving, edges and folds; inspect the mapping before generative rendering.
+3. **Jewelry answers the recording (5):** make an audible artifact whose source
+   timing survives, then compare it with a freer generated response.
+
+The richer vocabulary in idea 1 is a small parallel extension of our current
+stack. It should earn its complexity through more useful, explainable outcomes.
+The source-library and Livistone directions are worthwhile when selecting pieces
+or changing scale becomes the main artistic question.
+
+## A useful comparison for every new idea
+
+Each first artifact should show **input → schema → output**, with the source
+photo, playable recording, time range, actual measurements or scores, chosen
+mapping and generated result. Preserve raw audio and put listening gain or
+speed changes in separately labeled playback copies/modes. Audibility changes
+must not silently change the evidence given to the encoder.
+
+Compare different sounds with the same photo and seed, and compare the sound
+mapping against a no-sound or constant-control condition. Add another seed when
+assessing consistency, and shuffle mappings where that comparison is meaningful.
+Check whether source shape, materials and the sound relationship survive; clear
+visual difference alone does not demonstrate acoustic fidelity.
+
+Save model revisions, exact prompts, reference hashes and time coordinates under
+the existing [data layout](../data/README.md). Raw RMS includes recording gain
+and distance; spectral centroid is not F0; CLAP scores compare supplied sentences.
+These distinctions belong in the explanation of the artifact, not as hidden
+implementation assumptions.

@@ -218,3 +218,101 @@ def demo_command(
     from .gallery import write_gallery
 
     write_gallery(layout.output)
+
+
+brush_app = typer.Typer(help="Human-operated sound brush: keys → emitted audio → measured contour → stroke.", no_args_is_help=True)
+app.add_typer(brush_app, name="brush")
+StoneOption = Annotated[str, typer.Option(help="Stone at the centre: mitoring (amber) or mycelium (opal).")]
+
+
+@brush_app.command("keys")
+def brush_keys_command():
+    """Print the keyboard map: which key plays which recording or synthesized contour."""
+    from .brush import load_config
+
+    config = load_config()
+    for pitch_class, source in config["keyboard"]["pitch_classes"].items():
+        family = source.get("family")
+        title = config["families"][family]["title"] if family else f"recorded {source['recording']}"
+        command = config["commands"].get(family, "beads" if family == "clicks" else "—") if family else "measured, not designed"
+        print(f"{pitch_class:3s} {title:36s} designed command: {command}")
+    print("\nPhrase syntax: NOTE:SECONDS[@VELOCITY][~BEND] and rest:SECONDS, e.g. 'C4:0.8@100 E4:1.0~-0.5 rest:0.4 F4:0.9'")
+
+
+@brush_app.command("play")
+def brush_play_command(
+    phrase: Annotated[str | None, typer.Argument(help="Typed phrase, e.g. 'C4:0.8@100 E4:1.0 rest:0.4 F4:0.9'.")] = None,
+    midi: Annotated[Path | None, typer.Option(exists=True, dir_okay=False, help="MIDI file recorded from a keyboard.")] = None,
+    name: Annotated[str, typer.Option(help="Output file stem.")] = "phrase",
+    stone: StoneOption = "mitoring",
+    data_dir: DataOption = DEFAULT_DATA,
+    output: OutputOption = None,
+):
+    """Render a phrase or MIDI file to audio, then draw from that audio alone; needs art + viz (+ midi)."""
+    from .brush import load_config, parse_midi, parse_phrase, perform
+
+    if (phrase is None) == (midi is None):
+        raise typer.BadParameter("Give either a PHRASE or --midi")
+    config = load_config()
+    layout = Layout(data_dir)
+    events = parse_midi(midi, config) if midi else parse_phrase(phrase, config)
+    record = perform(layout, events, config, output or layout.output / "brush" / "played", name, stone, name, phrase=phrase, midi=midi)
+    for segment in record["segments"]:
+        print(f"{segment['index']:2d} {segment['kind']:6s} {segment['start_s']:6.2f}s  {segment['recognition']['command']:7s} {segment['recognition']['reason']}")
+    print(f"Stroke {record['stroke_sha256'][:16]} · {record['metrics']} · {record['timing_ms']}")
+
+
+@brush_app.command("draw")
+def brush_draw_command(
+    audio: Annotated[Path, typer.Argument(exists=True, dir_okay=False, help="Any WAV/FLAC: a saved performance or a recording.")],
+    name: Annotated[str | None, typer.Option(help="Output file stem; defaults to the audio stem.")] = None,
+    stone: StoneOption = "mitoring",
+    data_dir: DataOption = DEFAULT_DATA,
+    output: OutputOption = None,
+):
+    """Draw from an audio file without any keyboard data; identical audio gives an identical stroke."""
+    from .brush import load_config, save_drawing
+    from .data import write_json
+
+    layout = Layout(data_dir)
+    directory = output or layout.output / "brush" / "drawn"
+    record = save_drawing(directory, name or audio.stem, audio, load_config(), stone, audio.name)
+    write_json(directory / f"{name or audio.stem}-record.json", record)
+    print(f"Stroke {record['stroke_sha256']} · {record['metrics']}")
+
+
+@brush_app.command("study")
+def brush_study_command(
+    data_dir: DataOption = DEFAULT_DATA,
+    learned: Annotated[bool, typer.Option(help="Also compare OpenWhistle embeddings with measured contours.")] = True,
+    device: DeviceOption = "auto",
+):
+    """Keys, performances, one-feature changes, replay checks, learned comparison and gallery."""
+    from .brush_study import study
+
+    print(f"Gallery: {study(Layout(data_dir), learned, device)}")
+
+
+@brush_app.command("live")
+def brush_live_command(
+    port: Annotated[str | None, typer.Option(help="MIDI input port name; list with --list-ports.")] = None,
+    virtual: Annotated[bool, typer.Option(help="Open a virtual input port named whales-sound-brush.")] = False,
+    list_ports: Annotated[bool, typer.Option(help="Print available MIDI inputs and exit.")] = False,
+    phrase_gap: Annotated[float, typer.Option(min=0.2, max=10, help="Seconds of silence that end a phrase.")] = 1.5,
+    phrases: Annotated[int, typer.Option(min=1, max=100)] = 1,
+    stone: StoneOption = "mitoring",
+    play: Annotated[bool, typer.Option(help="Play the emitted audio with pw-play/paplay/aplay after each phrase.")] = False,
+    figures: Annotated[bool, typer.Option(help="Also draw the slower spectrogram explanation for each phrase.")] = False,
+    data_dir: DataOption = DEFAULT_DATA,
+):
+    """Phrase-level live loop from a MIDI keyboard; needs art + viz + midi."""
+    if list_ports:
+        import mido
+
+        print("\n".join(mido.get_input_names()) or "No MIDI inputs")
+        return
+    if port is None and not virtual:
+        raise typer.BadParameter("Give --port NAME or --virtual")
+    from .brush_study import live
+
+    print(f"Saved {live(Layout(data_dir), port, virtual, phrase_gap, phrases, stone, play, figures)}")

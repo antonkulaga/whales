@@ -16,11 +16,17 @@ import polars as pl
 import typer
 
 from experiments.cli import app as art_app
+from experiments.follow import app as follow_app
+from experiments.inscription import app as inscription_app
+from dclde import app as dclde_app
 
 ROOT = Path(__file__).resolve().parent
 CLASSIFICATION = "dolphinteam/OpenWhistle-Classification-Finetuning"
 app = typer.Typer(help=__doc__, no_args_is_help=True, add_completion=False)
 app.add_typer(art_app, name="art")
+app.add_typer(dclde_app, name="dclde")
+app.add_typer(follow_app, name="follow")
+app.add_typer(inscription_app, name="inscription")
 
 
 @dataclass

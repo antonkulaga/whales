@@ -1,0 +1,436 @@
+{
+  "computed_at_utc": "2026-10-07T12:38:30.275831+00:00",
+  "input": "/home/antonkulaga/sources/whales/data/input/dclde/Annotations.csv",
+  "input_sha256": "407f1c0f7d95a39c7bace99bbef40646e2fe62403c6237c20ddf374e88e21b15",
+  "scope": "Combined annotation CSV only; not audio coverage, detected whale counts, or model evaluation.",
+  "statistics": {
+    "annotations": 207574,
+    "recordings": 13084,
+    "distinct_soundfile_names": 13084,
+    "recording_key": [
+      "Provider",
+      "Dataset",
+      "Soundfile"
+    ],
+    "exact_duplicate_rows_excluding_export_index": 65,
+    "valid_utc_date_rows": 207574,
+    "date_min": "2011-02-10",
+    "date_max": "2023-04-28",
+    "invalid_or_missing_time_bounds": 650,
+    "invalid_or_missing_frequency_bounds": 2398,
+    "valid_call_or_detection_rows": 206883,
+    "orca_annotations": 59107,
+    "orca_annotations_with_known_ecotype": 52657,
+    "orca_annotations_without_ecotype": 6450,
+    "known_orca_ecotypes": [
+      {
+        "Ecotype": "SRKW",
+        "annotations": 20908,
+        "percent_of_known_orca_ecotypes": 39.706021991378165
+      },
+      {
+        "Ecotype": "TKW",
+        "annotations": 12707,
+        "percent_of_known_orca_ecotypes": 24.131644415747193
+      },
+      {
+        "Ecotype": "NRKW",
+        "annotations": 8266,
+        "percent_of_known_orca_ecotypes": 15.697817953928253
+      },
+      {
+        "Ecotype": "SAR",
+        "annotations": 8078,
+        "percent_of_known_orca_ecotypes": 15.340790398237651
+      },
+      {
+        "Ecotype": "OKW",
+        "annotations": 2698,
+        "percent_of_known_orca_ecotypes": 5.123725240708738
+      }
+    ],
+    "duration_seconds": {
+      "min": 0.042770000000004416,
+      "median": 0.554000000000002,
+      "p95": 1.6940000000000008,
+      "max": 621.99
+    },
+    "summed_annotation_hours": 42.490255469350586,
+    "union_annotated_hours": 40.94762774066916,
+    "groups": {
+      "ClassSpecies": [
+        {
+          "ClassSpecies": "HW",
+          "annotations": 124977,
+          "recordings": 6218,
+          "percent": 60.20840760403519
+        },
+        {
+          "ClassSpecies": "KW",
+          "annotations": 59107,
+          "recordings": 2716,
+          "percent": 28.475146212916837
+        },
+        {
+          "ClassSpecies": "UndBio",
+          "annotations": 11821,
+          "recordings": 1215,
+          "percent": 5.6948365402218
+        },
+        {
+          "ClassSpecies": "AB",
+          "annotations": 11669,
+          "recordings": 4031,
+          "percent": 5.621609642826172
+        }
+      ],
+      "Ecotype": [
+        {
+          "Ecotype": "NA",
+          "annotations": 154917,
+          "recordings": 11401,
+          "percent": 74.63217936735815
+        },
+        {
+          "Ecotype": "SRKW",
+          "annotations": 20908,
+          "recordings": 994,
+          "percent": 10.07255243913014
+        },
+        {
+          "Ecotype": "TKW",
+          "annotations": 12707,
+          "recordings": 638,
+          "percent": 6.121672271093682
+        },
+        {
+          "Ecotype": "NRKW",
+          "annotations": 8266,
+          "recordings": 471,
+          "percent": 3.9821943017911683
+        },
+        {
+          "Ecotype": "SAR",
+          "annotations": 8078,
+          "recordings": 51,
+          "percent": 3.891624191854471
+        },
+        {
+          "Ecotype": "OKW",
+          "annotations": 2698,
+          "recordings": 143,
+          "percent": 1.2997774287723896
+        }
+      ],
+      "AnnotationLevel": [
+        {
+          "AnnotationLevel": "Detection",
+          "annotations": 169282,
+          "recordings": 10337,
+          "percent": 81.55260292714887
+        },
+        {
+          "AnnotationLevel": "Call",
+          "annotations": 37624,
+          "recordings": 2251,
+          "percent": 18.125584129033502
+        },
+        {
+          "AnnotationLevel": "File",
+          "annotations": 668,
+          "recordings": 596,
+          "percent": 0.3218129438176265
+        }
+      ],
+      "Provider": [
+        {
+          "Provider": "DFO_CRP",
+          "annotations": 158874,
+          "recordings": 9374,
+          "percent": 76.53848747916405
+        },
+        {
+          "Provider": "JASCO_VFPA",
+          "annotations": 12517,
+          "recordings": 290,
+          "percent": 6.030138649349148
+        },
+        {
+          "Provider": "DFO_WDLP",
+          "annotations": 10408,
+          "recordings": 963,
+          "percent": 5.014115447984815
+        },
+        {
+          "Provider": "UAF_NGOS",
+          "annotations": 10113,
+          "recordings": 142,
+          "percent": 4.871997456328827
+        },
+        {
+          "Provider": "SIMRES",
+          "annotations": 4018,
+          "recordings": 143,
+          "percent": 1.9356952219449448
+        },
+        {
+          "Provider": "SIO",
+          "annotations": 2795,
+          "recordings": 62,
+          "percent": 1.346507751452494
+        },
+        {
+          "Provider": "ONC",
+          "annotations": 2706,
+          "recordings": 1233,
+          "percent": 1.3036314760037384
+        },
+        {
+          "Provider": "OrcaSound",
+          "annotations": 2398,
+          "recordings": 687,
+          "percent": 1.155250657596809
+        },
+        {
+          "Provider": "JASCO_VFPA_ONC",
+          "annotations": 2078,
+          "recordings": 42,
+          "percent": 1.001088768342856
+        },
+        {
+          "Provider": "SMRUConsulting",
+          "annotations": 1667,
+          "recordings": 148,
+          "percent": 0.8030870918323103
+        }
+      ],
+      "Dataset": [
+        {
+          "Dataset": "WVanIsl",
+          "annotations": 114056,
+          "recordings": 5644,
+          "percent": 54.94715137734013
+        },
+        {
+          "Dataset": "NorthBc",
+          "annotations": 44818,
+          "recordings": 3730,
+          "percent": 21.591336101823927
+        },
+        {
+          "Dataset": "Field_HTI",
+          "annotations": 6360,
+          "recordings": 43,
+          "percent": 3.063967548922312
+        },
+        {
+          "Dataset": "HaroStraitNorth",
+          "annotations": 5326,
+          "recordings": 143,
+          "percent": 2.565831944270477
+        },
+        {
+          "Dataset": "HaroStraitSouth",
+          "annotations": 5170,
+          "recordings": 138,
+          "percent": 2.490678023259175
+        },
+        {
+          "Dataset": "SwanChan",
+          "annotations": 4138,
+          "recordings": 271,
+          "percent": 1.9935059304151772
+        },
+        {
+          "Dataset": "Tekteksen",
+          "annotations": 4018,
+          "recordings": 143,
+          "percent": 1.9356952219449448
+        },
+        {
+          "Dataset": "BarkleyCanyon",
+          "annotations": 2706,
+          "recordings": 1233,
+          "percent": 1.3036314760037384
+        },
+        {
+          "Dataset": "StrGeoN1",
+          "annotations": 2234,
+          "recordings": 161,
+          "percent": 1.076242689354158
+        },
+        {
+          "Dataset": "Cpe_Elz",
+          "annotations": 2159,
+          "recordings": 46,
+          "percent": 1.0401109965602628
+        },
+        {
+          "Dataset": "StraitofGeorgia",
+          "annotations": 2078,
+          "recordings": 42,
+          "percent": 1.001088768342856
+        },
+        {
+          "Dataset": "BoundaryPass",
+          "annotations": 2021,
+          "recordings": 9,
+          "percent": 0.9736286818194957
+        },
+        {
+          "Dataset": "CarmanahPt",
+          "annotations": 1774,
+          "recordings": 254,
+          "percent": 0.8546349735516008
+        },
+        {
+          "Dataset": "Field_SondTrap",
+          "annotations": 1718,
+          "recordings": 8,
+          "percent": 0.8276566429321591
+        },
+        {
+          "Dataset": "LimeKiln",
+          "annotations": 1667,
+          "recordings": 148,
+          "percent": 0.8030870918323103
+        },
+        {
+          "Dataset": "StrGeoS2",
+          "annotations": 1590,
+          "recordings": 166,
+          "percent": 0.765991887230578
+        },
+        {
+          "Dataset": "orcasound_lab",
+          "annotations": 1316,
+          "recordings": 384,
+          "percent": 0.6339907695568809
+        },
+        {
+          "Dataset": "bush_point",
+          "annotations": 741,
+          "recordings": 194,
+          "percent": 0.35698112480368444
+        },
+        {
+          "Dataset": "Quin_Can",
+          "annotations": 636,
+          "recordings": 16,
+          "percent": 0.30639675489223117
+        },
+        {
+          "Dataset": "MS_671879205",
+          "annotations": 464,
+          "recordings": 31,
+          "percent": 0.22353473941823157
+        },
+        {
+          "Dataset": "KB_67383303",
+          "annotations": 450,
+          "recordings": 7,
+          "percent": 0.21679015676337113
+        },
+        {
+          "Dataset": "StrGeoS1",
+          "annotations": 435,
+          "recordings": 85,
+          "percent": 0.20956381820459208
+        },
+        {
+          "Dataset": "MS_6897",
+          "annotations": 373,
+          "recordings": 4,
+          "percent": 0.17969495216163872
+        },
+        {
+          "Dataset": "port_townsend",
+          "annotations": 341,
+          "recordings": 109,
+          "percent": 0.16427876323624346
+        },
+        {
+          "Dataset": "KB_67424266",
+          "annotations": 299,
+          "recordings": 23,
+          "percent": 0.14404501527166214
+        },
+        {
+          "Dataset": "HE_67424266",
+          "annotations": 294,
+          "recordings": 13,
+          "percent": 0.14163623575206913
+        },
+        {
+          "Dataset": "StrGeoN2",
+          "annotations": 237,
+          "recordings": 26,
+          "percent": 0.11417614922870879
+        },
+        {
+          "Dataset": "MS_5360",
+          "annotations": 97,
+          "recordings": 6,
+          "percent": 0.04673032268010444
+        },
+        {
+          "Dataset": "KB_5354",
+          "annotations": 32,
+          "recordings": 2,
+          "percent": 0.01541618892539528
+        },
+        {
+          "Dataset": "RB_335826997",
+          "annotations": 12,
+          "recordings": 2,
+          "percent": 0.00578107084702323
+        },
+        {
+          "Dataset": "HE_67391498",
+          "annotations": 9,
+          "recordings": 2,
+          "percent": 0.004335803135267422
+        },
+        {
+          "Dataset": "RB_67424266",
+          "annotations": 5,
+          "recordings": 1,
+          "percent": 0.0024087795195930125
+        }
+      ],
+      "KW_certain": [
+        {
+          "KW_certain": "NA",
+          "annotations": 149415,
+          "recordings": 11116,
+          "percent": 71.98155838399799
+        },
+        {
+          "KW_certain": "1",
+          "annotations": 57318,
+          "recordings": 2451,
+          "percent": 27.61328490080646
+        },
+        {
+          "KW_certain": "0",
+          "annotations": 841,
+          "recordings": 286,
+          "percent": 0.4051567151955447
+        }
+      ]
+    }
+  },
+  "method": "Keep NA labels explicit. Recording key = Provider + Dataset + Soundfile. Durations use finite 0 <= begin < end, Call/Detection only. Union intervals within each recording across all classes; not total recorded or listening hours. Missing and invalid time/frequency bounds are reported rather than imputed.",
+  "verified_on": "2026-10-07",
+  "source_manifest": {
+    "fetched_at_utc": "2026-10-07T12:37:18.817456+00:00",
+    "url": "https://storage.googleapis.com/noaa-passive-bioacoustic/dclde/2027/dclde_2027_killer_whales/Annotations.csv?generation=1774987199567470",
+    "object": "dclde/2027/dclde_2027_killer_whales/Annotations.csv",
+    "generation": "1774987199567470",
+    "bytes": 50484452,
+    "updated": "2026-03-31T19:59:59.629Z",
+    "md5_base64": "IoP/1+5taDSeXI8D2mEmXA==",
+    "sha256": "407f1c0f7d95a39c7bace99bbef40646e2fe62403c6237c20ddf374e88e21b15",
+    "scope": "Complete combined annotation CSV only; no recordings downloaded."
+  }
+}
