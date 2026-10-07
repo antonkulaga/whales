@@ -53,7 +53,10 @@ function el<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string,
 }
 
 export class AtlasMap {
+  private width = W;
   private readonly projection: GeoProjection;
+  private readonly viewport: SVGRectElement;
+  private readonly geography: { node: SVGPathElement; shape: object }[] = [];
   private readonly world: SVGGElement;
   private readonly datasets: SVGGElement;
   private readonly arcs: SVGGElement;
@@ -62,7 +65,9 @@ export class AtlasMap {
   private readonly siteLayer: SVGGElement;
   private readonly behaviour: ZoomBehavior<SVGSVGElement, unknown>;
   private k = 1;
+  private panX = 0;
   private parts: MapPart[] = [];
+  private framedSites: Site[] | null = null;
 
   constructor(
     private readonly svg: SVGSVGElement,
@@ -71,21 +76,31 @@ export class AtlasMap {
     private readonly sites: Site[],
     private readonly onSite: (site: Site) => void,
   ) {
-    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-    this.projection = geoEqualEarth().fitExtent([[10, 10], [W - 10, H - 10]], { type: "Sphere" });
+    const box = svg.getBoundingClientRect();
+    this.width = box.height ? H * box.width / box.height : W;
+    svg.setAttribute("viewBox", `0 0 ${this.width} ${H}`);
+    // Clip only at the rectangular viewport. Hall scenery belongs behind the map,
+    // so decorative seating cannot hide sites when the geography is zoomed or panned.
+    const defs = el("defs", {}, svg);
+    const clip = el("clipPath", { id: "map-viewport-clip" }, defs);
+    this.viewport = el("rect", { x: 0, y: 0, width: this.width, height: H }, clip);
+    this.projection = geoEqualEarth().fitExtent([[25, 32], [this.width - 25, H - 32]], { type: "Sphere" });
     const path = geoPath(this.projection);
-    this.world = el("g", {}, svg);
-    el("path", { class: "sphere", d: path({ type: "Sphere" }) ?? "" }, this.world);
-    el("path", { class: "graticule", d: path(geoGraticule10()) ?? "" }, this.world);
+    const mapStage = el("g", { "clip-path": "url(#map-viewport-clip)" }, svg);
+    this.world = el("g", {}, mapStage);
+    const sphere = { type: "Sphere" } as const;
+    const graticule = geoGraticule10();
+    this.geography.push({ node: el("path", { class: "sphere", d: path(sphere) ?? "" }, this.world), shape: sphere });
+    this.geography.push({ node: el("path", { class: "graticule", d: path(graticule) ?? "" }, this.world), shape: graticule });
     const land = el("g", {}, this.world);
     for (const feature of countries.features) {
-      el("path", { class: "land", d: path(feature as never) ?? "" }, land);
+      this.geography.push({ node: el("path", { class: "land", d: path(feature as never) ?? "" }, land), shape: feature });
     }
     this.datasets = el("g", {}, this.world);
     for (const point of points) {
       const xy = this.projection([point.lon, point.lat]);
       if (!xy) continue;
-      const dot = el("circle", { class: `dataset ${point.kind}`, cx: xy[0], cy: xy[1], r: 2.2 }, this.datasets);
+      const dot = el("circle", { class: `dataset ${point.kind}`, cx: xy[0], cy: xy[1], r: 2.2, "data-lon": point.lon, "data-lat": point.lat }, this.datasets);
       el("title", {}, dot).textContent = `${point.label} · ${point.dataset}`;
     }
     this.arcs = el("g", {}, this.world);
@@ -95,17 +110,47 @@ export class AtlasMap {
     this.drawSites();
     this.behaviour = zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 64])
-      .translateExtent([[0, 0], [W, H]])
+      .translateExtent([[0, 0], [this.width, H]])
       .on("zoom", (event: D3ZoomEvent<SVGSVGElement, unknown>) => {
         this.world.setAttribute("transform", event.transform.toString());
         this.k = event.transform.k;
+        this.panX = event.transform.x;
         this.rescale();
       });
     select(svg).call(this.behaviour);
+    new ResizeObserver(() => { this.resize(); this.rescale(); }).observe(svg);
+  }
+
+  /** Match the available width at the chosen height without stretching the geography. */
+  private resize() {
+    const box = this.svg.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    const width = H * box.width / box.height;
+    if (Math.abs(width - this.width) < 1) return;
+    this.width = width;
+    this.svg.setAttribute("viewBox", `0 0 ${width} ${H}`);
+    this.viewport.setAttribute("width", String(width));
+    this.projection.fitExtent([[25, 32], [width - 25, H - 32]], { type: "Sphere" });
+    const path = geoPath(this.projection);
+    for (const { node, shape } of this.geography) node.setAttribute("d", path(shape as never) ?? "");
+    this.datasets.querySelectorAll<SVGCircleElement>("circle").forEach((dot) => {
+      const xy = this.projection([Number(dot.dataset.lon), Number(dot.dataset.lat)]);
+      if (xy) { dot.setAttribute("cx", String(xy[0])); dot.setAttribute("cy", String(xy[1])); }
+    });
+    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((group, i) => {
+      const [x, y] = this.xy(this.sites[i]!.location);
+      group.dataset.x = String(x);
+      group.dataset.y = String(y);
+    });
+    this.setCombination(this.parts);
+    this.pulses.replaceChildren();
+    this.behaviour.translateExtent([[0, 0], [width, H]]);
+    this.fit(this.framedSites);
   }
 
   /** Frame a set of sites (null: the whole world). Zoom stays within the behaviour's limits. */
   fit(subset: Site[] | null) {
+    this.framedSites = subset;
     let transform = zoomIdentity;
     if (subset?.length) {
       const points = subset.map((site) => this.xy(site.location));
@@ -113,9 +158,9 @@ export class AtlasMap {
       const ys = points.map((p) => p[1]);
       const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
       // Labels sit to the right of their marks, so the right margin is wider.
-      const [left, right, pad] = [50, 190, 50];
-      const k = Math.max(1, Math.min(64, (W - left - right) / Math.max(x1 - x0, 1), (H - 2 * pad) / Math.max(y1 - y0, 1)));
-      const cx = left + (W - left - right) / 2;
+      const [left, right, pad] = [75, 115, 65];
+      const k = Math.max(1, Math.min(64, (this.width - left - right) / Math.max(x1 - x0, 1), (H - 2 * pad) / Math.max(y1 - y0, 1)));
+      const cx = left + (this.width - left - right) / 2;
       transform = zoomIdentity.translate(cx - (k * (x0 + x1)) / 2, H / 2 - (k * (y0 + y1)) / 2).scale(k);
     }
     select(this.svg).call(this.behaviour.transform, transform);
@@ -123,7 +168,11 @@ export class AtlasMap {
 
   /** Sites with at least one recording in the orchestra get a halo. */
   setSeated(keys: Set<string>) {
-    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((node) => node.classList.toggle("seated", keys.has(node.dataset.key ?? "")));
+    this.siteLayer.querySelectorAll<SVGGElement>(".site").forEach((node) => {
+      const seated = keys.has(node.dataset.key ?? "");
+      node.classList.toggle("seated", seated);
+      node.setAttribute("aria-pressed", String(seated));
+    });
   }
 
   /** Mirror a hover in the recordings list. */
@@ -139,7 +188,7 @@ export class AtlasMap {
     for (const site of this.sites) {
       const [x, y] = this.xy(site.location);
       const group = el("g", {
-        class: `site ${site.location.precision}`, "data-key": site.key, tabindex: 0, role: "button",
+        class: `site ${site.location.precision}`, "data-key": site.key, tabindex: 0, role: "button", "aria-pressed": "false",
         "aria-label": `${site.location.label}: ${site.sources.length} recording${site.sources.length === 1 ? "" : "s"}`,
         style: `--c:${SPECIES_COLOR[site.species]}`, "data-x": x, "data-y": y,
       }, this.siteLayer);
@@ -165,7 +214,7 @@ export class AtlasMap {
 
   /** Keep marks, labels and rings the same on-screen size at every zoom level. */
   private rescale() {
-    const k = this.k;
+    const k = this.displayZoom();
     this.datasets.querySelectorAll("circle").forEach((dot) => dot.setAttribute("r", String(2.2 / k)));
     const groups = [...this.siteLayer.querySelectorAll<SVGGElement>(".site")];
     const at = groups.map((g) => [Number(g.dataset.x), Number(g.dataset.y)] as const);
@@ -174,9 +223,21 @@ export class AtlasMap {
       // Show a label only when no other site sits within 70 screen units; zooming in reveals the rest.
       const [x, y] = at[i]!;
       const crowded = at.some(([ox, oy], j) => j !== i && Math.hypot(ox - x, oy - y) * k < 70);
-      group.querySelector<SVGTextElement>(".site-label")?.setAttribute("visibility", crowded ? "hidden" : "visible");
+      const label = group.querySelector<SVGTextElement>(".site-label");
+      if (label) {
+        const nearRight = x * this.k + this.panX > this.width * .68;
+        label.setAttribute("x", nearRight ? "-13" : "13");
+        label.setAttribute("text-anchor", nearRight ? "end" : "start");
+        label.setAttribute("visibility", crowded ? "hidden" : "visible");
+      }
     });
     this.drawPins();
+  }
+
+  /** Match SVG viewBox scaling as well as zoom, so mobile pins remain readable and tappable. */
+  private displayZoom(): number {
+    const box = this.svg.getBoundingClientRect();
+    return this.k * (Math.min(box.width / this.width, box.height / H) || 1);
   }
 
   /** Where a site sits inside the map box, in CSS pixels, for anchoring the popover. */
@@ -218,7 +279,8 @@ export class AtlasMap {
     });
     for (const { location, numbers } of seats.values()) {
       const [x, y] = this.xy(location);
-      el("text", { class: "part-pin", x: x - 15 / this.k, y: y - 13 / this.k, "font-size": 11 / this.k, "stroke-width": 3 / this.k, "text-anchor": "end" }, this.pins)
+      const k = this.displayZoom();
+      el("text", { class: "part-pin", x: x - 15 / k, y: y - 13 / k, "font-size": 11 / k, "stroke-width": 3 / k, "text-anchor": "end" }, this.pins)
         .textContent = numbers.join("·");
     }
   }
@@ -232,7 +294,7 @@ export class AtlasMap {
       const [x, y] = this.xy(part.location);
       const u = pulse.age_s / lifetime;
       el("circle", {
-        class: "pulse", cx: x, cy: y, r: (9 + 30 * u) / this.k,
+        class: "pulse", cx: x, cy: y, r: (9 + 30 * u) / this.displayZoom(),
         style: `--c:${SPECIES_COLOR[part.species]};stroke-opacity:${(1 - u).toFixed(3)};stroke-width:${2.2 - 1.4 * u}`,
       }, this.pulses);
     }

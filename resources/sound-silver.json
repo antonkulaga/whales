@@ -1,5 +1,5 @@
 {
-  "interpretation": "Sound bends one of Livia's cast-silver rings. Time runs along the metal from one end of the open ring to the other; pitch lifts the band along the finger, level swells it outward, pitch slope leans it. Every point keeps its angle, may only move outward from the finger and may slide along the finger, so the map is one-to-one: the piece cannot tear or pass through itself. Casting checks then decide how far it may go.",
+  "interpretation": "Sound bends one of Livia's cast-silver rings. Time runs along the metal from one end of the open ring to the other; pitch lifts the band along the finger, level swells it outward, pitch slope leans it. Every point keeps its angle, may only move outward from the finger and may slide along the finger, so the map is one-to-one: the piece cannot tear or pass through itself. Casting checks then decide how far it may go. Lift moves whole cross-sections and keeps the silver's weight, so it carries most of the change; swell adds silver and closes lattice gaps fastest, so it is weighted 0.4, as is lean.",
   "pieces": {
     "inline": {
       "title": "Inline Ring",
@@ -19,11 +19,36 @@
     }
   },
   "sounds": [
-    {"id": "nana", "path": "data/output/inscription/audio/test-0000-0267-original.wav", "title": "SW_Nana", "kind": "Signature whistle, OpenWhistle test set"},
-    {"id": "neo", "path": "data/output/inscription/audio/test-0000-0051-original.wav", "title": "SW_Neo", "kind": "Signature whistle with clicks, OpenWhistle test set"},
-    {"id": "nsw", "path": "data/output/inscription/audio/test-0000-0303-original.wav", "title": "NSW_1", "kind": "Non-signature whistle with clicks, OpenWhistle test set"},
-    {"id": "coda", "path": "data/input/audio/dswp-0000.wav", "title": "Sperm whale coda", "kind": "Clicks only, DSWP"},
-    {"id": "wave", "path": "data/output/brush/keys/F.wav", "title": "Brush key F: wave", "kind": "Synthesized designed contour (art brush)"}
+    {
+      "id": "nana",
+      "path": "data/output/inscription/audio/test-0000-0267-original.wav",
+      "title": "SW_Nana",
+      "kind": "Signature whistle, OpenWhistle test set"
+    },
+    {
+      "id": "neo",
+      "path": "data/output/inscription/audio/test-0000-0051-original.wav",
+      "title": "SW_Neo",
+      "kind": "Signature whistle with clicks, OpenWhistle test set"
+    },
+    {
+      "id": "nsw",
+      "path": "data/output/inscription/audio/test-0000-0303-original.wav",
+      "title": "NSW_1",
+      "kind": "Non-signature whistle with clicks, OpenWhistle test set"
+    },
+    {
+      "id": "coda",
+      "path": "data/input/audio/dswp-0000.wav",
+      "title": "Sperm whale coda",
+      "kind": "Clicks only, DSWP"
+    },
+    {
+      "id": "wave",
+      "path": "data/output/brush/keys/F.wav",
+      "title": "Brush key F: wave",
+      "kind": "Synthesized designed contour (art brush)"
+    }
   ],
   "features": {
     "pitch_full_scale_octaves": 0.5,
@@ -33,11 +58,11 @@
     "smooth_s": 0.02
   },
   "mapping": {
-    "sigma_mm": 2.5,
+    "sigma_mm": 4.0,
     "lock_ramp_mm": 1.5,
     "lift": 1.0,
-    "swell": 1.0,
-    "lean": 1.0,
+    "swell": 0.4,
+    "lean": 0.4,
     "lean_reference_mm": 3.0,
     "profile_bins": 1440,
     "bore_bins": 360,
@@ -54,6 +79,116 @@
     "density_g_cm3": 10.36,
     "note": "Assumed lost-wax sterling limits; confirm with Livia's caster. A point fails only if it falls below the floor and also loses more than 10% of its own original wall or gap, so walls that were already thin are not penalised for staying thin."
   },
-  "search": {"max_gain_mm": 6.0, "steps": 9},
-  "viewer": {"triangles": 60000}
+  "search": {
+    "max_gain_mm": 8.0,
+    "steps": 9
+  },
+  "viewer": {
+    "triangles": 60000
+  },
+  "variants": {
+    "all": [
+      "lift",
+      "swell",
+      "lean"
+    ],
+    "lift": [
+      "lift"
+    ]
+  },
+  "motion": {
+    "compare": [
+      [
+        "Cast once",
+        "No",
+        "Yes",
+        "Silver and casting only",
+        "Nothing new",
+        "It never moves again"
+      ],
+      [
+        "Ferrofluid stones",
+        "Yes, live",
+        "Yes; moves on its stand",
+        "≈ €80–150: display-grade ferrofluid, glass or resin domes, a 12 V electromagnet, ESP32 board with a microphone, a driver, a power supply",
+        "Cups shaped for sealed domes; a stand with the coil",
+        "Sealing the fluid. Plain ferrofluid stains glass, so use display fluid already suspended in a clear liquid"
+      ],
+      [
+        "Hinged + nitinol",
+        "At ¼–⅛ speed",
+        "Yes, with a battery inside",
+        "≈ €60–120: Flexinol 0.003″ wire (≈ $2.50 per foot), crimps, ESP32 board with a microphone, MOSFETs, a small LiPo battery",
+        "Segments with hinge pins, printed and cast as she already does",
+        "Anchoring the wire and hiding the battery; each wire draws about 100 mA while it pulls"
+      ],
+      [
+        "Magnetic fins",
+        "Yes, live",
+        "Yes; moves on its stand",
+        "≈ €80–150: platinum-cure silicone, 1 mm neodymium magnets, four small coils, an H-bridge driver, ESP32 board",
+        "Printed moulds for the fins; slots in the rail",
+        "Setting each magnet's direction by hand; the coils must sit close"
+      ],
+      [
+        "Memory cells",
+        "One write per sound, then holds",
+        "Yes, no electronics in the ring",
+        "≈ €50–120: printed or nitinol snap domes with tiny magnets, one coil as write head, a turntable stand, ESP32 board",
+        "Dome seats along the band",
+        "Getting domes this small to snap reliably"
+      ]
+    ],
+    "precedents": [
+      {
+        "id": "kodama",
+        "title": "Protrude, Flow",
+        "by": "Sachiko Kodama, 2001",
+        "note": "microphone → electromagnets → ferrofluid; the room's voices shape it",
+        "url": "https://www.youtube.com/watch?v=c4rLG5Aaie4",
+        "image_url": "https://img.youtube.com/vi/c4rLG5Aaie4/hqdefault.jpg"
+      },
+      {
+        "id": "vanderwaals",
+        "title": "Van der Waals ferrofluid speaker",
+        "by": "Sergey Kuznetsov, 2021",
+        "note": "ferrofluid moving to music, sold as a product",
+        "url": "https://musictech.com/news/gear/watch-alien-black-goo-dance-along-to-your-music-in-this-new-ferrofluid-speaker",
+        "image_url": "https://musictech.com/wp-content/uploads/2021/12/Ferrofluid-Speaker-Kickstarter@2000x1500-1200x900.jpg"
+      },
+      {
+        "id": "zhao",
+        "title": "Printed magnetic soft materials",
+        "by": "Kim, Zhao et al., MIT, 2018",
+        "note": "silicone with magnetised particles changes shape in milliseconds",
+        "url": "https://zhaolab.stanford.edu/sites/g/files/sbiybj21256/files/media/file/s41586-018-0185-0.pdf",
+        "image_url": "https://3dprintingindustry.com/wp-content/uploads/2018/06/gif-5.gif",
+        "frame": 12
+      },
+      {
+        "id": "becker",
+        "title": "Kinetic ring",
+        "by": "Friedrich Becker, from 1965",
+        "note": "parts on bearings, set moving by the wearer's hand",
+        "url": "https://blog.nationalmuseum.ch/en/2023/02/jewellery-in-motion/",
+        "image_url": "https://blog.nationalmuseum.ch/app/uploads/becker-ring-titel.webp"
+      },
+      {
+        "id": "galatea",
+        "title": "Blossom ring",
+        "by": "Galatea, 2018",
+        "note": "shape-memory tines open and close with temperature",
+        "url": "https://www.jckonline.com/editorial-article/galatea-ring-blossoms-temperature-changes/",
+        "image_url": "https://www.jckonline.com/wp-content/uploads/2018/01/Galatea-Blossoming-Ring.jpg"
+      },
+      {
+        "id": "kinematics",
+        "title": "Kinematics",
+        "by": "Nervous System, from 2013",
+        "note": "printed hinged parts that drape like fabric",
+        "url": "https://n-e-r-v-o-u-s.com/projects/sets/kinematics/",
+        "image_url": "https://n-e-r-v-o-u-s.com/projects/images/773/detail-1_1200.jpg"
+      }
+    ]
+  }
 }

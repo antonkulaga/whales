@@ -1,0 +1,885 @@
+<title>Sound to Silver Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a jeweller's bench. The ring sits on the stage at left with its sound strip underneath;
+   the assay ticket (controls and casting readings) stands at right; the method follows below. */
+:root {
+  --plaster: #eceeec;      /* casting-plaster ground */
+  --sheet: #f8f9f7;        /* raised surfaces */
+  --ink: #1b2024;          /* oxidised silver */
+  --ink-soft: #57616a;
+  --rule: #cdd3d4;
+  --wax: #66489a;          /* purple carving wax: the sound and the accent */
+  --wax-soft: #e7e0f2;
+  --pass: #2c7660;
+  --warn: #a5650f;
+  --fail: #b2382c;
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --plaster: #121517; --sheet: #1a1e21; --ink: #dfe3e5; --ink-soft: #9aa4ab; --rule: #2d3438;
+    --wax: #a98ce2; --wax-soft: #2a2339; --pass: #5dbf9d; --warn: #e2a54c; --fail: #f07d6e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --plaster: #121517; --sheet: #1a1e21; --ink: #dfe3e5; --ink-soft: #9aa4ab; --rule: #2d3438;
+  --wax: #a98ce2; --wax-soft: #2a2339; --pass: #5dbf9d; --warn: #e2a54c; --fail: #f07d6e; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--plaster); color: var(--ink); font: 15px/1.55 var(--font-body); padding-inline: max(16px, 3vw); padding-block: 20px 48px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; }
+h2 { font-size: 1.45rem; line-height: 1.2; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; }
+a { color: var(--wax); }
+.wrap { max-width: 1320px; margin-inline: auto; display: grid; gap: 28px; }
+.mast { display: grid; gap: 8px; max-width: 70ch; }
+.eyebrow, .label { font: 500 0.72rem/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.lede { color: var(--ink-soft); font-size: 1.02rem; }
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+@media (max-width: 960px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.stagecol { display: grid; gap: 12px; min-width: 0; }
+.stage { position: relative; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.stage .tag { position: absolute; left: 14px; top: 12px; display: grid; gap: 2px; pointer-events: none; }
+.stage .tag b { font: 400 1.15rem/1.2 var(--font-display); }
+.stage .tag span { font: 0.75rem/1.3 var(--font-data); color: var(--ink-soft); }
+.legend { position: absolute; right: 14px; bottom: 12px; display: flex; gap: 10px; align-items: center; font: 0.72rem/1 var(--font-data); color: var(--ink-soft); pointer-events: none; flex-wrap: wrap; justify-content: flex-end; max-width: 70%; }
+.legend i { display: inline-block; width: 22px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+.status { position: absolute; left: 14px; bottom: 12px; font: 0.75rem/1.3 var(--font-data); color: var(--ink-soft); max-width: 60%; }
+.strip { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 12px 8px; display: grid; gap: 6px; }
+.strip canvas { width: 100%; height: 170px; display: block; }
+.strip .label { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ticket { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px; display: grid; gap: 16px; min-width: 0; }
+.group { display: grid; gap: 8px; }
+.seg { display: flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.seg button { flex: 1; background: transparent; border: 0; padding: 8px 6px; font: 500 0.88rem var(--font-body); color: var(--ink-soft); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--wax-soft); color: var(--ink); }
+.sounds { display: grid; gap: 4px; }
+.sound { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; align-items: baseline; padding: 7px 9px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; text-align: left; background: transparent; color: var(--ink); font: inherit; width: 100%; }
+.sound:hover { border-color: var(--rule); }
+.sound[aria-pressed="true"] { background: var(--wax-soft); border-color: var(--wax); }
+.sound .dot { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--wax); align-self: center; }
+.sound[aria-pressed="true"] .dot { background: var(--wax); }
+.sound b { font-weight: 600; font-size: 0.92rem; }
+.sound small { grid-column: 2 / 4; color: var(--ink-soft); font-size: 0.78rem; line-height: 1.3; }
+.sound em { font: normal 0.75rem var(--font-data); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--rule); background: var(--plaster); color: var(--ink); padding: 8px 12px; border-radius: 8px; font: 500 0.88rem var(--font-body); cursor: pointer; }
+.btn.primary { background: var(--wax); border-color: var(--wax); color: var(--sheet); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+select, input[type="file"] { font: 0.85rem var(--font-body); color: var(--ink); background: var(--plaster); border: 1px solid var(--rule); border-radius: 8px; padding: 7px 8px; }
+button:focus-visible, select:focus-visible, input:focus-visible, label:focus-within { outline: 2px solid var(--wax); outline-offset: 2px; }
+.gain { display: grid; gap: 4px; }
+.gain-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.gain-head output { font: 500 1.05rem var(--font-data); font-variant-numeric: tabular-nums; }
+.range-wrap { position: relative; }
+input[type="range"] { width: 100%; accent-color: var(--wax); margin: 6px 0 2px; }
+.safe-tick { position: absolute; top: -2px; width: 2px; height: 26px; background: var(--pass); pointer-events: none; }
+.scale { display: flex; justify-content: space-between; font: 0.7rem var(--font-data); color: var(--ink-soft); }
+.checks { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 0.86rem; }
+.checks label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.note { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.4; }
+.assay { border-top: 1px dashed var(--rule); padding-top: 14px; display: grid; gap: 10px; }
+.verdict { display: inline-flex; align-items: center; gap: 8px; font: 600 0.9rem var(--font-body); padding: 5px 11px; border-radius: 999px; border: 1.5px solid currentColor; width: fit-content; }
+.verdict.ok { color: var(--pass); }
+.verdict.warn { color: var(--warn); }
+.verdict.bad { color: var(--fail); }
+dl.read { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; margin: 0; font-size: 0.86rem; }
+dl.read dt { color: var(--ink-soft); }
+dl.read dd { margin: 0; text-align: right; font: 0.84rem var(--font-data); font-variant-numeric: tabular-nums; }
+dl.read dd.bad { color: var(--fail); }
+dl.read dd.warn { color: var(--warn); }
+.verified { background: var(--plaster); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; }
+.explain { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 20px; }
+.explain section { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.explain p, .explain li { max-width: 65ch; }
+.explain ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+.map-rows { display: grid; gap: 8px; }
+.map-rows div { display: grid; grid-template-columns: 7.5em 1.2em 1fr; gap: 6px; align-items: baseline; }
+.map-rows b { font: 500 0.82rem var(--font-data); color: var(--wax); }
+.map-rows span { color: var(--ink-soft); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 0.84rem; min-width: 760px; }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; font-variant-numeric: tabular-nums; }
+th { font: 500 0.7rem var(--font-data); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+td.num { font-family: var(--font-data); font-size: 0.8rem; }
+td .pill { font: 600 0.75rem var(--font-body); padding: 2px 8px; border-radius: 999px; border: 1.2px solid currentColor; }
+.pill.ok { color: var(--pass); } .pill.bad { color: var(--fail); }
+tr:last-child td { border-bottom: 0; }
+.originals { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 14px; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--sheet); }
+figcaption { font-size: 0.8rem; color: var(--ink-soft); }
+.full { grid-column: 1 / -1; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Livia Zaharia's cast silver · dolphin and whale recordings</p>
+    <h1>Sound to Silver Bench</h1>
+    <p class="lede">A recorded whistle bends a ring Livia has already cast. The piece cannot tear or pass through itself, and the finger hole keeps its size; casting checks decide how far the sound may push.</p>
+  </header>
+
+  <main class="bench">
+    <div class="stagecol">
+      <div class="stage" id="stage">
+        <div class="tag"><b id="piece-name">Inline Ring</b><span id="piece-meta">Silver · 2022</span></div>
+        <div class="status" id="status">Loading the ring…</div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="strip">
+        <div class="label"><span>Input · <span id="strip-title">recording</span></span><span id="strip-time">0.00 s</span></div>
+        <canvas id="sound-strip" aria-label="Pitch and level of the recording, and the lift and swell it writes along the metal"></canvas>
+      </div>
+    </div>
+
+    <aside class="ticket" aria-label="Controls and casting readings">
+      <div class="group">
+        <span class="label">Piece</span>
+        <div class="seg" id="pieces" role="group" aria-label="Piece"></div>
+      </div>
+      <div class="group">
+        <span class="label">Sound</span>
+        <div class="sounds" id="sounds"></div>
+        <div class="row">
+          <button class="btn primary" id="play" type="button">Play and bend</button>
+          <select id="speed" aria-label="Playback speed">
+            <option value="1">1× speed</option>
+            <option value="0.5">½× speed</option>
+            <option value="0.25" selected>¼× speed</option>
+          </select>
+        </div>
+        <div class="row">
+          <label class="btn" for="upload">Load a recording</label>
+          <input id="upload" type="file" accept="audio/*" hidden>
+          <button class="btn" id="mic" type="button">Whistle live</button>
+        </div>
+        <p class="note" id="sound-note"></p>
+      </div>
+      <div class="group gain">
+        <div class="gain-head"><span class="label">Push, mm at full scale</span><output id="gain-out">0.00</output></div>
+        <div class="range-wrap"><input id="gain" type="range" min="0" max="8" step="0.01" value="1" aria-label="Push in millimetres"><div class="safe-tick" id="safe-tick" hidden></div></div>
+        <div class="scale"><span>0</span><span id="safe-label">safe limit</span><span id="gain-max">8 mm</span></div>
+      </div>
+      <div class="group">
+        <span class="label">Gestures</span>
+        <div class="checks">
+          <label><input type="checkbox" id="g-lift" checked> pitch → lift</label>
+          <label><input type="checkbox" id="g-swell" checked> level → swell</label>
+          <label><input type="checkbox" id="g-lean" checked> slope → lean</label>
+        </div>
+      </div>
+      <div class="group">
+        <span class="label">View</span>
+        <div class="seg" id="modes" role="group" aria-label="Colour">
+          <button type="button" data-mode="silver" aria-pressed="true">Silver</button>
+          <button type="button" data-mode="move" aria-pressed="false">Movement</button>
+          <button type="button" data-mode="risk" aria-pressed="false">Casting risk</button>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" id="ghost" checked> show original</label>
+          <label><input type="checkbox" id="naive"> push along surface (naive)</label>
+        </div>
+      </div>
+      <div class="assay" aria-live="polite">
+        <span class="label">Assay · live estimate</span>
+        <span class="verdict ok" id="verdict">Casts</span>
+        <dl class="read" id="readings"></dl>
+        <div class="verified" id="verified"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="explain">
+    <section>
+      <h2>How the sound moves the metal</h2>
+      <div class="map-rows">
+        <div><b>time</b><span>→</span><p>position along the metal, from one end of the open ring to the other</p></div>
+        <div><b>pitch</b><span>→</span><p>lift: the band slides along the finger, up above the whistle's median pitch, down below it; ±0.5 octave is full scale</p></div>
+        <div><b>level</b><span>→</span><p>swell: louder moments push the outer metal away from the finger</p></div>
+        <div><b>pitch slope</b><span>→</span><p>lean: a rising sweep tilts the outer metal one way, a falling sweep the other</p></div>
+      </div>
+      <p class="note" id="spread-note">Each moment is spread over a few millimetres of metal, so the silver bends instead of creasing.</p>
+    </section>
+    <section>
+      <h2>Why it cannot break apart</h2>
+      <p>Every point keeps its angle around the finger. It may move outward from the finger and slide along it, never inward. Outward push grows with distance from the finger, and lift moves a whole cross-section at once, so two points of the ring can never land in the same place: the surface cannot tear, fold through itself or close the finger hole.</p>
+      <p>What can still go wrong is the casting. A wall can thin below <span id="wall-floor">0.6</span> mm, or an opening can narrow below <span id="gap-floor">0.4</span> mm so the investment cannot hold it apart. The assay measures both. Turn on <i>push along surface</i> to see the usual audio-reactive approach: it erodes thin wires and drives the metal through itself.</p>
+    </section>
+    <section class="full">
+      <h2>Verified on the full print files</h2>
+      <p class="note">Rays re-cast on every vertex of the original STL (about 200,000 triangles) after deformation. The safe limit is the largest push that keeps at most 0.1% of the surface past the wall or opening limit or through itself. "2×" doubles that push. "Live estimate" is what this page computes in the browser at that push. "Naive" pushes along the surface normal by the all-gesture limit.</p>
+      <div class="tablewrap"><table id="verified-table"></table></div>
+    </section>
+    <section class="full">
+      <h2>The original pieces</h2>
+      <div class="originals" id="originals"></div>
+    </section>
+    <section class="full">
+      <h3>Notes</h3>
+      <ul class="note" id="notes"></ul>
+    </section>
+  </div>
+</div>
+
+<script id="silver-data" type="application/json">/*SILVER_DATA*/null</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const DATA = JSON.parse(document.getElementById("silver-data").textContent);
+const M = DATA.config.mapping, C = DATA.config.casting, F = DATA.config.features;
+const TAU = Math.PI * 2;
+const $ = (id) => document.getElementById(id);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const fmt = (v, d = 2) => (Number.isFinite(v) ? v.toFixed(d) : "—");
+const VARIANT_NAMES = { all: "lift + swell + lean", lift: "lift only" };
+
+// ------------------------------------------------------------ decoding
+function bytes(b64) {
+  const bin = atob(b64), out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out.buffer;
+}
+function dequantize(b64, box) {
+  const q = new Uint16Array(bytes(b64)), out = new Float32Array(q.length);
+  for (let i = 0; i < q.length; i++) {
+    const c = i % 3;
+    out[i] = q[i] === 65535 ? NaN : box[0][c] + (q[i] / 65534) * (box[1][c] - box[0][c]);
+  }
+  return out;
+}
+function circular(values, theta) {
+  const n = values.length, pos = (theta / TAU) * n - 0.5, lo = Math.floor(pos), f = pos - lo;
+  return values[((lo % n) + n) % n] * (1 - f) + values[(((lo + 1) % n) + n) % n] * f;
+}
+
+// Cylindrical coordinates in the ring's own frame, computed once per point.
+function prepare(points, frame) {
+  const n = points.length / 3, r = new Float64Array(n), th = new Float64Array(n), h = new Float64Array(n), bore = new Float64Array(n);
+  const valid = new Uint8Array(n);
+  const [cx, cy, cz] = frame.center, a = frame.axis, e1 = frame.e1, e2 = frame.e2;
+  for (let i = 0; i < n; i++) {
+    const dx = points[3 * i] - cx, dy = points[3 * i + 1] - cy, dz = points[3 * i + 2] - cz;
+    if (!Number.isFinite(dx + dy + dz)) continue;
+    valid[i] = 1;
+    h[i] = dx * a[0] + dy * a[1] + dz * a[2];
+    const X = dx * e1[0] + dy * e1[1] + dz * e1[2], Y = dx * e2[0] + dy * e2[1] + dz * e2[2];
+    r[i] = Math.hypot(X, Y);
+    let t = Math.atan2(Y, X); if (t < 0) t += TAU;
+    th[i] = t; bore[i] = circular(frame.bore, t);
+  }
+  return { n, r, th, h, bore, valid };
+}
+
+// The map: θ kept; r' = r + g·swell·max(S,0)·w(r); h' = h + g·lift·L + g·lean·Λ·(r − bore)/ref.
+// Output in stage coordinates: x = r'cosθ, y = h' (finger axis up), z = −r'sinθ.
+function bend(P, prof, gain, ges, out) {
+  for (let i = 0; i < P.n; i++) {
+    if (!P.valid[i]) { out[3 * i] = out[3 * i + 1] = out[3 * i + 2] = NaN; continue; }
+    const r = P.r[i], t = P.th[i], b = P.bore[i];
+    let x = (r - b) / M.lock_ramp_mm; x = x < 0 ? 0 : x > 1 ? 1 : x;
+    const w = x * x * (3 - 2 * x);
+    let rn = r, hn = P.h[i];
+    if (ges.swell) rn = r + gain * M.swell * Math.max(circular(prof.swell, t), 0) * w;
+    if (ges.lift) hn += gain * M.lift * circular(prof.lift, t);
+    if (ges.lean) hn += gain * M.lean * circular(prof.lean, t) * (r - b) / M.lean_reference_mm;
+    out[3 * i] = rn * Math.cos(t); out[3 * i + 1] = hn; out[3 * i + 2] = -rn * Math.sin(t);
+  }
+}
+// The usual audio-reactive move, for contrast: along the surface normal.
+function pushAlongNormals(P, normals, prof, gain, ges, out, sign = 1) {
+  for (let i = 0; i < P.n; i++) {
+    if (!P.valid[i]) { out[3 * i] = out[3 * i + 1] = out[3 * i + 2] = NaN; continue; }
+    const t = P.th[i];
+    const amount = gain * ((ges.lift ? M.lift * circular(prof.lift, t) : 0) + (ges.swell ? M.swell * circular(prof.swell, t) : 0));
+    const r = P.r[i];
+    out[3 * i] = r * Math.cos(t) + sign * normals[3 * i] * amount;
+    out[3 * i + 1] = P.h[i] + sign * normals[3 * i + 1] * amount;
+    out[3 * i + 2] = -r * Math.sin(t) + sign * normals[3 * i + 2] * amount;
+  }
+}
+
+// ------------------------------------------------------------ sound → profiles along the ring
+function profiles(sound, frame, until = Infinity) {
+  const B = M.profile_bins, lift = new Float64Array(B), swell = new Float64Array(B), lean = new Float64Array(B);
+  const sigma = frame.sigma, norm = 1 / (sigma * Math.sqrt(TAU)), reach = Math.ceil((5 * sigma / TAU) * B);
+  const T = sound.time_s, D = sound.duration_s;
+  for (let f = 0; f < T.length; f++) {
+    if (T[f] > until) break;
+    const angle = frame.theta_start + frame.span * T[f] / D;
+    const dt = sound.dt ? sound.dt[f] : sound.hop_s;
+    const step = frame.span * dt / D;
+    const p = sound.pitch[f], l = sound.level[f], s = sound.slope[f];
+    if (!p && !l && !s) continue;
+    const centre = Math.round((angle / TAU) * B - 0.5);
+    for (let k = -reach; k <= reach; k++) {
+      const j = (((centre + k) % B) + B) % B;
+      let d = ((j + 0.5) / B) * TAU - angle;
+      d = ((d + Math.PI) % TAU + TAU) % TAU - Math.PI;
+      const g = Math.exp(-0.5 * (d / sigma) ** 2) * norm * step;
+      lift[j] += p * g; swell[j] += l * g; lean[j] += s * g;
+    }
+  }
+  return { lift, swell, lean };
+}
+
+// ------------------------------------------------------------ features for loaded or live audio
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -TAU / len, wr = Math.cos(ang), wi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let cr = 1, ci = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const ar = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci, ai = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr;
+        re[i + k + len / 2] = re[i + k] - ar; im[i + k + len / 2] = im[i + k] - ai;
+        re[i + k] += ar; im[i + k] += ai;
+        const nr = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = nr;
+      }
+    }
+  }
+}
+const BAND = [300, 20000], TONALITY_DB = 18;
+// One spectral frame → peak frequency, tonality and band level.
+function spectralFrame(power, binHz) {
+  const lo = Math.max(1, Math.ceil(BAND[0] / binHz)), hi = Math.min(power.length - 2, Math.floor(BAND[1] / binHz));
+  let peak = lo, total = 0;
+  const vals = [];
+  for (let k = lo; k <= hi; k++) { total += power[k]; vals.push(power[k]); if (power[k] > power[peak]) peak = k; }
+  vals.sort((a, b) => a - b);
+  const median = vals[vals.length >> 1] || 1e-30;
+  const a = Math.log10(power[peak - 1] + 1e-30), b = Math.log10(power[peak] + 1e-30), c = Math.log10(power[peak + 1] + 1e-30);
+  const den = a - 2 * b + c, delta = Math.abs(den) > 1e-12 ? Math.max(-0.5, Math.min(0.5, 0.5 * (a - c) / den)) : 0;
+  return { hz: (peak + delta) * binHz, tonality: 10 * Math.log10((power[peak] + 1e-30) / (median + 1e-30)), level: 10 * Math.log10(total + 1e-30) };
+}
+// Frames → normalised pitch, level and slope, following the same rules as the Python pipeline.
+function normalise(frames, times) {
+  const n = frames.length, levels = frames.map((f) => f.level).slice().sort((a, b) => a - b);
+  const floor = levels[Math.floor(0.2 * (n - 1))] + F.level_headroom_db, peak = levels[n - 1];
+  const voiced = frames.map((f) => f.tonality >= TONALITY_DB);
+  for (let i = 0; i < n; ) { // keep voiced runs of at least 4 frames
+    if (!voiced[i]) { i++; continue; }
+    let j = i; while (j < n && voiced[j]) j++;
+    if (j - i < 4) for (let k = i; k < j; k++) voiced[k] = false;
+    i = j;
+  }
+  const octaves = frames.map((f) => Math.log2(Math.max(f.hz, 1)));
+  const v = octaves.filter((_, i) => voiced[i]).sort((a, b) => a - b);
+  const ref = v.length ? v[v.length >> 1] : 0;
+  const pitch = new Array(n).fill(0), slope = new Array(n).fill(0), level = new Array(n).fill(0);
+  for (let i = 0; i < n; i++) {
+    level[i] = Math.max(0, Math.min(1, (frames[i].level - floor) / Math.max(peak - floor, 1e-6)));
+    if (voiced[i]) pitch[i] = Math.max(-1, Math.min(1, (octaves[i] - ref) / F.pitch_full_scale_octaves));
+    if (voiced[i] && i > 0 && i < n - 1 && voiced[i - 1] && voiced[i + 1]) {
+      const rate = (octaves[i + 1] - octaves[i - 1]) / Math.max(times[i + 1] - times[i - 1], 1e-6);
+      slope[i] = Math.max(-1, Math.min(1, rate / F.slope_full_scale_octaves_per_s));
+    }
+  }
+  const smooth = (arr, w) => arr.map((_, i) => { let s = 0, c = 0; for (let k = i - w; k <= i + w; k++) if (k >= 0 && k < n) { s += arr[k]; c++; } return s / c; });
+  return { pitch: smooth(pitch, 1), level: smooth(level, 2), slope: smooth(slope, 2) };
+}
+function analyse(samples, rate) {
+  const size = rate > 50000 ? 2048 : 1024, hop = Math.round(rate * 0.005), binHz = rate / size;
+  const win = new Float64Array(size).map((_, i) => 0.5 - 0.5 * Math.cos((TAU * i) / size));
+  const frames = [], times = [];
+  for (let start = 0; start + size <= samples.length; start += hop) {
+    const re = new Float64Array(size), im = new Float64Array(size);
+    for (let i = 0; i < size; i++) re[i] = samples[start + i] * win[i];
+    fft(re, im);
+    const power = new Float64Array(size / 2);
+    for (let k = 0; k < size / 2; k++) power[k] = re[k] * re[k] + im[k] * im[k];
+    frames.push(spectralFrame(power, binHz)); times.push((start + size / 2) / rate);
+  }
+  if (frames.length < 8) throw new Error("The recording is too short to measure.");
+  return { time_s: times, duration_s: samples.length / rate, hop_s: hop / rate, ...normalise(frames, times) };
+}
+
+// ------------------------------------------------------------ state
+const pieces = DATA.pieces.map((p) => {
+  const positions = dequantize(p.positions, p.box), inner = dequantize(p.inner, p.box), outer = dequantize(p.outer, p.box);
+  const indices = p.index_bits === 16 ? new Uint16Array(bytes(p.indices)) : new Uint32Array(bytes(p.indices));
+  return { ...p, positions, inner, outer, indices, V: prepare(positions, p.frame), I: prepare(inner, p.frame), O: prepare(outer, p.frame) };
+});
+const sounds = DATA.sounds.map((s) => ({ ...s, verified: true }));
+const state = { piece: pieces[0], sound: sounds[0], gain: 1, ges: { lift: true, swell: true, lean: true }, mode: "silver", ghost: true, naive: false,
+  t: Infinity, playing: false, audio: null, live: null, userSet: false };
+
+// ------------------------------------------------------------ stage
+const stage = $("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(32, 4 / 3, 0.5, 600);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.minDistance = 25; controls.maxDistance = 160;
+const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(30, 60, 40); scene.add(key);
+
+const geometry = new THREE.BufferGeometry();
+const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.26, vertexColors: true, envMapIntensity: 1.1 });
+const mesh = new THREE.Mesh(geometry, material); scene.add(mesh);
+const ghostGeometry = new THREE.BufferGeometry();
+const ghost = new THREE.Mesh(ghostGeometry, new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.16, depthWrite: false }));
+ghost.visible = true; scene.add(ghost);
+const arcLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ dashSize: 1.2, gapSize: 1.1, transparent: true, opacity: 0.8 }));
+scene.add(arcLine);
+const headMat = new THREE.MeshBasicMaterial();
+const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 12), headMat); scene.add(head);
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  drawStrip();
+}
+new ResizeObserver(resize).observe(stage);
+
+function themeColors() {
+  arcLine.material.color.set(css("--wax")); headMat.color.set(css("--wax"));
+  ghost.material.color.set(css("--ink-soft"));
+  paint(); drawStrip();
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeColors);
+new MutationObserver(themeColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+let buffers = null;
+function loadPiece(piece) {
+  const n = piece.V.n;
+  buffers = { pos: new Float32Array(3 * n), base: new Float32Array(3 * n), inner: new Float32Array(3 * n), outer: new Float32Array(3 * n),
+              color: new Float32Array(3 * n).fill(1), move: new Float32Array(n), wall: new Float32Array(n), gap: new Float32Array(n), flag: new Uint8Array(n) };
+  const none = { lift: new Float64Array(M.profile_bins), swell: new Float64Array(M.profile_bins), lean: new Float64Array(M.profile_bins) };
+  bend(piece.V, none, 0, state.ges, buffers.base);
+  const baseInner = new Float32Array(3 * n), baseOuter = new Float32Array(3 * n);
+  bend(piece.I, none, 0, state.ges, baseInner); bend(piece.O, none, 0, state.ges, baseOuter);
+  geometry.setAttribute("position", new THREE.BufferAttribute(buffers.pos, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(buffers.color, 3));
+  geometry.setIndex(new THREE.BufferAttribute(piece.indices, 1));
+  ghostGeometry.setAttribute("position", new THREE.BufferAttribute(buffers.base, 3));
+  ghostGeometry.setIndex(new THREE.BufferAttribute(piece.indices, 1));
+  ghostGeometry.computeVertexNormals();
+  // Original walls, gaps, normals and vertex areas (for area fractions).
+  const g0 = new THREE.BufferGeometry(); g0.setAttribute("position", new THREE.BufferAttribute(buffers.base, 3)); g0.setIndex(new THREE.BufferAttribute(piece.indices, 1)); g0.computeVertexNormals();
+  piece.normals = g0.getAttribute("normal").array.slice();
+  piece.wall0 = new Float32Array(n); piece.gap0 = new Float32Array(n); piece.area = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    piece.wall0[i] = piece.I.valid[i] ? dist(buffers.base, i, baseInner, i) : NaN;
+    piece.gap0[i] = piece.O.valid[i] ? dist(buffers.base, i, baseOuter, i) : Infinity;
+  }
+  const ix = piece.indices;
+  for (let f = 0; f < ix.length; f += 3) {
+    const a = area(buffers.base, ix[f], ix[f + 1], ix[f + 2]) / 3;
+    piece.area[ix[f]] += a; piece.area[ix[f + 1]] += a; piece.area[ix[f + 2]] += a;
+  }
+  piece.totalArea = piece.area.reduce((s, v) => s + v, 0);
+  piece.volume0 = volume(buffers.base, ix);
+  // The metal arc: time runs along it.
+  const fr = piece.frame, pts = [], R = fr.r_ref + 5.5;
+  for (let k = 0; k <= 160; k++) { const t = fr.theta_start + fr.span * k / 160; pts.push(new THREE.Vector3(R * Math.cos(t), 0, -R * Math.sin(t))); }
+  arcLine.geometry.dispose(); arcLine.geometry = new THREE.BufferGeometry().setFromPoints(pts); arcLine.computeLineDistances();
+  const ext = Math.max(...piece.summary ? [piece.summary.r_ref_mm * 2 + 8] : [30]);
+  camera.position.set(ext * 0.78, ext * 0.85, ext * 1.15); controls.target.set(0, -0.5, 0); controls.update();
+}
+function dist(A, i, B, j) { return Math.hypot(A[3 * i] - B[3 * j], A[3 * i + 1] - B[3 * j + 1], A[3 * i + 2] - B[3 * j + 2]); }
+function area(P, a, b, c) {
+  const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2];
+  const vx = P[3 * c] - P[3 * a], vy = P[3 * c + 1] - P[3 * a + 1], vz = P[3 * c + 2] - P[3 * a + 2];
+  return 0.5 * Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx);
+}
+function volume(P, ix) {
+  let v = 0;
+  for (let f = 0; f < ix.length; f += 3) {
+    const a = 3 * ix[f], b = 3 * ix[f + 1], c = 3 * ix[f + 2];
+    v += P[a] * (P[b + 1] * P[c + 2] - P[b + 2] * P[c + 1]) - P[a + 1] * (P[b] * P[c + 2] - P[b + 2] * P[c]) + P[a + 2] * (P[b] * P[c + 1] - P[b + 1] * P[c]);
+  }
+  return v / 6;
+}
+
+// ------------------------------------------------------------ update: sound → profiles → bend → assay
+let current = null;
+function update() {
+  const piece = state.piece, sound = state.live || state.sound, b = buffers;
+  const prof = profiles(sound, piece.frame, state.t);
+  current = prof;
+  const n = piece.V.n;
+  if (state.naive) {
+    pushAlongNormals(piece.V, piece.normals, prof, state.gain, state.ges, b.pos, 1);
+    // The opposite wall faces the other way: its points move along −n.
+    pushAlongNormals(piece.I, piece.normals, prof, state.gain, state.ges, b.inner, -1);
+    pushAlongNormals(piece.O, piece.normals, prof, state.gain, state.ges, b.outer, -1);
+  } else {
+    bend(piece.V, prof, state.gain, state.ges, b.pos);
+    bend(piece.I, prof, state.gain, state.ges, b.inner);
+    bend(piece.O, prof, state.gain, state.ges, b.outer);
+  }
+  let thinArea = 0, closeArea = 0, crossArea = 0, minWall = Infinity, minGap = Infinity, maxMove = 0;
+  const nx = piece.normals;
+  for (let i = 0; i < n; i++) {
+    const move = dist(b.pos, i, b.base, i); b.move[i] = move; if (move > maxMove) maxMove = move;
+    const w0 = piece.wall0[i], g0 = piece.gap0[i];
+    const measurable = w0 >= C.measurable_wall_mm && g0 >= C.measurable_gap_mm;
+    let flag = 0;
+    if (measurable) {
+      const w = dist(b.pos, i, b.inner, i);
+      // Signed: if the opposite wall has crossed to this side of the surface, the metal passed through itself.
+      const sx = b.inner[3 * i] - b.pos[3 * i], sy = b.inner[3 * i + 1] - b.pos[3 * i + 1], sz = b.inner[3 * i + 2] - b.pos[3 * i + 2];
+      const facing = sx * nx[3 * i] + sy * nx[3 * i + 1] + sz * nx[3 * i + 2];
+      b.wall[i] = facing > 0 ? 0 : w;
+      if (b.wall[i] < minWall) minWall = b.wall[i];
+      if (facing > 0) { flag = 3; crossArea += piece.area[i]; }
+      else if (w < C.min_wall_mm && w < C.relative_tolerance * w0) { flag = 1; thinArea += piece.area[i]; }
+      if (Number.isFinite(g0) && piece.O.valid[i]) {
+        const g = dist(b.pos, i, b.outer, i);
+        const ox = b.outer[3 * i] - b.pos[3 * i], oy = b.outer[3 * i + 1] - b.pos[3 * i + 1], oz = b.outer[3 * i + 2] - b.pos[3 * i + 2];
+        const ahead = ox * nx[3 * i] + oy * nx[3 * i + 1] + oz * nx[3 * i + 2];
+        b.gap[i] = ahead < 0 ? 0 : g;
+        if (b.gap[i] < minGap) minGap = b.gap[i];
+        if (ahead < 0) { if (!flag) { flag = 3; crossArea += piece.area[i]; } }
+        else if (!flag && g < C.min_gap_mm && g < C.relative_tolerance * g0) { flag = 2; closeArea += piece.area[i]; }
+      } else b.gap[i] = Infinity;
+    } else { b.wall[i] = NaN; b.gap[i] = NaN; }
+    b.flag[i] = flag;
+  }
+  geometry.attributes.position.needsUpdate = true;
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  const vol = volume(b.pos, piece.indices);
+  const assay = { thin: thinArea / piece.totalArea, close: closeArea / piece.totalArea, cross: crossArea / piece.totalArea,
+                  minWall, minGap, maxMove, mass: (vol / 1000) * C.density_g_cm3, massChange: 100 * (vol / piece.volume0 - 1) };
+  state.assay = assay;
+  paint(); readings(assay); drawStrip(); placeHead();
+}
+
+function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+function rgb(hex) { const c = new THREE.Color(hex); return [c.r, c.g, c.b]; }
+function paint() {
+  if (!buffers) return;
+  const b = buffers, n = state.piece.V.n, col = b.color;
+  const silver = [1, 1, 1], wax = rgb(css("--wax")), fail = rgb(css("--fail")), warn = rgb(css("--warn"));
+  const top = Math.max(0.5, ...[state.gain * 1.2]);
+  for (let i = 0; i < n; i++) {
+    let c = silver;
+    if (state.mode === "move") c = lerp(silver, wax, Math.min(1, b.move[i] / top));
+    else if (state.mode === "risk") {
+      if (b.flag[i]) c = fail;
+      else {
+        const wm = b.wall[i] / Math.max(C.min_wall_mm, 1e-6), gm = b.gap[i] / Math.max(C.min_gap_mm, 1e-6);
+        const margin = Math.min(Number.isFinite(wm) ? wm : 9, Number.isFinite(gm) ? gm : 9);
+        if (margin < 1.15) c = lerp(silver, warn, 0.85);
+      }
+    }
+    col[3 * i] = c[0]; col[3 * i + 1] = c[1]; col[3 * i + 2] = c[2];
+  }
+  geometry.attributes.color && (geometry.attributes.color.needsUpdate = true);
+  const legend = $("legend");
+  legend.innerHTML = state.mode === "move"
+    ? `<span><i style="background:linear-gradient(90deg,#d9dde0,${css("--wax")})"></i>0 → ${fmt(top, 1)} mm moved</span>`
+    : state.mode === "risk"
+      ? `<span><i style="background:${css("--warn")}"></i>within 15% of a limit</span><span><i style="background:${css("--fail")}"></i>below limit or through itself</span>`
+      : "";
+}
+
+function placeHead() {
+  const fr = state.piece.frame, sound = state.live || state.sound;
+  const t = Math.min(state.t, sound.duration_s), angle = fr.theta_start + fr.span * (t / sound.duration_s), R = fr.r_ref + 5.5;
+  head.position.set(R * Math.cos(angle), 0, -R * Math.sin(angle));
+  head.visible = state.playing || !!state.live;
+}
+
+function verifiedRecord() {
+  const s = state.live || state.sound;
+  if (!s.verified || state.naive) return null;
+  const g = state.ges, entry = state.piece.results[s.id];
+  if (!entry) return null;
+  const key = g.lift && g.swell && g.lean ? "all" : g.lift && !g.swell && !g.lean ? "lift" : null;
+  return key ? { key, ...entry.variants[key] } : null;
+}
+function readings(a) {
+  const piece = state.piece, s = state.live || state.sound;
+  const total = a.thin + a.close + a.cross, limit = C.max_violating_area_fraction;
+  const v = $("verdict"), rec = verifiedRecord();
+  const past = rec && !rec.limited_by_search_range && state.gain > rec.safe_gain_mm * 1.02;
+  if (a.cross > limit) { v.className = "verdict bad"; v.textContent = "Passes through itself"; }
+  else if (past) { v.className = "verdict bad"; v.textContent = "Past the verified limit"; }
+  else if (total > limit) { v.className = "verdict bad"; v.textContent = a.thin >= a.close ? "Too thin to cast" : "Openings close up"; }
+  else if (total > limit / 4) { v.className = "verdict warn"; v.textContent = "Casts, near the limit"; }
+  else { v.className = "verdict ok"; v.textContent = "Casts"; }
+  const o = piece.original, bore = piece.summary.bore_diameter_median_mm;
+  const rows = [
+    ["Thinnest wall", `${fmt(a.minWall)} mm`, a.minWall < C.min_wall_mm ? (a.thin > limit ? "bad" : "warn") : ""],
+    ["Narrowest opening", `${fmt(a.minGap)} mm`, a.minGap < C.min_gap_mm ? (a.close > limit ? "bad" : "warn") : ""],
+    ["Surface past a limit", `${(100 * total).toFixed(2)}% of ${(100 * limit).toFixed(1)}%`, total > limit ? "bad" : ""],
+    ["Finger hole", state.naive ? "changes" : `Ø ${fmt(bore, 1)} mm, kept`, state.naive ? "warn" : ""],
+    ["Silver", `${fmt(a.mass, 2)} g (${a.massChange >= 0 ? "+" : ""}${fmt(a.massChange, 1)}%)`, ""],
+    ["Largest movement", `${fmt(a.maxMove)} mm`, ""],
+  ];
+  $("readings").innerHTML = rows.map(([k, val, cls]) => `<dt>${k}</dt><dd class="${cls}">${val}</dd>`).join("");
+  const ver = $("verified");
+  if (rec) {
+    const safe = rec.checks.safe, dbl = rec.checks.double;
+    ver.innerHTML = `<span class="label">Verified · full print file · ${VARIANT_NAMES[rec.key]}</span>
+      <dl class="read"><dt>Safe limit</dt><dd>${fmt(rec.safe_gain_mm)} mm${rec.limited_by_search_range ? " (top of range)" : ""}</dd>
+      <dt>At the limit: wall · opening</dt><dd>${fmt(safe.min_wall_mm)} · ${fmt(safe.min_gap_mm)} mm</dd>
+      <dt>Moves up to · silver</dt><dd>${fmt(safe.displacement_max_mm)} mm · ${safe.mass_change_percent >= 0 ? "+" : ""}${fmt(safe.mass_change_percent, 1)}%</dd>
+      <dt>At 2× the limit</dt><dd class="${dbl.casts ? "" : "bad"}">${dbl.casts ? "casts" : `${(100 * dbl.violating_area_fraction).toFixed(2)}% past limits`}</dd></dl>
+      <p class="note">${past ? "Past this push the full print file fails even where the live estimate looks fine: the estimate only follows each point's own partner across a wall or opening, so it misses new near-contacts." : "The live estimate above follows each point's partner across its wall and opening; the full-file check also catches new near-contacts."}</p>`;
+  } else {
+    ver.innerHTML = `<span class="label">Not verified</span><p class="note">${state.naive ? "The naive push is shown for contrast; its full-resolution check is in the table below." : s.verified ? "Only all three gestures together and lift alone are verified; other mixes are estimated live." : "Loaded and live sounds are estimated live only; add the file to resources/sound-silver.json and rerun to verify it on the full print model."}</p>`;
+  }
+}
+
+// ------------------------------------------------------------ sound strip: input above, what it writes along the metal below
+function drawStrip() {
+  const canvas = $("sound-strip"), dpr = Math.min(devicePixelRatio, 2);
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  if (!W) return;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const g = canvas.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const sound = state.live || state.sound, ink = css("--ink-soft"), wax = css("--wax"), rule = css("--rule");
+  const left = 44, right = W - 8, mid = H * 0.5, top1 = 8, bot1 = mid - 10, top2 = mid + 10, bot2 = H - 16;
+  g.font = "10px " + css("--font-data"); g.fillStyle = ink; g.strokeStyle = rule; g.lineWidth = 1;
+  const D = sound.duration_s, x = (t) => left + (right - left) * (t / D);
+  // Upper: level as a fill, pitch as a line (±0.5 octave about the median).
+  g.beginPath(); g.moveTo(left, (top1 + bot1) / 2); g.lineTo(right, (top1 + bot1) / 2); g.stroke();
+  g.fillText("+½ oct", 2, top1 + 8); g.fillText("−½ oct", 2, bot1);
+  const T = sound.time_s, until = Number.isFinite(state.t) ? state.t : Infinity;
+  g.globalAlpha = 0.22; g.fillStyle = wax; g.beginPath(); g.moveTo(x(T[0]), bot1);
+  for (let i = 0; i < T.length; i++) g.lineTo(x(T[i]), bot1 - sound.level[i] * (bot1 - top1));
+  g.lineTo(x(T[T.length - 1]), bot1); g.closePath(); g.fill(); g.globalAlpha = 1;
+  g.strokeStyle = wax; g.lineWidth = 1.6; g.beginPath(); let pen = false;
+  for (let i = 0; i < T.length; i++) {
+    if (sound.pitch[i] === 0 && sound.level[i] < 0.05) { pen = false; continue; }
+    const y = (top1 + bot1) / 2 - sound.pitch[i] * (bot1 - top1) / 2;
+    if (pen) g.lineTo(x(T[i]), y); else { g.moveTo(x(T[i]), y); pen = true; }
+  }
+  g.stroke();
+  // Lower: lift (line) and swell (fill) along the metal, in mm at the current push.
+  const fr = state.piece.frame, B = M.profile_bins, prof = current;
+  g.fillStyle = ink; g.fillText("lift", 2, top2 + 8); g.fillText("swell", 2, bot2);
+  g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); g.moveTo(left, (top2 + bot2) / 2); g.lineTo(right, (top2 + bot2) / 2); g.stroke();
+  if (prof) {
+    const scale = Math.max(state.gain, 0.5) * 1.05, yl = (v) => (top2 + bot2) / 2 - (v / scale) * (bot2 - top2) / 2;
+    const at = (u) => fr.theta_start + fr.span * u;
+    g.globalAlpha = 0.22; g.fillStyle = wax; g.beginPath(); g.moveTo(left, (top2 + bot2) / 2);
+    for (let k = 0; k <= 300; k++) { const u = k / 300; g.lineTo(left + (right - left) * u, yl(-state.gain * M.swell * Math.max(circular(prof.swell, at(u) % TAU), 0) * (state.ges.swell ? 1 : 0))); }
+    g.lineTo(right, (top2 + bot2) / 2); g.closePath(); g.fill(); g.globalAlpha = 1;
+    g.strokeStyle = wax; g.lineWidth = 2; g.beginPath();
+    for (let k = 0; k <= 300; k++) { const u = k / 300, v = state.ges.lift ? state.gain * M.lift * circular(prof.lift, at(u) % TAU) : 0; k ? g.lineTo(left + (right - left) * u, yl(v)) : g.moveTo(left, yl(v)); }
+    g.stroke();
+  }
+  g.fillStyle = ink;
+  const arc = fr.span * fr.r_ref;
+  g.fillText(`0 s · one end`, left, H - 3);
+  const endLabel = `${fmt(D, 2)} s · ${fmt(arc, 0)} mm of metal`;
+  g.fillText(endLabel, right - g.measureText(endLabel).width, H - 3);
+  if (Number.isFinite(until) && until < D) {
+    g.strokeStyle = css("--ink"); g.lineWidth = 1; g.beginPath(); g.moveTo(x(until), 4); g.lineTo(x(until), H - 14); g.stroke();
+  }
+  $("strip-time").textContent = `${fmt(Number.isFinite(until) ? Math.min(until, D) : D)} s of ${fmt(D)} s`;
+}
+
+// ------------------------------------------------------------ controls
+function setSafeTick() {
+  const rec = verifiedRecord(), tick = $("safe-tick"), range = $("gain");
+  if (rec) {
+    const max = Math.min(8, Math.max(3, Math.ceil(rec.safe_gain_mm * 2.5)));
+    range.max = String(max); $("gain-max").textContent = `${max} mm`;
+    tick.hidden = false; tick.style.left = `calc(${(Math.min(rec.safe_gain_mm, max) / max) * 100}% - 1px)`;
+    $("safe-label").textContent = `safe limit ${fmt(rec.safe_gain_mm)} mm${rec.limited_by_search_range ? "+" : ""}`;
+    if (!state.userSet) { state.gain = rec.safe_gain_mm; range.value = String(state.gain); }
+  } else {
+    tick.hidden = true; $("safe-label").textContent = "safe limit not verified";
+  }
+  $("gain-out").textContent = fmt(state.gain);
+}
+function renderPieces() {
+  $("pieces").innerHTML = pieces.map((p) => `<button type="button" data-id="${p.id}" aria-pressed="${p === state.piece}">${p.title.replace(" Ring", "")}</button>`).join("");
+}
+function renderSounds() {
+  const list = [...sounds, ...(state.extra ? [state.extra] : [])];
+  $("sounds").innerHTML = list.map((s) => `<button type="button" class="sound" data-id="${s.id}" aria-pressed="${s === state.sound && !state.live}">
+      <span class="dot"></span><b>${s.title}</b><em>${fmt(s.duration_s)} s</em><small>${s.kind}</small></button>`).join("");
+}
+function selectPiece(piece) {
+  stop(); state.piece = piece; state.userSet = false;
+  $("piece-name").textContent = piece.title; $("piece-meta").textContent = `${piece.materials} · ${piece.year} · ${piece.triangle_count.toLocaleString()} triangles shown`;
+  loadPiece(piece); renderPieces(); setSafeTick(); state.t = Infinity; update();
+  $("spread-note").textContent = `Each moment is spread over ${M.sigma_mm} mm of metal (about ${fmt(piece.summary.sigma_degrees, 0)}° of this ring), so the silver bends instead of creasing. On ${piece.title} the sound runs over ${fmt(piece.summary.metal_arc_mm, 0)} mm of metal; the opening is ${fmt(piece.summary.opening_degrees, 0)}°.`;
+}
+function selectSound(sound) {
+  stop(); state.live = null; state.sound = sound; state.userSet = false; state.t = Infinity;
+  $("strip-title").textContent = `${sound.title} · ${sound.kind}`;
+  $("sound-note").textContent = sound.summary ? `${sound.summary.tonal_segments} whistle segment${sound.summary.tonal_segments === 1 ? "" : "s"}, ${sound.summary.clicks} clicks measured${sound.summary.median_hz ? `, median pitch ${(sound.summary.median_hz / 1000).toFixed(1)} kHz` : ""}.` : "";
+  renderSounds(); setSafeTick(); update();
+}
+function stop() {
+  if (state.audio) { state.audio.pause(); }
+  if (state.live && state.live.stop) state.live.stop();
+  state.playing = false; $("play").textContent = "Play and bend";
+}
+function play() {
+  if (state.playing) { stop(); state.t = Infinity; update(); return; }
+  const s = state.live ? null : state.sound;
+  if (!s || !s.audio) return;
+  if (!state.audio) state.audio = new Audio();
+  const a = state.audio;
+  a.src = s.audio; a.preservesPitch = false; a.playbackRate = Number($("speed").value); a.currentTime = 0;
+  state.playing = true; $("play").textContent = "Stop";
+  a.play().catch(() => { state.playing = false; $("play").textContent = "Play and bend"; $("status").textContent = "The browser blocked playback; press Play again."; });
+  a.onended = () => { state.playing = false; $("play").textContent = "Play and bend"; state.t = Infinity; update(); };
+  const tick = () => {
+    if (!state.playing) return;
+    state.t = a.currentTime; update(); requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+async function loadFile(file) {
+  stop();
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const decoded = await ctx.decodeAudioData(await file.arrayBuffer());
+    const mono = new Float32Array(decoded.length);
+    for (let c = 0; c < decoded.numberOfChannels; c++) { const ch = decoded.getChannelData(c); for (let i = 0; i < mono.length; i++) mono[i] += ch[i] / decoded.numberOfChannels; }
+    const clip = mono.subarray(0, Math.min(mono.length, decoded.sampleRate * 12));
+    const feat = analyse(clip, decoded.sampleRate);
+    const url = URL.createObjectURL(file);
+    state.extra = { id: "upload", title: file.name.slice(0, 40), kind: "Your recording · measured in the browser", audio: url, verified: false, ...feat,
+                    summary: null };
+    ctx.close();
+    selectSound(state.extra);
+    state.gain = 1.5; $("gain").value = "1.5"; $("gain-out").textContent = fmt(state.gain); update();
+  } catch (err) {
+    $("sound-note").textContent = `Could not read that file: ${err.message}. Try a WAV or MP3.`;
+  }
+}
+
+async function whistleLive() {
+  stop();
+  const seconds = 6;
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
+  catch {
+    $("sound-note").textContent = "The microphone is blocked in this view. Open the local copy of this page (data/output/silver/index.html) to whistle live, or load a recording.";
+    return;
+  }
+  const ctx = new AudioContext(), source = ctx.createMediaStreamSource(stream), analyser = ctx.createAnalyser();
+  analyser.fftSize = 2048; analyser.smoothingTimeConstant = 0; source.connect(analyser);
+  const db = new Float32Array(analyser.frequencyBinCount), power = new Float64Array(analyser.frequencyBinCount), binHz = ctx.sampleRate / analyser.fftSize;
+  const frames = [], times = [], started = performance.now();
+  const live = { id: "live", title: "Live whistle", kind: "Microphone · measured in the browser", verified: false, duration_s: seconds, hop_s: 1 / 60,
+                 time_s: [], pitch: [], level: [], slope: [], dt: [] };
+  live.stop = () => { stream.getTracks().forEach((t) => t.stop()); ctx.close(); live.stop = null; state.playing = false; $("mic").textContent = "Whistle live"; };
+  state.live = live; state.playing = true; state.userSet = true; $("mic").textContent = "Listening…";
+  $("strip-title").textContent = `Live whistle · ${seconds} s along the metal`;
+  if (state.gain < 0.5) { state.gain = 1.5; $("gain").value = "1.5"; $("gain-out").textContent = fmt(state.gain); }
+  setSafeTick(); renderSounds();
+  const tick = () => {
+    if (!live.stop) return;
+    const t = (performance.now() - started) / 1000;
+    analyser.getFloatFrequencyData(db);
+    for (let k = 0; k < db.length; k++) power[k] = Math.pow(10, db[k] / 10);
+    frames.push(spectralFrame(power, binHz)); times.push(t);
+    const norm = normalise(frames, times);
+    live.time_s = times; live.pitch = norm.pitch; live.level = norm.level; live.slope = norm.slope;
+    live.dt = times.map((v, i) => (i ? v - times[i - 1] : 1 / 60));
+    state.t = t; update();
+    if (t >= seconds) { live.stop(); state.t = Infinity; update(); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+$("pieces").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) selectPiece(pieces.find((p) => p.id === b.dataset.id)); });
+$("sounds").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; const list = [...sounds, ...(state.extra ? [state.extra] : [])]; selectSound(list.find((s) => s.id === b.dataset.id)); });
+$("play").addEventListener("click", play);
+$("speed").addEventListener("change", () => { if (state.audio) state.audio.playbackRate = Number($("speed").value); });
+$("gain").addEventListener("input", (e) => { state.gain = Number(e.target.value); state.userSet = true; $("gain-out").textContent = fmt(state.gain); update(); });
+for (const k of ["lift", "swell", "lean"]) $(`g-${k}`).addEventListener("change", (e) => { state.ges[k] = e.target.checked; state.userSet = false; setSafeTick(); update(); });
+$("modes").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; state.mode = b.dataset.mode; [...$("modes").children].forEach((x) => x.setAttribute("aria-pressed", String(x === b))); paint(); });
+$("ghost").addEventListener("change", (e) => { ghost.visible = e.target.checked; });
+$("naive").addEventListener("change", (e) => { state.naive = e.target.checked; setSafeTick(); update(); });
+$("upload").addEventListener("change", (e) => { const f = e.target.files[0]; if (f) loadFile(f); e.target.value = ""; });
+$("mic").addEventListener("click", () => (state.live && state.live.stop ? (state.live.stop(), state.t = Infinity, update()) : whistleLive()));
+
+// ------------------------------------------------------------ static sections
+$("wall-floor").textContent = C.min_wall_mm; $("gap-floor").textContent = C.min_gap_mm;
+const soundTitle = Object.fromEntries(sounds.map((s) => [s.id, s.title]));
+$("verified-table").innerHTML = `<thead><tr><th>Piece</th><th>Sound</th><th>Gestures</th><th>Safe limit</th><th>Moves up to</th><th>Wall at limit</th><th>Opening at limit</th><th>Silver</th><th>2× limit</th><th>Live estimate at 2×</th><th>Naive at limit</th></tr></thead><tbody>` +
+  pieces.flatMap((p) => Object.entries(p.results).flatMap(([sid, entry]) => Object.entries(entry.variants).map(([key, r]) => {
+    const s = r.checks.safe, d = r.checks.double, nv = entry.naive_at_safe;
+    const pill = (c, frac) => c.casts ? `<span class="pill ok">casts</span>` : `<span class="pill bad">${(100 * frac).toFixed(2)}% past</span>`;
+    return `<tr><td>${p.title}</td><td>${soundTitle[sid] || sid}</td><td>${VARIANT_NAMES[key]}</td><td class="num">${fmt(r.safe_gain_mm)} mm${r.limited_by_search_range ? "+" : ""}</td><td class="num">${fmt(s.displacement_max_mm)} mm</td>
+      <td class="num">${fmt(s.min_wall_mm)} mm</td><td class="num">${fmt(s.min_gap_mm)} mm</td><td class="num">${s.mass_change_percent >= 0 ? "+" : ""}${fmt(s.mass_change_percent, 1)}%</td>
+      <td>${pill(d, d.violating_area_fraction)}</td><td>${pill(r.live.double, r.live.double.violating_area_fraction)}</td><td>${key === "all" ? pill(nv, nv.violating_area_fraction) : ""}</td></tr>`;
+  }))).join("") + `</tbody>`;
+$("originals").innerHTML = pieces.map((p) => p.photo ? `<figure><img src="${p.photo}" alt="${p.title}, cast silver, photographed by Livia Zaharia"><figcaption><b>${p.title}</b> · ${p.materials}, ${p.year}. ${p.note} Original wall ≥ ${fmt(p.original.min_wall_mm)} mm, openings ≥ ${fmt(p.original.min_gap_mm)} mm, ${fmt(p.original.mass_g, 1)} g of sterling.</figcaption></figure>` : "").join("");
+$("notes").innerHTML = [
+  `Casting limits are assumptions for lost-wax sterling: walls ${C.min_wall_mm} mm, openings ${C.min_gap_mm} mm. A wall that was already thinner only fails if it loses more than ${Math.round((1 - C.relative_tolerance) * 100)}% of itself. Confirm both with the caster.`,
+  `Live readings use ${pieces.map((p) => `${p.vertex_count.toLocaleString()} vertices for ${p.title}`).join(" and ")}: each vertex is paired with the point straight across its wall and its opening on the print file, and both ends move with the same map. The verified figures re-cast rays on the full print files.`,
+  `Pitch, level and slope are measured from the waveform (ridge contour above 3 kHz for the presets, above 300 Hz for loaded and live sound). They describe the signal, not what the animal meant.`,
+  `Recordings: OpenWhistle test-set whistles (SW_Nana, SW_Neo, NSW_1), a DSWP sperm-whale coda, and the art brush's synthesized wave contour. Ring models and photographs: Livia Zaharia.`,
+  `Full-resolution STLs at the safe limit are written locally to data/output/silver/stl/ for printing tests.`,
+].map((t) => `<li>${t}</li>`).join("");
+
+// ------------------------------------------------------------ start
+renderSounds(); selectPiece(pieces[0]); selectSound(sounds[0]); themeColors(); resize();
+$("status").textContent = "Drag to turn the ring. Play bends it as the sound plays.";
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+
+// Test hook: deform a piece with a preset sound in the ring's own (STL) coordinates.
+window.__silver = {
+  ready: true,
+  modelSpace(pieceId, soundId, gain, stride) {
+    const piece = pieces.find((p) => p.id === pieceId), sound = sounds.find((s) => s.id === soundId);
+    stride = stride || Math.max(1, Math.floor(piece.V.n / 64));
+    const prof = profiles(sound, piece.frame), out = new Float32Array(piece.V.n * 3);
+    bend(piece.V, prof, gain, { lift: true, swell: true, lean: true }, out);
+    const fr = piece.frame, res = [];
+    for (let i = 0; i < piece.V.n && res.length < 64; i += stride) {
+      const X = out[3 * i], Y = out[3 * i + 1], Z = -out[3 * i + 2];
+      res.push([0, 1, 2].map((c) => fr.center[c] + X * fr.e1[c] + Y * fr.axis[c] + Z * fr.e2[c]));
+    }
+    return res;
+  },
+  state,
+  // For captures: choose piece, sound, push, colour and comparison in one call.
+  show({ piece, sound, gain, mode = "silver", ghost: showGhost = false, naive = false, view, gestures = ["lift", "swell", "lean"] } = {}) {
+    if (piece && piece !== state.piece.id) selectPiece(pieces.find((p) => p.id === piece));
+    for (const k of ["lift", "swell", "lean"]) { state.ges[k] = gestures.includes(k); $(`g-${k}`).checked = state.ges[k]; }
+    if (sound) selectSound(sounds.find((s) => s.id === sound));
+    if (gain !== undefined) { state.gain = gain; state.userSet = true; $("gain").value = String(gain); $("gain-out").textContent = fmt(gain); }
+    state.mode = mode; [...$("modes").children].forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.mode === mode)));
+    ghost.visible = showGhost; $("ghost").checked = showGhost; state.naive = naive; $("naive").checked = naive;
+    if (view) { camera.position.set(...view); controls.update(); }
+    update(); controls.update(); renderer.render(scene, camera);
+    return state.assay;
+  },
+};
+</script>

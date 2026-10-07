@@ -568,6 +568,7 @@ def combine_command(
     model: Annotated[bool, typer.Option(help="Run ACE-Step when the spec asks for it.")] = True,
     ace_root: Annotated[Path | None, typer.Option(help="ACE-Step 1.5 checkout with its own .venv.")] = None,
     offload: Annotated[bool, typer.Option(help="CPU offload between stages; needed when other jobs share the GPU.")] = False,
+    rerender: Annotated[bool, typer.Option(help="Render again even when a complete render of this combination exists.")] = False,
 ):
     """Combine several sources into one guide, response and optional ACE-Step cover; prints the manifest path last."""
     import json
@@ -576,7 +577,7 @@ def combine_command(
     from .follow_combine import combine
 
     try:
-        print(combine(Layout(data_dir), load_config(), json.loads(spec.read_text(encoding="utf-8")), ace_root, model, offload))
+        print(combine(Layout(data_dir), load_config(), json.loads(spec.read_text(encoding="utf-8")), ace_root, model, offload, reuse=not rerender))
     except ValueError as error:  # one plain line, so the sound map can show it as is
         print(f"ERROR: {error}", file=sys.stderr)
         raise typer.Exit(2) from error

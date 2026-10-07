@@ -49,6 +49,7 @@ bun install
 bun test && bun run typecheck
 bun run dev                 # http://127.0.0.1:3070; ORCHESTRA_PORT/HOST from ../../.env, WHALES_ROOT
 bun scripts/demo.ts         # refresh demo/follow from data/output/follow
+bun scripts/silver.ts       # refresh demo/silver (the Sound to silver tab's media) from data/output/silver, docs and jewelry renders
 bun run export              # static copy into data/output/follow (atlas.html and friends)
 ```
 
@@ -68,6 +69,10 @@ changes in their areas.
   and `resources/follow-music.json`. Editing that file re-renders every piece. Preset
   names live in `data/output/follow/presets.json`, never in specs, so naming never
   changes an id.
+- **Renders are reused:** a complete earlier render with the same id is returned without
+  recomputing anything. Bump `RENDER_VERSION` in `experiments/follow_combine.py`
+  whenever rendering, response or scoring code changes, so stale renders get rebuilt.
+  `main.py follow combine --rerender` rebuilds a single piece.
 - **`index.html` anchors:** `scripts/export.ts` parses `<title>`, the `./style.css`
   link and the `./main.ts` script tag. Keep them when editing the page.
 - **Pages and galleries** follow Input → Schema → Output. Keep original recordings

@@ -21,6 +21,8 @@ const TYPES: Record<string, string> = {
   ".wav": "audio/wav",
   ".webp": "image/webp",
   ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
   ".json": "application/json",
   ".geojson": "application/geo+json",
 };

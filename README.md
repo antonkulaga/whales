@@ -65,9 +65,15 @@ the app is described in [apps/sound-map/README.md](apps/sound-map/README.md).
 The second idea turns sound into Livia's own material: a recording bends one of
 her cast-silver rings (Inline, Roots). Time runs along the metal, pitch lifts the
 band along the finger, level swells it outward and pitch slope leans it, while
-casting checks guard wall thickness, gaps and the finger bore. It is not
-implemented end to end yet. Work has started in `experiments/silver.py`, with
-settings in `resources/sound-silver.json`.
+casting checks guard wall thickness, gaps and the finger bore. The bending study
+has run on both rings: Roots moves by up to 4 mm and Inline by about 2 mm, the
+finger hole is unchanged in all 20 runs, and a live 3D bench plays each recording
+while the ring bends ([report](docs/sound-to-silver-bending.md)). Animated studies
+keep the metal moving after casting: ferrofluid stones, hinged nitinol, magnetic
+fins and memory cells. Nothing has been cast yet.
+
+All of it is in the orchestra app's **Sound to silver (optional)** tab, after
+Installation, with the bench and the animations running inside it.
 
 One silver piece already exists as a pilot. **Hardata II** (implemented and run)
 engraves a dolphin whistle as a contour groove around a ring band and reads it back
@@ -113,6 +119,7 @@ describes the pieces these build on.
 - [Artistic experiments — implemented outputs and revised brainstorming](docs/artistic-experiments.md)
 - [Sound brush — keyboard → emitted waveform → recognized contour → stroke, with replay checks and an OpenWhistle comparison](docs/sound-brush.md)
 - [Hardata II pilot — how many inscribed bits keep a dolphin whistle's type, and a simulated silver groove](docs/hardata-ii-pilot.md)
+- [Sound to silver bending — whistles bend Livia's Inline and Roots rings at print resolution without tearing; casting checks find each sound's safe limit](docs/sound-to-silver-bending.md)
 - [Eight new science-and-art proposals — ranking, recommended pilot and reading map](docs/novel-projects.md) · [experimental plans](docs/novel-experimental-plans.md) · [prior art](docs/novel-prior-art.md) · [novelty assessment](docs/novel-novelty-assessment.md) · [visual atlas of all six reports](docs/atlas/index.html) (open in a browser; playable pilot clips)
 
 **For coding agents:** [AGENTS.md](AGENTS.md) covers the layout, commands and conventions.

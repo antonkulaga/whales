@@ -220,6 +220,34 @@ def demo_command(
     write_gallery(layout.output)
 
 
+@app.command("silver")
+def silver_command(
+    data_dir: DataOption = DEFAULT_DATA,
+    drive: Annotated[Path, typer.Option(exists=True, file_okay=False, help="Livia's STL archive (drive-folder).")] = Path.home() / "Downloads" / "drive-folder",
+    livia_dir: LiviaOption = ROOT.parent / "livia",
+    piece: Annotated[list[str] | None, typer.Option(help="Piece id from resources/sound-silver.json; repeatable. Default: all.")] = None,
+    sound: Annotated[list[str] | None, typer.Option(help="Sound id; repeatable. Default: all.")] = None,
+    output: OutputOption = None,
+    stl: Annotated[bool, typer.Option(help="Write full-resolution STLs at each safe limit.")] = True,
+):
+    """Bend Livia's stoneless rings with sound; casting checks, safe limits and a live 3D viewer. Needs art + mesh."""
+    from .silver import run
+
+    print(f"Viewer: {run(Layout(data_dir), drive, livia_dir, piece, sound, output, stl) / 'index.html'}")
+
+
+@app.command("silver-motion")
+def silver_motion_command(
+    data_dir: DataOption = DEFAULT_DATA,
+    drive: Annotated[Path, typer.Option(exists=True, file_okay=False, help="Livia's STL archive (drive-folder).")] = Path.home() / "Downloads" / "drive-folder",
+    output: OutputOption = None,
+):
+    """Animated studies of moving versions (ferrofluid, nitinol hinges, magnetic fins, memory cells). Run `art silver` first."""
+    from .silver_motion import run
+
+    print(f"Motion studies: {run(Layout(data_dir), drive, output)}")
+
+
 brush_app = typer.Typer(help="Human-operated sound brush: keys → emitted audio → measured contour → stroke.", no_args_is_help=True)
 app.add_typer(brush_app, name="brush")
 StoneOption = Annotated[str, typer.Option(help="Stone at the centre: mitoring (amber) or mycelium (opal).")]

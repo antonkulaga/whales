@@ -312,14 +312,16 @@ def vertex_areas(mesh):
 
 
 def interpenetrations(mesh, measurable, offset: float = 0.02):
-    """Vertices whose point just outside the surface lies inside the solid: the surface passed through itself.
+    """Mask of vertices whose point just outside the surface lies inside the solid: the surface passed through itself.
 
-    Only measurable vertices count; in a concave crease the offset point legitimately lands in the neighbouring wall.
+    Only measurable vertices are tested; in a concave crease the offset point legitimately lands in the neighbouring wall.
     """
     import numpy as np
 
+    inside = np.zeros(len(mesh.vertices), dtype=bool)
     v, n = np.asarray(mesh.vertices)[measurable], np.asarray(mesh.vertex_normals)[measurable]
-    return int(np.count_nonzero(mesh.contains(v + n * offset)))
+    inside[np.flatnonzero(measurable)] = mesh.contains(v + n * offset)
+    return inside
 
 
 def baseline(mesh, frame: dict, config: dict):
@@ -348,41 +350,42 @@ def check(mesh, vertices, frame: dict, base: dict, config: dict):
     thin = measurable & (wall < c["min_wall_mm"]) & (wall < tolerance * base["wall"])
     close = measurable & (gap < c["min_gap_mm"]) & (gap < tolerance * base["gap"])
     total = base["areas"].sum()
-    inside = interpenetrations(after, measurable)
+    inside = interpenetrations(after, measurable) & ~base["inside"]
     bore = bore_profile(vertices, frame, config["mapping"]["bore_bins"])
     metal = np.isfinite(bore) & np.isfinite(base["bore"])
     ratio = np.asarray(after.edges_unique_length) / np.maximum(base["edges"], 1e-12)
     moved = np.linalg.norm(vertices - np.asarray(mesh.vertices), axis=1)
-    finite_wall, finite_gap = wall[np.isfinite(wall)], gap[np.isfinite(gap)]
+    finite_wall, finite_gap = wall[measurable & np.isfinite(wall)], gap[measurable & np.isfinite(gap)]
     result = {
         "thin_area_fraction": float(base["areas"][thin].sum() / total),
         "close_area_fraction": float(base["areas"][close].sum() / total),
-        "thin_vertices": int(thin.sum()), "close_vertices": int(close.sum()),
+        "through_itself_area_fraction": float(base["areas"][inside].sum() / total),
+        "thin_vertices": int(thin.sum()), "close_vertices": int(close.sum()), "through_itself_vertices": int(inside.sum()),
         "min_wall_mm": float(finite_wall.min()), "wall_p1_mm": float(np.percentile(finite_wall, 1)),
         "min_gap_mm": float(finite_gap.min()), "gap_p1_mm": float(np.percentile(finite_gap, 1)),
-        "interpenetrating_vertices": inside, "interpenetrating_vertices_before": base["inside"],
         "bore_change_mm": float(np.abs(bore[metal] - base["bore"][metal]).max()),
         "mass_g": float(after.volume / 1000 * c["density_g_cm3"]),
         "mass_change_percent": float(100 * (after.volume / base["volume"] - 1)),
         "edge_stretch_p0_1": float(np.percentile(ratio, 0.1)), "edge_stretch_p99_9": float(np.percentile(ratio, 99.9)),
         "displacement_max_mm": float(moved.max()), "displacement_p95_mm": float(np.percentile(moved, 95)),
     }
-    result["casts"] = bool(result["thin_area_fraction"] + result["close_area_fraction"] <= c["max_violating_area_fraction"]
-                           and inside <= base["inside"])
-    return result, thin | close
+    violating = thin | close | inside
+    result["violating_area_fraction"] = float(base["areas"][violating].sum() / total)
+    result["casts"] = result["violating_area_fraction"] <= c["max_violating_area_fraction"]
+    return result, violating
 
 
-def safe_gain(mesh, frame: dict, profile: dict, base: dict, config: dict):
+def safe_gain(mesh, frame: dict, profile: dict, base: dict, config: dict, gestures=GESTURES):
     """Largest gain (mm at full scale) whose deformation still passes every casting check, by bisection."""
     s = config["search"]
     vertices = mesh.vertices
     low, high = 0.0, s["max_gain_mm"]
-    top, _ = check(mesh, deform(vertices, frame, profile, high, config), frame, base, config)
+    top, _ = check(mesh, deform(vertices, frame, profile, high, config, gestures), frame, base, config)
     if top["casts"]:
         return high, True
     for _ in range(s["steps"]):
         middle = (low + high) / 2
-        result, _ = check(mesh, deform(vertices, frame, profile, middle, config), frame, base, config)
+        result, _ = check(mesh, deform(vertices, frame, profile, middle, config, gestures), frame, base, config)
         low, high = (middle, high) if result["casts"] else (low, middle)
     return low, False
 
@@ -405,21 +408,52 @@ def decimate(mesh, triangles: int):
 
 
 def opposite_points(full, small):
-    """For each viewer vertex, the points straight across its wall and its gap on the full-resolution surface.
+    """For each viewer vertex, the points straight across its wall and its opening on the full-resolution surface.
 
-    Deforming both ends of each pair with the same map gives a live wall and gap estimate in the browser.
+    Rays start just outside (walls) or just inside (openings) so the vertex's own surface is crossed first and
+    recognised by its facing: across a wall the ray leaves the metal (face normal along the ray); across an
+    opening it enters the next wall (face normal against the ray). Deforming both ends of each pair with the
+    same map gives the browser's live wall and opening estimate.
     """
     import numpy as np
 
     v, n = np.asarray(small.vertices), np.asarray(small.vertex_normals)
     result = {}
-    for name, sign in (("inner", -1), ("outer", 1)):
-        origins = v + sign * n * 1e-3
-        locations, index, _ = full.ray.intersects_location(origins, sign * n, multiple_hits=False)
+    for name, sign, leaving in (("inner", -1, True), ("outer", 1, False)):
+        direction = sign * n
+        origins = v - direction * 0.05
+        locations, index, faces = full.ray.intersects_location(origins, direction, multiple_hits=True)
+        facing = np.einsum("ij,ij->i", full.face_normals[faces], direction[index])
+        distance = np.linalg.norm(locations - origins[index], axis=1)
+        keep = (facing > 0) == leaving
+        keep &= distance > (0.05 + 0.01 if leaving else 0.0)
         points = np.full(v.shape, np.nan)
-        points[index] = locations
+        order = np.lexsort((distance[keep], index[keep]))
+        chosen_index, first = np.unique(index[keep][order], return_index=True)
+        points[chosen_index] = locations[keep][order][first]
         result[name] = points
     return result
+
+
+def live_assay(small, pairs: dict, moved, moved_pairs: dict, config: dict):
+    """The browser's estimate, reproduced: walls and openings between each vertex and its deformed partner."""
+    import numpy as np
+
+    c = config["casting"]
+    v0, n0 = np.asarray(small.vertices), np.asarray(small.vertex_normals)
+    wall0 = np.linalg.norm(v0 - pairs["inner"], axis=1)
+    gap0 = np.where(np.isfinite(pairs["outer"]).all(axis=1), np.linalg.norm(v0 - pairs["outer"], axis=1), np.inf)
+    measurable = np.nan_to_num(wall0, nan=0) >= c["measurable_wall_mm"]
+    measurable &= gap0 >= c["measurable_gap_mm"]
+    to_inner, to_outer = moved_pairs["inner"] - moved, moved_pairs["outer"] - moved
+    crossed = (np.einsum("ij,ij->i", to_inner, n0) > 0) | (np.isfinite(gap0) & (np.einsum("ij,ij->i", to_outer, n0) < 0))
+    wall, gap = np.linalg.norm(to_inner, axis=1), np.linalg.norm(to_outer, axis=1)
+    thin = (wall < c["min_wall_mm"]) & (wall < c["relative_tolerance"] * wall0)
+    close = np.isfinite(gap0) & (gap < c["min_gap_mm"]) & (gap < c["relative_tolerance"] * gap0)
+    bad = measurable & (crossed | thin | close)
+    areas = vertex_areas(small)
+    return {"violating_area_fraction": float(areas[bad].sum() / areas.sum()),
+            "casts": bool(areas[bad].sum() / areas.sum() <= c["max_violating_area_fraction"])}
 
 
 def pack(array, dtype):
@@ -459,14 +493,6 @@ def viewer_piece(full, small, frame: dict, info: dict, pairs: dict):
                   "e2": frame["e2"].tolist(), "bore": np.asarray(frame["bore"]).tolist(), "theta_start": frame["theta_start"],
                   "span": frame["span"], "r_ref": frame["r_ref"], "sigma": frame["sigma"]},
     }
-
-
-def estimate(small, pairs: dict, vertices, deformed_pairs: dict):
-    """The browser's live wall and gap: distance between a vertex and its deformed opposite point."""
-    import numpy as np
-
-    return (np.linalg.norm(vertices - deformed_pairs["inner"], axis=1),
-            np.linalg.norm(vertices - deformed_pairs["outer"], axis=1))
 
 
 def downsample_wav(path: Path, target_rate: int = 44100):
@@ -510,7 +536,7 @@ def write_stl(path: Path, mesh, vertices):
 
 def run(layout: Layout, drive: Path = DRIVE, livia: Path = ROOT.parent / "livia", pieces=None, sounds=None,
         output: Path | None = None, stl: bool = True, log=print):
-    """Every piece × sound: safe gain, checks at 0.5×, 1× and 2× safe, the naive contrast, STLs and the viewer."""
+    """Every piece × sound × gesture set: safe gain, checks at 0.5×, 1× and 2× safe, the naive contrast, STLs and the viewer."""
     import numpy as np
 
     config = load_config()
@@ -535,11 +561,13 @@ def run(layout: Layout, drive: Path = DRIVE, livia: Path = ROOT.parent / "livia"
         frame = ring_frame(mesh, config)
         base = baseline(mesh, frame, config)
         summary = frame_summary(frame)
-        finite_wall, finite_gap = base["wall"][np.isfinite(base["wall"])], base["gap"][np.isfinite(base["gap"])]
+        measurable = base["measurable"]
+        finite_wall = base["wall"][measurable & np.isfinite(base["wall"])]
+        finite_gap = base["gap"][measurable & np.isfinite(base["gap"])]
         original = {"min_wall_mm": float(finite_wall.min()), "wall_p1_mm": float(np.percentile(finite_wall, 1)),
                     "min_gap_mm": float(finite_gap.min()), "gap_p1_mm": float(np.percentile(finite_gap, 1)),
                     "mass_g": base["volume"] / 1000 * config["casting"]["density_g_cm3"],
-                    "interpenetrating_vertices": base["inside"]}
+                    "through_itself_vertices": int(base["inside"].sum())}
         log(f"{piece_id}: {info['triangles']} triangles, bore Ø {summary['bore_diameter_median_mm']:.1f} mm, "
             f"opening {summary['opening_degrees']:.0f}°, wall ≥ {original['min_wall_mm']:.2f} mm, gap ≥ {original['min_gap_mm']:.2f} mm")
         small = decimate(mesh, config["viewer"]["triangles"])
@@ -549,33 +577,34 @@ def run(layout: Layout, drive: Path = DRIVE, livia: Path = ROOT.parent / "livia"
         for spec_sound in sound_specs:
             feature = sound_features[spec_sound["id"]]
             profile = profiles(feature, frame, config)
-            gain, unlimited = safe_gain(mesh, frame, profile, base, config)
-            entry = {"safe_gain_mm": gain, "limited_by_search_range": unlimited, "checks": {}}
-            for label, factor in (("half", 0.5), ("safe", 1.0), ("double", 2.0)):
-                moved = deform(mesh.vertices, frame, profile, gain * factor, config)
-                entry["checks"][label], _ = check(mesh, moved, frame, base, config)
-                if label == "safe" and stl:
-                    write_stl(output / "stl" / f"{piece_id}-{spec_sound['id']}-safe.stl", mesh, moved)
-            pushed = naive(np.asarray(mesh.vertices), np.asarray(mesh.vertex_normals), frame, profile, gain, config)
+            entry = {"variants": {}}
+            for variant, gestures in config["variants"].items():
+                gain, unlimited = safe_gain(mesh, frame, profile, base, config, gestures)
+                record = {"gestures": gestures, "safe_gain_mm": gain, "limited_by_search_range": unlimited, "checks": {}, "live": {}}
+                for label, factor in (("half", 0.5), ("safe", 1.0), ("double", 2.0)):
+                    moved = deform(mesh.vertices, frame, profile, gain * factor, config, gestures)
+                    record["checks"][label], _ = check(mesh, moved, frame, base, config)
+                    if label == "safe" and stl:
+                        write_stl(output / "stl" / f"{piece_id}-{spec_sound['id']}-{variant}-safe.stl", mesh, moved)
+                    # The browser's live estimate at the same push, for comparison with the verified verdict.
+                    moved_small = deform(np.asarray(small.vertices), frame, profile, gain * factor, config, gestures)
+                    moved_pairs = {k: deform(np.nan_to_num(v), frame, profile, gain * factor, config, gestures) for k, v in pairs.items()}
+                    record["live"][label] = live_assay(small, pairs, moved_small, moved_pairs, config)
+                entry["variants"][variant] = record
+            first = entry["variants"]["all"]
+            pushed = naive(np.asarray(mesh.vertices), np.asarray(mesh.vertex_normals), frame, profile, first["safe_gain_mm"], config)
             entry["naive_at_safe"], _ = check(mesh, pushed, frame, base, config)
-            # How well the browser's live estimate (deformed opposite points) matches re-cast rays at the safe gain.
-            moved_small = deform(np.asarray(small.vertices), frame, profile, gain, config)
-            deformed_pairs = {k: deform(np.nan_to_num(v), frame, profile, gain, config) for k, v in pairs.items()}
-            wall_live, gap_live = estimate(small, pairs, moved_small, deformed_pairs)
-            import trimesh
-
-            truth_wall, truth_gap = walls_and_gaps(trimesh.Trimesh(moved_small, small.faces, process=False))
-            valid = np.isfinite(pairs["inner"]).all(axis=1) & np.isfinite(truth_wall)
-            entry["live_wall_error_mm"] = {"median": float(np.median(np.abs(wall_live[valid] - truth_wall[valid]))),
-                                           "p95": float(np.percentile(np.abs(wall_live[valid] - truth_wall[valid]), 95))}
+            moved_small = deform(np.asarray(small.vertices), frame, profile, first["safe_gain_mm"], config)
             entry["reference_vertices"] = moved_small[:: max(1, len(moved_small) // 64)][:64].round(5).tolist()
             piece_results["sounds"][spec_sound["id"]] = entry
-            safe = entry["checks"]["safe"]
-            log(f"  {spec_sound['id']:5s} safe gain {gain:.2f} mm{' (top of range)' if unlimited else ''}; "
-                f"max move {safe['displacement_max_mm']:.2f} mm; wall ≥ {safe['min_wall_mm']:.2f}; gap ≥ {safe['min_gap_mm']:.2f}; "
-                f"bore Δ {safe['bore_change_mm']:.3f}; mass {safe['mass_change_percent']:+.1f}%; "
-                f"2×: casts={entry['checks']['double']['casts']}; naive: casts={entry['naive_at_safe']['casts']} "
-                f"(thin {entry['naive_at_safe']['thin_area_fraction']:.1%}, through-itself {entry['naive_at_safe']['interpenetrating_vertices']})")
+            for variant, record in entry["variants"].items():
+                safe = record["checks"]["safe"]
+                log(f"  {spec_sound['id']:5s} {variant:4s} safe {record['safe_gain_mm']:.2f} mm{'+' if record['limited_by_search_range'] else ''}; "
+                    f"moves ≤ {safe['displacement_max_mm']:.2f} mm; wall ≥ {safe['min_wall_mm']:.2f}; opening ≥ {safe['min_gap_mm']:.2f}; "
+                    f"bore Δ {safe['bore_change_mm']:.3f}; silver {safe['mass_change_percent']:+.1f}%; 2× casts={record['checks']['double']['casts']}; "
+                    f"live says safe={record['live']['safe']['casts']} 2×={record['live']['double']['casts']}")
+            log(f"        naive at the 'all' limit: casts={entry['naive_at_safe']['casts']} "
+                f"(thin {entry['naive_at_safe']['thin_area_fraction']:.1%}, through itself {entry['naive_at_safe']['through_itself_area_fraction']:.1%})")
         results[piece_id] = piece_results
         photo = livia / "assets" / "pieces" / spec["photo"]
         viewer_pieces.append(viewer_piece(mesh, small, frame, {

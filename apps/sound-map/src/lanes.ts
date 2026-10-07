@@ -2,17 +2,17 @@
 // onset-strength envelopes, a shared playhead, and per-part timing scores.
 
 import { fileUrl } from "./lib/api.ts";
-import type { Manifest, ManifestPart, OutputScores, PhraseEvent, StemName, Timing } from "./lib/types.ts";
+import type { Manifest, ManifestPart, OutputScores, PhraseEvent, Source, StemName, Timing } from "./lib/types.ts";
 import { SPECIES_COLOR } from "./map.ts";
 
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
 const signed = (z: number | undefined | null) => (z == null ? "—" : `${z > 0 ? "+" : ""}${z.toFixed(1)}`);
 
-const LANES: { key: StemName; title: string; caption: (m: Manifest) => string }[] = [
-  { key: "animal", title: "Recordings", caption: () => "Each recording at its place on the timeline." },
-  { key: "guide", title: "Combined guide", caption: () => "Each part's measured events in its own instrument and register." },
-  { key: "response", title: "Deterministic response", caption: () => "No model: pads, bass and drums on every part's events." },
-  { key: "ace", title: "ACE-Step", caption: (m) => m.ace ? `${m.ace.task} of the combined guide · strength ${m.ace.audio_cover_strength} · seed ${m.ace.seed}` : "" },
+const LANES: { key: StemName; title: string; material: string; caption: (m: Manifest) => string }[] = [
+  { key: "animal", title: "Animal voices", material: "Recorded", caption: () => "The original recordings, arranged on one timeline." },
+  { key: "guide", title: "Combined guide", material: "Constructed from measurements", caption: () => "Measured events rendered in each player's instrument and register." },
+  { key: "response", title: "Deterministic response", material: "Constructed", caption: () => "Pads, bass and drums placed on each player's events." },
+  { key: "ace", title: "The composition", material: "Generated · ACE-Step 1.5", caption: () => "One musical interpretation generated from the combined guide." },
 ];
 
 export function partColor(part: ManifestPart): string {
@@ -43,25 +43,55 @@ function envelope(scores: OutputScores | undefined, duration: number): string {
   return `<svg class="env" viewBox="0 0 1000 24" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}" vector-effect="non-scaling-stroke"/></svg>`;
 }
 
-export function renderLanes(container: HTMLElement, manifest: Manifest, onSeek: (t: number) => void): (t: number | null) => void {
+export function renderLanes(container: HTMLElement, manifest: Manifest, onSeek: (t: number) => void, keys?: readonly StemName[]): (t: number | null) => void {
   const parts = manifest.parts;
-  container.innerHTML = LANES.filter((lane) => manifest.stems[lane.key]).map((lane) => {
+  container.innerHTML = LANES.filter((lane) => manifest.stems[lane.key] && (!keys || keys.includes(lane.key))).map((lane) => {
     const stem = manifest.stems[lane.key]!;
-    const overlay = ticks(parts, manifest.duration_s) + (lane.key === "guide" || lane.key === "ace" ? contours(parts, manifest.duration_s, stem.band) : "");
+    const overlay = ticks(parts, manifest.duration_s) + (lane.key === "guide" ? contours(parts, manifest.duration_s, stem.band) : "");
     const scores = lane.key === "response" || lane.key === "ace" ? manifest.scores[lane.key] : undefined;
-    return `<div class="lane"><div><h3>${esc(lane.title)}</h3><div class="small">${esc(lane.caption(manifest))}</div></div>
-      <div><div class="spec" data-lane="${lane.key}"><img src="${esc(fileUrl(stem.image))}" alt="Spectrogram of ${esc(lane.title)}" loading="lazy">
+    return `<div class="lane"><div><span class="material-label">${esc(lane.material)}</span><h3>${esc(lane.title)}</h3><div class="small">${esc(lane.caption(manifest))}</div></div>
+      <div><div class="spec" data-lane="${lane.key}" role="slider" tabindex="0" aria-label="Seek in ${esc(lane.title)}" aria-valuemin="0" aria-valuemax="${manifest.duration_s}" aria-valuenow="0"><img src="${esc(fileUrl(stem.image))}" alt="Spectrogram of ${esc(lane.title)}" loading="lazy">
         <svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${overlay}</svg><div class="playhead"></div></div>${envelope(scores, manifest.duration_s)}</div></div>`;
   }).join("");
-  container.querySelectorAll<HTMLElement>(".spec").forEach((spec) => spec.addEventListener("click", (event) => {
-    const box = spec.getBoundingClientRect();
-    onSeek(((event.clientX - box.left) / box.width) * manifest.duration_s);
-  }));
+  return bindTimeline(container, manifest.duration_s, onSeek);
+}
+
+/** Actual source spectrograms, cropped to the selected trims and placed on the piece's timeline. */
+export function renderIndividualTracks(container: HTMLElement, manifest: Manifest, sources: ReadonlyMap<string, Source>, onSeek: (t: number) => void): (t: number | null) => void {
+  container.innerHTML = manifest.parts.map((part, i) => {
+    const source = sources.get(part.source);
+    const length = part.trim_s[1] - part.trim_s[0];
+    const left = 100 * part.offset_s / manifest.duration_s;
+    const width = 100 * length / manifest.duration_s;
+    const image = source && length > 0 ? `<img src="${esc(fileUrl(source.files.animal.image))}" alt="Recorded ${esc(part.species)} spectrogram, trimmed to this player's excerpt" style="width:${100 * source.duration_s / length}%;left:${-100 * part.trim_s[0] / length}%" loading="lazy">` : "";
+    return `<div class="individual-lane" data-track-part="${i}" style="--c:${partColor(part)}"><div><span class="material-label">Recorded · ${part.offset_s.toFixed(1)}–${(part.offset_s + length).toFixed(1)} s</span><h3>${i + 1} · ${esc(part.species)}</h3><div class="small">${esc(part.location.label)}</div></div>
+      <div class="spec" data-lane="part-${i}" role="slider" tabindex="0" aria-label="Seek in recording ${i + 1}: ${esc(part.title)}" aria-valuemin="0" aria-valuemax="${manifest.duration_s}" aria-valuenow="0"><div class="recording-clip" style="left:${left}%;width:${width}%">${image}</div><svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${ticks([part], manifest.duration_s)}</svg><div class="playhead"></div></div></div>`;
+  }).join("") + `<div class="track-ruler" aria-label="Shared time in seconds">${[0, .25, .5, .75, 1].map(fraction => `<span>${(fraction * manifest.duration_s).toFixed(1)} s</span>`).join("")}</div>`;
+  return bindTimeline(container, manifest.duration_s, onSeek);
+}
+
+function bindTimeline(container: HTMLElement, duration: number, onSeek: (t: number) => void): (t: number | null) => void {
+  container.querySelectorAll<HTMLElement>(".spec").forEach((spec) => {
+    spec.addEventListener("click", (event) => {
+      const box = spec.getBoundingClientRect();
+      onSeek(((event.clientX - box.left) / box.width) * duration);
+    });
+    spec.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const current = Number(spec.getAttribute("aria-valuenow"));
+      const next = event.key === "Home" ? 0 : event.key === "End" ? duration - .1 : current + (event.key === "ArrowRight" ? 1 : -1);
+      onSeek(Math.max(0, Math.min(duration - .1, next)));
+    });
+  });
   const heads = [...container.querySelectorAll<HTMLElement>(".playhead")];
   return (t) => {
     for (const head of heads) {
       head.style.display = t == null ? "none" : "block";
-      if (t != null) head.style.left = `${((t / manifest.duration_s) * 100).toFixed(3)}%`;
+      if (t != null) {
+        head.style.left = `${((t / duration) * 100).toFixed(3)}%`;
+        head.parentElement?.setAttribute("aria-valuenow", t.toFixed(1));
+      }
     }
   };
 }
@@ -81,5 +111,5 @@ export function renderScores(container: HTMLElement, manifest: Manifest) {
     return [`<div class="score-row"><b>${title}</b>${parts}${chip("all onsets", scores.all)}${leak}</div>`];
   });
   container.innerHTML = rows.join("") +
-    `<p class="small">Timing z compares each output's onset envelope with one part's onsets against the same output shifted in time. From z ≈ 3 the music follows that part; near 0 it ignores it. Source leak ≥ 0.15 means the output partly copies the guide.</p>`;
+    `<p class="small">Timing z compares an output's onset envelope with the measured onsets against the same output shifted in time. In this experiment, z ≈ 3 or above suggests stronger timing alignment; near 0 shows no extra alignment. Source leak is peak waveform correlation with the guide; values ≥ 0.15 flag possible copying.</p>`;
 }

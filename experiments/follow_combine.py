@@ -28,6 +28,9 @@ WORLD = ROOT / "resources" / "maps" / "world-map-data.json"
 COUNTRIES = ROOT / "resources" / "maps" / "world-countries-110m.geojson"
 ARRANGEMENTS = ("layer", "sequence")
 TASKS = ("cover", "lego")
+# Bump when rendering, response or scoring code changes: saved renders with another version are rebuilt
+# on their next request. Ids hash the spec and config, not the code. Manifests without the field are version 1.
+RENDER_VERSION = 1
 
 
 def prepared_sources(layout: Layout):
@@ -169,7 +172,27 @@ def scores(audio, rate: int, parts: list[dict], frame_rate: int, metrics: dict):
             "envelope": [round(float(v), 2) for v in env[::2]], "envelope_rate_hz": frame_rate / 2}
 
 
-def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = None, run_model: bool = True, offload: bool = False):
+def saved_render(folder: Path, output: Path, needs_ace: bool) -> Path | None:
+    """The manifest of an earlier render of this exact combination, when every file it lists still exists.
+
+    The id hashes the resolved spec and the experiment config, so a match needs no re-rendering. A render made
+    without the model is reused only when this request does not ask for ACE-Step either.
+    """
+    path = folder / "manifest.json"
+    if not path.exists():
+        return None
+    manifest = read_json(path)
+    if manifest.get("render_version", 1) != RENDER_VERSION:
+        return None
+    if needs_ace and "ace" not in manifest.get("stems", {}):
+        return None
+    files = [stem[key] for stem in manifest["stems"].values() for key in ("audio", "image")]
+    files += [f for part in manifest["parts"] for f in part["files"].values()]
+    return path if all((output / f).exists() for f in files) else None
+
+
+def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = None, run_model: bool = True, offload: bool = False,
+            reuse: bool = True):
     """Write stems, listening files and manifest.json for one combination; returns the manifest path."""
     import numpy as np
 
@@ -177,6 +200,10 @@ def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = No
     prepared = prepared_sources(layout)
     combo = plan(spec, config, prepared)
     folder = output / "combos" / combo["id"]
+    reused = saved_render(folder, output, bool(combo["ace"] and run_model)) if reuse else None
+    if reused:
+        print(f"Reusing the saved render → combos/{combo['id']}/manifest.json")
+        return reused
     folder.mkdir(parents=True, exist_ok=True)
     rate, n = config["sample_rate"], round(combo["duration_s"] * config["sample_rate"])
     locations = {s["id"]: s["location"] for s in config["sources"]}
@@ -235,7 +262,7 @@ def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = No
             results[name] = scores(audio, rate, parts, m["frame_rate_hz"], m)
             if name == "ace":
                 results[name]["leakage"] = leakage(audio, mixes["guide"] * scale, rate)
-    manifest = {"id": combo["id"], "title": combo["title"], "created_at_utc": now(), "config_sha256": config["config_sha256"],
+    manifest = {"id": combo["id"], "title": combo["title"], "created_at_utc": now(), "config_sha256": config["config_sha256"], "render_version": RENDER_VERSION,
                 "spec": combo, "duration_s": combo["duration_s"], "scale": scale, "parts": parts, "stems": stems,
                 "scores": results, "ace": ace_result, "interpretation": config["combination"]["interpretation"]}
     write_json(folder / "manifest.json", manifest)

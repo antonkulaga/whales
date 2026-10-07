@@ -118,6 +118,30 @@ class CombineTests(unittest.TestCase):
         self.assertTrue(all(part["z"] >= 3 for part in response["parts"]), response["parts"])
         self.assertTrue((self.layout.output / "follow" / sp["files"]["guide"]).exists())
 
+    def test_repeated_combination_reuses_the_saved_render(self):
+        from experiments.data import read_json
+        from experiments.follow_combine import combine
+
+        spec = {"arrangement": "layer", "parts": [{"source": "hb"}, {"source": "sp", "offset_s": 2}]}
+        first = combine(self.layout, self.config, spec, run_model=False)
+        manifest = read_json(first)
+        guide = first.parent / "guide.wav"
+        stamp = guide.stat().st_mtime_ns
+        self.assertEqual(combine(self.layout, self.config, spec, run_model=False), first)
+        self.assertEqual(guide.stat().st_mtime_ns, stamp)  # nothing was rendered again
+        self.assertEqual(read_json(first)["created_at_utc"], manifest["created_at_utc"])
+        missing = self.layout.output / "follow" / manifest["stems"]["response"]["audio"]
+        missing.unlink()
+        combine(self.layout, self.config, spec, run_model=False)
+        self.assertTrue(missing.exists())  # an incomplete render is rebuilt
+        combine(self.layout, self.config, spec, run_model=False, reuse=False)
+        self.assertNotEqual(guide.stat().st_mtime_ns, stamp)  # --rerender rebuilds on request
+        stale = read_json(first) | {"render_version": 0}
+        from experiments.data import write_json
+        write_json(first, stale)
+        combine(self.layout, self.config, spec, run_model=False)
+        self.assertEqual(read_json(first)["render_version"], 1)  # renders from older code are rebuilt
+
     def test_catalog_lists_located_sources_and_dataset_points(self):
         from experiments.data import read_json
         from experiments.follow_combine import catalog

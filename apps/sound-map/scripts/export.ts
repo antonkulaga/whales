@@ -11,6 +11,16 @@ import type { Catalog, ComboSummary, Manifest } from "../src/lib/types.ts";
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
 const APP = join(import.meta.dir, "..");
+const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", "species/humpback.png", "species/dolphin.png", "species/sperm-whale.png", "species/killer-whale.png", "species/credits.json",
+  // About and Installation photos (Livia Zaharia's portrait and pieces, Anton Kulaga's GitHub portrait)
+  "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg",
+  "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json"];
+// A freshly prepared catalog has no artwork; recover the shared assets from the demo.
+for (const path of artwork) {
+  if (!(await Bun.file(join(OUTPUT, path)).exists())) {
+    await Bun.write(join(OUTPUT, path), Bun.file(join(APP, "demo", "follow", path)));
+  }
+}
 
 const build = await Bun.build({ entrypoints: [join(APP, "src", "main.ts")], target: "browser", format: "esm", minify: true });
 if (!build.success) throw new AggregateError(build.logs, "Bundling failed");
@@ -33,7 +43,7 @@ const summaries: ComboSummary[] = manifests.map((m) => ({
 }));
 await Bun.write(join(OUTPUT, "combos.json"), JSON.stringify(summaries));
 
-const files = new Set<string>(["atlas-app.js", "atlas.css", "catalog.json", "combos.json", catalog.countries]);
+const files = new Set<string>(["atlas-app.js", "atlas.css", "catalog.json", "combos.json", ...artwork, catalog.countries]);
 for (const source of catalog.sources) {
   for (const listening of Object.values(source.files)) {
     files.add(listening.audio);
@@ -64,7 +74,9 @@ await Bun.write(join(OUTPUT, "atlas-files.json"), JSON.stringify([...files].sort
 const html = await Bun.file(join(APP, "src", "index.html")).text();
 const head = html.match(/<title>[\s\S]*?(?=<link rel="stylesheet" href="\.\/style\.css">)/)?.[0] ?? "<title>Phrase Atlas</title>";
 const body = html.match(/<body>([\s\S]*)<\/body>/)?.[1] ?? "";
-const page = `${head.trim()}
+const page = `<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+${head.trim()}
 <link rel="stylesheet" href="atlas.css">
 ${body.replace('<script type="module" src="./main.ts"></script>', '<script>window.PHRASE_ATLAS_STATIC = true;</script>\n  <script type="module" src="atlas-app.js"></script>').trim()}
 `;

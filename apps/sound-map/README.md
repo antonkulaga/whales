@@ -5,18 +5,71 @@ then compose one piece from all their measured phrases with ACE-Step 1.5. While 
 plays, each recording site pulses on its own onsets and the arcs between players
 light up.
 
+This is a **pre-project prototype for the HIFMB × HWK ArtWaves residency proposal**
+([residency listing](https://www.transartists.org/en/air/helmholtz-institute-functional-marine-biodiversity-hanse-wissenschaftskolleg-institute-advanced)).
+The interface takes its visual cues from a vineyard concert hall: curved seating
+terraces, timber, ivory and brass, alongside warm paper and editorial typography.
+An AI-generated ocean-atlas illustration of whales and dolphins inside a hall forms
+a fixed decorative background at 42% opacity (32% on phones), visible around the
+geography inside the map frame. Copy, spectrograms and controls have their own
+surfaces; the backdrop cannot intercept pointer events. The map uses the full
+rectangular viewport, with no seating overlay or oval mask hiding recording sites.
+Six larger chairs show species silhouettes as recordings join the orchestra. The
+desktop map is capped at 480 px high to keep the seating close to the geography.
+Icons are from PhyloPic: Chris huh (humpback, dolphin and orca) and Margot Michaud
+(sperm whale); sources and credits are bundled in `demo/follow/species/credits.json`.
+The selected artwork and its
+generation prompt are bundled in `demo/follow/concert-hall-atlas-v1.png` and
+`concert-hall-atlas-v1.prompt.json`.
+
+The artistic premise is to make marine biodiversity audible through an imagined
+symphony for human ears. DCLDE killer-whale excerpts meet recordings from other
+waters; measured rhythms and contour shapes guide ACE-Step while the original
+voices remain playable. The technical tab links the dataset paper and scopes its
+"largest" claim to curated DCLDE audio and annotations at publication in 2025.
+
+- **Concert hall:** a title and one paragraph above a map spanning the available
+  screen width; playable original recordings below it, ensemble controls, and finished
+  pieces. A collapsible programme in one scrollable column beside the desktop map
+  fills the orchestra without starting playback or moving away from the map. On
+  phones it expands below the geography. The current piece shows individual source
+  excerpts on a shared timeline, then the combined guide and generated composition.
+- **Technical score:** Input → Schema → Guide → Output diagrams; a recording selector
+  with actual spectrograms, measured onsets and pitch contours, playable original and
+  guide audio; composition scores, fine-tuning, model controls, and engine logs.
+  `?view=technical` opens this tab, including alongside a `#<piece id>` link.
+- **Installation:** the proposed physical room, led by two AI-generated concept
+  images: an oak table with a printed ocean map, tactile whale and dolphin figures
+  with selection buttons, a large wall display of recorded → measured → generated
+  sound, and speakers around the visitors. One button selects one recording; pressing
+  again removes it, with a light and the screen confirming up to six seated voices.
+  A small touchscreen handles composition and playback. The original recordings and
+  guides could be routed to separate speakers; generated music is a shared mix.
+  A three-step visit and the physical setup form the main page; build details and
+  scientific collaborations expand below, with a link to the separate Silver tab.
+  The room is a proposal to build with residency or other
+  funding; hardware selection, screen synchronisation and spatial playback still need
+  development. Images and generation prompts are in `demo/follow/installation/`,
+  preserved by the demo refresh and included in the static export. `?view=installation`.
+- **About:** Livia Zaharia and Anton Kulaga, with links and the GitHub repository.
+  `?view=about`. Photos are in `demo/follow/about/` and are copied by the export.
+
 - **Seating:** a site with one recording toggles it on click; a site with several opens
-  a short list with "Seat all". The recordings list under the map seats, removes and
+  a short list with "Seat all". The recordings list below the map seats, removes and
   previews every recording and shows its spectrogram with the measured calls.
 - **Map:** zoom presets (All sites, North-east Pacific, Salish Sea, World) frame the
   clustered hydrophones. Seated sites get a halo and their seat numbers.
-- **Dock:** a bar pinned to the bottom of the window lists the players. Use × to
-  remove one and Layer or Sequence to arrange them. **Compose piece** turns into
-  **Update piece** after any change and **Up to date** when nothing changed.
+- **Orchestra:** controls directly below the map list the players without covering
+  the geography or species seats. Use × to
+  remove one and **Together** or **In sequence** to arrange them. **Compose piece** turns into
+  **Update piece** after any change and **Play** when the current piece matches the ensemble.
   **New take** keeps the players with a new ACE-Step seed. Ctrl+Enter triggers the
   main button.
 - **Presets:** a piece is named only when saved as a preset under the result. Opening
-  any saved piece seats its players again.
+  any programme piece seats its players again; use Play to listen, or change the
+  ensemble to compose a variation. The drawer's Escape key collapses it.
+- **Keyboard:** arrow keys, Home, and End navigate the tabs. Spectrograms support
+  arrow-key seeking, Home, and End, and map sites respond to Enter and Space.
 
 The app is Bun + TypeScript. Measurement, guides, the deterministic response, ACE-Step
 and scoring all run in Python (`main.py follow combine`); the server writes a spec, runs
@@ -65,6 +118,7 @@ The server binds to localhost and runs one combination at a time, because the GP
 | `src/player.ts` | WebAudio playback: every stem starts on the same clock; toggles change gains only |
 | `src/lanes.ts` | Spectrogram lanes with each part's onsets and contours, envelopes, scores |
 | `src/lib/` | Pure logic shared by UI, server and tests |
+| `src/silver.ts`, `src/silver.css` | The **Sound to silver (optional)** tab (`?view=silver&idea=bend`): six idea tabs, with the live bench and moving-silver studies embedded from `/silver/files/` (`data/output/silver`, else `demo/silver`; refresh the copy with `bun scripts/silver.ts`). `/silver` redirects to it; the static export hides it |
 
 A combination spec looks like this:
 
@@ -85,7 +139,9 @@ The same file works from the command line:
 `uv run --group art --group viz main.py follow combine spec.json`. Results go to
 `data/output/follow/combos/<id>/` (Git-ignored); open `http://127.0.0.1:3070/#<id>` to
 see one. The id hashes the resolved spec and the experiment config, so changing either
-renders anew.
+renders anew. A complete earlier render with the same id is reused instantly, and
+`--rerender` forces a fresh one. The app also remembers which orchestras it has already
+rendered in the session, so going back to one opens it without calling the server.
 
 Each part is scored only while it plays: timing z of the output's onset envelope against
 that part's onsets, versus the same window shifted in time. In a layered piece this shows

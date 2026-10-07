@@ -11,6 +11,16 @@ import type { Catalog, Manifest } from "../src/lib/types.ts";
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
 const DEMO = join(import.meta.dir, "..", "demo", "follow");
+const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", "species/humpback.png", "species/dolphin.png", "species/sperm-whale.png", "species/killer-whale.png", "species/credits.json",
+  // Retain the About photos and Installation concepts when refreshing the playback bundle.
+  "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg",
+  "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json"];
+// Preserve the shared artwork before replacing the demo, even after a fresh measurement run.
+for (const path of artwork) {
+  if (!(await Bun.file(join(OUTPUT, path)).exists())) {
+    await Bun.write(join(OUTPUT, path), Bun.file(join(DEMO, path)));
+  }
+}
 
 const catalog = (await Bun.file(join(OUTPUT, "catalog.json")).json()) as Catalog;
 const wanted = process.argv[2]?.split(",").filter(Boolean);
@@ -32,7 +42,7 @@ function relativize<T>(value: T): T {
   return value;
 }
 
-const media = new Set<string>([catalog.countries]);
+const media = new Set<string>([catalog.countries, ...artwork]);
 for (const source of catalog.sources) {
   for (const listening of Object.values(source.files)) media.add(listening.audio).add(listening.image);
 }

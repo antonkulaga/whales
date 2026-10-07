@@ -1,0 +1,755 @@
+<title>Moving Silver Studies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a bench with one study at a time. Tabs name the mechanisms; the ring moves on the stage at left,
+   the mechanism schematic runs beside it in step; the sound strip, facts and precedents follow. */
+:root {
+  --plaster: #eceeec; --sheet: #f8f9f7; --ink: #1b2024; --ink-soft: #57616a; --rule: #cdd3d4;
+  --wax: #66489a; --wax-soft: #e7e0f2; --heat: #c8551b; --field: #1f6f8b; --pass: #2c7660; --fail: #b2382c;
+  --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --plaster: #121517; --sheet: #1a1e21; --ink: #dfe3e5; --ink-soft: #9aa4ab; --rule: #2d3438;
+    --wax: #a98ce2; --wax-soft: #2a2339; --heat: #f08a4b; --field: #5fb4d3; --pass: #5dbf9d; --fail: #f07d6e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --plaster: #121517; --sheet: #1a1e21; --ink: #dfe3e5; --ink-soft: #9aa4ab; --rule: #2d3438;
+  --wax: #a98ce2; --wax-soft: #2a2339; --heat: #f08a4b; --field: #5fb4d3; --pass: #5dbf9d; --fail: #f07d6e; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--plaster); color: var(--ink); font: 15px/1.55 var(--font-body); padding-inline: max(16px, 3vw); padding-block: 20px 48px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; }
+h2 { font-size: 1.4rem; line-height: 1.2; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; }
+a { color: var(--wax); }
+.wrap { max-width: 1320px; margin-inline: auto; display: grid; gap: 24px; }
+.mast { display: grid; gap: 8px; max-width: 72ch; }
+.eyebrow, .label { font: 500 0.72rem/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.lede { color: var(--ink-soft); font-size: 1.02rem; }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button { border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); border-radius: 999px; padding: 7px 14px; font: 500 0.9rem var(--font-body); cursor: pointer; display: inline-flex; gap: 8px; align-items: baseline; }
+.tabs button small { font: 0.7rem var(--font-data); color: var(--ink-soft); }
+.tabs button[aria-selected="true"] { background: var(--wax); border-color: var(--wax); color: var(--sheet); }
+.tabs button[aria-selected="true"] small { color: var(--sheet); opacity: 0.8; }
+.bench { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 960px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.stage, .schema { position: relative; background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; min-width: 0; }
+.stage { aspect-ratio: 4 / 3; max-width: 100%; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.stage .tag { position: absolute; left: 14px; top: 12px; display: grid; gap: 2px; pointer-events: none; max-width: 70%; }
+.stage .tag b { font: 400 1.15rem/1.2 var(--font-display); }
+.stage .tag span { font: 0.75rem/1.35 var(--font-data); color: var(--ink-soft); }
+.stage .badge { position: absolute; right: 12px; top: 12px; font: 600 0.78rem var(--font-body); padding: 4px 10px; border-radius: 999px; border: 1.5px solid currentColor; color: var(--field); background: var(--sheet); }
+.stage .hint { position: absolute; left: 14px; bottom: 10px; font: 0.72rem var(--font-data); color: var(--ink-soft); }
+.schema { display: grid; grid-template-rows: auto 1fr auto; padding: 12px 14px; gap: 8px; }
+.schema canvas { width: 100%; height: 360px; display: block; }
+.schema .caption { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.45; }
+.strip { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 8px; }
+.strip canvas { width: 100%; height: 92px; display: block; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.controls .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--rule); background: var(--plaster); color: var(--ink); padding: 7px 12px; border-radius: 8px; font: 500 0.88rem var(--font-body); cursor: pointer; }
+.btn.primary { background: var(--wax); border-color: var(--wax); color: var(--sheet); }
+select { font: 0.86rem var(--font-body); color: var(--ink); background: var(--plaster); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--wax); outline-offset: 2px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 10px; }
+.fact { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 3px; align-content: start; }
+.fact b { font: 500 0.95rem var(--font-body); }
+.fact span { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.4; }
+.explain { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; max-width: 75ch; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--sheet); }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; min-width: 760px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 500 0.7rem var(--font-data); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+tr:last-child td { border-bottom: 0; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.gallery a { text-decoration: none; color: inherit; display: grid; gap: 6px; }
+.gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--sheet); }
+.gallery b { font-weight: 600; font-size: 0.9rem; }
+.gallery span { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.4; }
+.gallery a:hover b { color: var(--wax); }
+.note { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.45; }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Sound to silver · moving versions</p>
+    <h1>Moving Silver Studies</h1>
+    <p class="lede">Five ways a piece could keep answering sound after it leaves the casting room, each built from Livia's print-and-cast pipeline plus hobby electronics for under €200 in parts. Each study moves her real Inline or Roots model with a recorded dolphin whistle, next to a schematic of the hardware that would do it.</p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Mechanism"></nav>
+
+  <section class="bench">
+    <div class="stage" id="stage">
+      <div class="tag"><b id="study-name"></b><span id="study-meta"></span></div>
+      <span class="badge" id="study-speed"></span>
+      <span class="hint">Drag to turn · scroll to zoom</span>
+    </div>
+    <div class="schema">
+      <span class="label">How it works</span>
+      <canvas id="schema" aria-label="Mechanism schematic, animated with the sound"></canvas>
+      <p class="caption" id="schema-caption"></p>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="controls">
+      <div class="row">
+        <span class="label">Sound</span>
+        <select id="sound" aria-label="Recording"></select>
+        <select id="speed" aria-label="Speed">
+          <option value="1">real time</option>
+          <option value="0.5">½ speed</option>
+          <option value="0.25" selected>¼ speed</option>
+          <option value="0.125">⅛ speed</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="listen" type="button">Play with sound</button>
+        <button class="btn" id="pause" type="button">Pause</button>
+      </div>
+    </div>
+    <canvas id="strip" aria-label="Pitch and level of the recording with the current moment"></canvas>
+  </section>
+
+  <section class="facts" id="facts"></section>
+
+  <section class="explain">
+    <h2>Side by side</h2>
+    <div class="tablewrap"><table id="compare"></table></div>
+    <p class="note">Speeds come from the cited sources. Nitinol figures are Dynalloy's Flexinol table for 0.003″ wire. Every animation here is a schematic: geometry from Livia's print files, motion computed from the measured pitch and level of the recording, with simple first-order lags for each mechanism. None of it is a physical simulation of the materials.</p>
+  </section>
+
+  <section class="explain">
+    <h2>Pieces that already move</h2>
+  </section>
+  <section class="gallery" id="gallery"></section>
+  <p class="note" id="credits"></p>
+</div>
+
+<script id="motion-data" type="application/json">/*MOTION_DATA*/null</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+const DATA = JSON.parse(document.getElementById("motion-data").textContent);
+const M = DATA.mapping, TAU = Math.PI * 2;
+const $ = (id) => document.getElementById(id);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ------------------------------------------------------------ geometry from the print files
+function bytes(b64) { const bin = atob(b64), out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out.buffer; }
+function dequantize(b64, box) {
+  const q = new Uint16Array(bytes(b64)), out = new Float32Array(q.length);
+  for (let i = 0; i < q.length; i++) { const c = i % 3; out[i] = box[0][c] + (q[i] / 65534) * (box[1][c] - box[0][c]); }
+  return out;
+}
+function circular(values, theta) {
+  const n = values.length, pos = (theta / TAU) * n - 0.5, lo = Math.floor(pos), f = pos - lo;
+  return values[((lo % n) + n) % n] * (1 - f) + values[(((lo + 1) % n) + n) % n] * f;
+}
+// Model (STL) coordinates → stage coordinates: finger axis up, ring centred.
+function toStage(fr, p, isDir = false) {
+  const d = isDir ? p : [p[0] - fr.center[0], p[1] - fr.center[1], p[2] - fr.center[2]];
+  const dot = (a) => d[0] * a[0] + d[1] * a[1] + d[2] * a[2];
+  return new THREE.Vector3(dot(fr.e1), dot(fr.axis), -dot(fr.e2));
+}
+function preparePiece(p) {
+  const pos = dequantize(p.positions, p.box), fr = p.frame, n = pos.length / 3;
+  const stage = new Float32Array(3 * n), r = new Float32Array(n), th = new Float32Array(n), h = new Float32Array(n), bore = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const v = toStage(fr, [pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]]);
+    stage[3 * i] = v.x; stage[3 * i + 1] = v.y; stage[3 * i + 2] = v.z;
+    r[i] = Math.hypot(v.x, v.z); let t = Math.atan2(-v.z, v.x); if (t < 0) t += TAU; th[i] = t; h[i] = v.y; bore[i] = circular(fr.bore, t);
+  }
+  const index = p.index_bits === 16 ? new Uint16Array(bytes(p.indices)) : new Uint32Array(bytes(p.indices));
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(stage.slice(), 3));
+  geometry.setIndex(new THREE.BufferAttribute(index, 1));
+  geometry.computeVertexNormals();
+  return { ...p, rest: stage, r, th, h, bore, n, index, geometry };
+}
+const inline = preparePiece(DATA.pieces.inline), roots = preparePiece(DATA.pieces.roots);
+const sounds = DATA.sounds;
+
+// The metal arc: time runs from one open end to the other.
+const along = (piece, u) => (piece.frame.theta_start + piece.frame.span * u) % TAU;
+// Outermost point of the band at an angle, for mounting fins and domes.
+function outerSite(piece, theta, widthDeg = 2.5) {
+  let best = -1, bestR = -1;
+  for (let i = 0; i < piece.n; i++) {
+    let d = Math.abs(piece.th[i] - theta); d = Math.min(d, TAU - d);
+    if (d < (widthDeg * Math.PI) / 180 && piece.r[i] > bestR && Math.abs(piece.h[i]) < 3.2) { bestR = piece.r[i]; best = i; }
+  }
+  if (best < 0) return null;
+  return { r: piece.r[best], h: piece.h[best], theta };
+}
+
+// ------------------------------------------------------------ sound
+function sample(sound, t) {
+  const i = clamp(Math.round((t - sound.time_s[0]) / sound.hop_s), 0, sound.time_s.length - 1);
+  const inside = t >= 0 && t <= sound.duration_s;
+  return { pitch: inside ? sound.pitch[i] : 0, level: inside ? sound.level[i] : 0, slope: inside ? sound.slope[i] : 0 };
+}
+function profiles(sound, frame, until) {
+  const B = M.profile_bins, lift = new Float64Array(B), swell = new Float64Array(B);
+  const sigma = frame.sigma, norm = 1 / (sigma * Math.sqrt(TAU)), reach = Math.ceil((5 * sigma / TAU) * B), T = sound.time_s, D = sound.duration_s;
+  for (let f = 0; f < T.length && T[f] <= until; f++) {
+    const p = sound.pitch[f], l = sound.level[f];
+    if (!p && !l) continue;
+    const angle = frame.theta_start + frame.span * T[f] / D, step = frame.span * sound.hop_s / D, centre = Math.round((angle / TAU) * B - 0.5);
+    for (let k = -reach; k <= reach; k++) {
+      const j = (((centre + k) % B) + B) % B;
+      let d = ((j + 0.5) / B) * TAU - angle; d = ((d + Math.PI) % TAU + TAU) % TAU - Math.PI;
+      const g = Math.exp(-0.5 * (d / sigma) ** 2) * norm * step;
+      lift[j] += p * g; swell[j] += l * g;
+    }
+  }
+  return { lift, swell };
+}
+
+// ------------------------------------------------------------ stage
+const stageEl = $("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+stageEl.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(30, 4 / 3, 0.5, 800);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.minDistance = 12; controls.maxDistance = 180;
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.0); keyLight.position.set(30, 60, 40); scene.add(keyLight);
+const silver = new THREE.MeshStandardMaterial({ color: 0xf2f2f0, metalness: 1, roughness: 0.24, envMapIntensity: 1.15 });
+const ghostMat = new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.14, depthWrite: false });
+
+function resize() {
+  const w = stageEl.clientWidth, h = stageEl.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  const c = $("schema"); c.width = c.clientWidth * Math.min(devicePixelRatio, 2); c.height = c.clientHeight * Math.min(devicePixelRatio, 2);
+  const s = $("strip"); s.width = s.clientWidth * Math.min(devicePixelRatio, 2); s.height = s.clientHeight * Math.min(devicePixelRatio, 2);
+  if (typeof redraw === "function") redraw();
+}
+new ResizeObserver(resize).observe(stageEl);
+
+// A stand under the ring, shared by the stand-driven studies.
+function makeStand(radius, y) {
+  const g = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius * 1.04, 2.2, 64), new THREE.MeshStandardMaterial({ color: 0x2a2f33, roughness: 0.55, metalness: 0.2 }));
+  base.position.y = y - 1.1; g.add(base);
+  return g;
+}
+function coilMesh(rIn, rOut, height) {
+  const g = new THREE.Group();
+  const copper = new THREE.MeshStandardMaterial({ color: 0xb8733e, metalness: 0.9, roughness: 0.35, emissive: 0x000000 });
+  const turns = 7;
+  for (let k = 0; k < turns; k++) {
+    const t = new THREE.Mesh(new THREE.TorusGeometry((rIn + rOut) / 2, (rOut - rIn) / 2, 10, 48), copper);
+    t.rotation.x = Math.PI / 2; t.position.y = (k / (turns - 1) - 0.5) * height; g.add(t);
+  }
+  g.userData.copper = copper;
+  return g;
+}
+
+// ------------------------------------------------------------ studies
+const studies = [];
+
+// 1. Cast once: the bend you saw, frozen in silver.
+studies.push((() => {
+  const mesh = new THREE.Mesh(inline.geometry.clone(), silver), ghost = new THREE.Mesh(inline.geometry, ghostMat);
+  const group = new THREE.Group(); group.add(mesh, ghost);
+  const pos = mesh.geometry.attributes.position;
+  return {
+    id: "cast", tab: "Cast once", speedTag: "set at casting", group,
+    name: "Inline · bent once, then cast", meta: "Silver · the shape is frozen when the wax is cast",
+    view: { pos: [26, 30, 46], target: [0, -1, 0] },
+    caption: "The whistle bends the wax print once (lift only, at Inline's verified 2.2 mm limit). After casting, the silver keeps that shape and does not move again. This is the baseline the other studies improve on.",
+    facts: [["Moves after casting", "No"], ["Wearable", "Yes, a normal ring"], ["Parts", "Silver and casting only"], ["Status", "Built: data/output/silver"]],
+    update(t, dt, sound) {
+      const gain = DATA.lift_limit[sound.id] ?? 2;
+      const prof = profiles(sound, inline.frame, t);
+      for (let i = 0; i < inline.n; i++) {
+        pos.array[3 * i] = inline.rest[3 * i]; pos.array[3 * i + 2] = inline.rest[3 * i + 2];
+        pos.array[3 * i + 1] = inline.rest[3 * i + 1] + gain * M.lift * circular(prof.lift, inline.th[i]);
+      }
+      pos.needsUpdate = true; mesh.geometry.computeVertexNormals();
+      this.state = { t, gain, sound };
+    },
+    schema(g, w, h) {
+      const s = this.state || {}, ink = css("--ink"), soft = css("--ink-soft"), wax = css("--wax"), rule = css("--rule");
+      const steps = ["whistle", "bend the print", "wax print", "cast silver", "worn, static"];
+      const boxW = (w - 40) / steps.length;
+      g.font = `13px ${css("--font-body")}`; g.textAlign = "center";
+      steps.forEach((label, i) => {
+        const x = 20 + i * boxW, y = h * 0.42, active = i <= Math.min(4, Math.floor(((s.t || 0) / (s.sound?.duration_s || 1)) * 2.2) + 1);
+        g.strokeStyle = active ? wax : rule; g.lineWidth = 1.5; g.fillStyle = active ? css("--wax-soft") : "transparent";
+        roundRect(g, x + 4, y - 22, boxW - 8, 44, 8); g.fill(); g.stroke();
+        g.fillStyle = active ? ink : soft; wrapText(g, label, x + boxW / 2, y + 4, boxW - 14, 15);
+        if (i < steps.length - 1) arrow(g, x + boxW - 4, y, x + boxW + 4, y, soft);
+      });
+      g.textAlign = "left"; g.fillStyle = soft; g.font = `12px ${css("--font-data")}`;
+      g.fillText(`lift ≤ ${(s.gain || 0).toFixed(2)} mm · silver weight unchanged`, 20, h * 0.42 + 54);
+      g.fillText("one sound, one shape, forever", 20, h * 0.42 + 72);
+    },
+  };
+})());
+
+// 2. Ferrofluid stones in Roots' three cups, driven by coils in a stand.
+studies.push((() => {
+  const group = new THREE.Group();
+  group.add(new THREE.Mesh(roots.geometry, silver));
+  const fr = roots.frame;
+  const cups = DATA.roots_cups.map((c) => ({ ...c, center: toStage(fr, c.center), opening: toStage(fr, c.opening, true).normalize() }));
+  // Order the cups by where they sit along the metal, so low, middle and high pitch read left to right.
+  cups.forEach((c) => { let t = Math.atan2(-c.center.z, c.center.x); if (t < 0) t += TAU; c.u = ((t - fr.theta_start + TAU) % TAU) / fr.span; });
+  cups.sort((a, b) => a.u - b.u);
+  const fluid = new THREE.MeshStandardMaterial({ color: 0x0b0c0e, metalness: 0.75, roughness: 0.1, envMapIntensity: 1.6 });
+  const glass = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0, roughness: 0.04, transparent: true, opacity: 0.16, envMapIntensity: 2, depthWrite: false });
+  const blobs = cups.map((c, k) => {
+    const R = c.radius * 0.95, geo = new THREE.SphereGeometry(1, 64, 40), base = geo.attributes.position.array.slice();
+    const n = base.length / 3, field = new Float32Array(n), up = new THREE.Vector3(0, 1, 0);
+    // Spikes: Fibonacci points in a 70° cone around the opening.
+    const spikes = [];
+    for (let i = 0; i < 17; i++) { const a = Math.acos(1 - (i + 0.5) / 17 * (1 - Math.cos(1.2))), b = i * 2.39996; spikes.push(new THREE.Vector3(Math.sin(a) * Math.cos(b), Math.cos(a), Math.sin(a) * Math.sin(b))); }
+    for (let i = 0; i < n; i++) {
+      const d = new THREE.Vector3(base[3 * i], base[3 * i + 1], base[3 * i + 2]);
+      let f = 0; for (const s of spikes) { const ang = d.angleTo(s); f += Math.max(0, 1 - ang / 0.22) ** 2.4; }
+      field[i] = Math.min(f, 1.2) * (d.y > 0 ? 1 : 0);
+    }
+    const mesh = new THREE.Mesh(geo, fluid), dome = new THREE.Mesh(new THREE.SphereGeometry(R * 1.32, 40, 20, 0, TAU, 0, Math.PI / 2), glass);
+    const holder = new THREE.Group(); holder.add(mesh, dome);
+    holder.position.copy(c.center).addScaledVector(c.opening, R * 0.45); holder.quaternion.setFromUnitVectors(up, c.opening);
+    group.add(holder);
+    return { mesh, base, field, R, amp: 0, cup: c, holder, centre: [-0.65, 0, 0.65][k] };
+  });
+  const stand = makeStand(24, -9.5); group.add(stand);
+  const coil = coilMesh(2.2, 4.6, 3.2); const mid = cups.reduce((a, c) => a.add(c.center), new THREE.Vector3()).multiplyScalar(1 / 3);
+  const look = cups.reduce((a, c) => a.add(c.opening), new THREE.Vector3()).normalize();
+  coil.position.set(mid.x, -8.6, mid.z); group.add(coil);
+  return {
+    id: "ferro", tab: "Ferrofluid stones", speedTag: "real time · start here", group,
+    name: "Roots · three ferrofluid stones", meta: "Sealed glass domes in Livia's silver cups · a coil in the stand",
+    view: { pos: [mid.x + look.x * 46 + 10, mid.y + 22, mid.z + look.z * 46 + 14], target: [mid.x * 0.6, mid.y - 2, mid.z * 0.6] },
+    caption: "Each cup holds a sealed drop of ferrofluid under glass. A coil under the ring follows the recording: loudness raises spikes, and pitch decides which cup answers (low, middle or high in the whistle). Ferrofluid reacts within milliseconds, so it can follow the whistle as it happens. Off the stand, Roots is an ordinary ring with three black stones.",
+    facts: [["Speed", "Real time: milliseconds"], ["Parts, roughly", "€80–150: display ferrofluid, domes, 12 V electromagnet, ESP32 + microphone, driver"], ["Livia adds", "Cups for sealed domes; a stand with the coil"], ["Precedent", "Kodama, Protrude, Flow (2001): microphone → electromagnets → ferrofluid"]],
+    update(t, dt, sound) {
+      const s = sample(sound, t);
+      blobs.forEach((b, k) => {
+        const band = Math.exp(-0.5 * ((s.pitch - b.centre) / 0.42) ** 2), target = s.level * (s.pitch === 0 ? (k === 1 ? 1 : 0.25) : band);
+        b.amp += (target - b.amp) * (1 - Math.exp(-dt / 0.03));
+        const p = b.mesh.geometry.attributes.position, H = b.R * 2.3 * b.amp;
+        for (let i = 0; i < p.count; i++) {
+          const x = b.base[3 * i], y = b.base[3 * i + 1], z = b.base[3 * i + 2], flat = y > 0 ? 0.62 : 0.8;
+          const rad = b.R + H * b.field[i];
+          p.array[3 * i] = x * rad; p.array[3 * i + 1] = y * (b.R * flat + H * b.field[i]); p.array[3 * i + 2] = z * rad;
+        }
+        p.needsUpdate = true; b.mesh.geometry.computeVertexNormals();
+      });
+      const drive = clamp(s.level, 0, 1);
+      coil.userData.copper.emissive.setRGB(0.35 * drive, 0.12 * drive, 0.02 * drive);
+      this.state = { s, amps: blobs.map((b) => b.amp) };
+    },
+    schema(g, w, h) {
+      const st = this.state || { s: { level: 0, pitch: 0 }, amps: [0, 0, 0] }, ink = css("--ink"), soft = css("--ink-soft"), field = css("--field"), heat = css("--heat"), wax = css("--wax");
+      // Signal chain across the top.
+      chain(g, ["recording or mic", "pitch · level", "3 coil currents"], 20, 24, w - 40);
+      // Cross-section of one cup.
+      const cx = w * 0.5, cy = h * 0.6, R = Math.min(w * 0.18, h * 0.2);
+      for (let k = 0; k < 5; k++) { // field lines
+        const a = 0.25 + 0.75 * st.s.level, spread = (k - 2) * R * 0.35;
+        g.strokeStyle = field; g.globalAlpha = 0.25 + 0.6 * a * (1 - Math.abs(k - 2) / 3); g.lineWidth = 1.4;
+        g.beginPath(); g.moveTo(cx + spread, cy + R * 1.7); g.bezierCurveTo(cx + spread * 1.1, cy + R * 0.6, cx + spread * 1.6, cy - R * 0.4, cx + spread * 2.4, cy - R * 1.6); g.stroke();
+      }
+      g.globalAlpha = 1;
+      g.fillStyle = css("--rule"); g.strokeStyle = soft; g.lineWidth = 2; // silver cup
+      g.beginPath(); g.arc(cx, cy, R * 1.12, 0, Math.PI); g.lineTo(cx - R * 0.95, cy); g.arc(cx, cy, R * 0.95, Math.PI, 0, true); g.closePath(); g.fill(); g.stroke();
+      const amp = Math.max(...st.amps); // ferrofluid with spikes
+      g.fillStyle = "#0b0c0e"; g.beginPath(); g.moveTo(cx - R * 0.95, cy);
+      for (let i = 0; i <= 60; i++) {
+        const x = cx - R * 0.95 + (i / 60) * R * 1.9, spike = Math.max(0, Math.cos(((i % 10) / 10) * TAU) ) ** 6;
+        g.lineTo(x, cy - R * 0.18 - spike * R * 1.1 * amp * (1 - Math.abs(i / 30 - 1) * 0.6));
+      }
+      g.lineTo(cx + R * 0.95, cy); g.arc(cx, cy, R * 0.95, 0, Math.PI); g.closePath(); g.fill();
+      g.strokeStyle = soft; g.lineWidth = 1.2; g.globalAlpha = 0.7; g.beginPath(); g.arc(cx, cy, R * 1.3, Math.PI, 0); g.stroke(); g.globalAlpha = 1; // glass
+      for (let k = 0; k < 6; k++) { g.fillStyle = heat; g.globalAlpha = 0.35 + 0.65 * st.s.level; roundRect(g, cx - R * 0.9 + k * R * 0.32, cy + R * 1.55, R * 0.26, R * 0.22, 3); g.fill(); }
+      g.globalAlpha = 1;
+      label(g, "glass dome", cx + R * 1.35, cy - R * 1.05, soft); label(g, "ferrofluid", cx + R * 1.2, cy - R * 0.1, ink);
+      label(g, "silver cup", cx + R * 1.2, cy + R * 0.8, soft); label(g, "coil in the stand", cx + R * 1.0, cy + R * 1.75, heat);
+      // Which cup answers.
+      ["low", "mid", "high"].forEach((name, k) => {
+        const x = 20 + k * 58, y = h - 22, a = st.amps[k] || 0;
+        g.fillStyle = wax; g.globalAlpha = 0.15 + 0.85 * a; roundRect(g, x, y - 26 * a - 4, 40, 26 * a + 4, 4); g.fill(); g.globalAlpha = 1;
+        g.fillStyle = soft; g.font = `11px ${css("--font-data")}`; g.fillText(name, x + 6, y + 14);
+      });
+    },
+  };
+})());
+
+// 3. Hinged Inline with nitinol tendons: rigid silver segments, shape-memory wire across each hinge.
+studies.push((() => {
+  const N = 12, group = new THREE.Group(), fr = inline.frame;
+  const segOf = (theta) => clamp(Math.floor((((theta - fr.theta_start + TAU) % TAU) / fr.span) * N), 0, N - 1);
+  const lists = Array.from({ length: N }, () => []);
+  const idx = inline.index, P = inline.rest;
+  for (let f = 0; f < idx.length; f += 3) {
+    const a = idx[f], b = idx[f + 1], c = idx[f + 2];
+    const x = (P[3 * a] + P[3 * b] + P[3 * c]) / 3, z = (P[3 * a + 2] + P[3 * b + 2] + P[3 * c + 2]) / 3;
+    let t = Math.atan2(-z, x); if (t < 0) t += TAU;
+    lists[segOf(t)].push(a, b, c);
+  }
+  const segments = lists.map((list, i) => {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", inline.geometry.attributes.position); geo.setAttribute("normal", inline.geometry.attributes.normal);
+    geo.setIndex(list);
+    const mesh = new THREE.Mesh(geo, silver); mesh.matrixAutoUpdate = false;
+    const theta = along(inline, (i + 0.5) / N);
+    group.add(mesh);
+    return { mesh, theta, lift: 0, target: 0 };
+  });
+  // Hinge pins at each boundary, pointing away from the finger, carried by the segment before it.
+  const pinMat = new THREE.MeshStandardMaterial({ color: 0x3a3f44, metalness: 0.8, roughness: 0.4 });
+  const pins = [];
+  for (let i = 0; i < N - 1; i++) {
+    const theta = along(inline, (i + 1) / N), site = outerSite(inline, theta, 4) || { r: fr.r_ref + 1, h: 0 };
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 2.6, 14), pinMat);
+    const base = new THREE.Matrix4().makeRotationY(theta).multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
+    base.setPosition(site.r * Math.cos(theta), site.h, -site.r * Math.sin(theta));
+    pin.matrixAutoUpdate = false; group.add(pin); pins.push({ pin, base, i });
+  }
+  // Tendons: one wire along the upper rail and one along the lower rail across each hinge.
+  const wireMat = (c) => new THREE.MeshStandardMaterial({ color: c, metalness: 0.6, roughness: 0.35, emissive: 0x000000 });
+  const wires = [];
+  for (let i = 0; i < N - 1; i++) {
+    for (const side of [1, -1]) {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1, 8), wireMat(0x8e959b));
+      group.add(m); wires.push({ m, i, side });
+    }
+  }
+  // Rail anchors: highest and lowest metal near each segment's middle, on the outer half of the band.
+  const rails = segments.map((s) => {
+    let top = null, bottom = null;
+    for (let i = 0; i < inline.n; i++) {
+      let d = Math.abs(inline.th[i] - s.theta); d = Math.min(d, TAU - d);
+      if (d > 0.07 || inline.r[i] < inline.bore[i] + 0.4) continue;
+      if (!top || inline.h[i] > top[1]) top = [i, inline.h[i]];
+      if (!bottom || inline.h[i] < bottom[1]) bottom = [i, inline.h[i]];
+    }
+    const at = (k) => new THREE.Vector3(inline.rest[3 * k], inline.rest[3 * k + 1], inline.rest[3 * k + 2]);
+    return { 1: top ? at(top[0]) : new THREE.Vector3(), [-1]: bottom ? at(bottom[0]) : new THREE.Vector3() };
+  });
+  const tmp = new THREE.Matrix4(), rot = new THREE.Matrix4(), back = new THREE.Matrix4();
+  const place = (s, i) => {
+    const r = fr.r_ref, c = new THREE.Vector3(r * Math.cos(s.theta), 0, -r * Math.sin(s.theta)), axis = new THREE.Vector3(Math.cos(s.theta), 0, -Math.sin(s.theta));
+    rot.makeRotationAxis(axis, s.tilt || 0); back.makeTranslation(-c.x, -c.y, -c.z); tmp.makeTranslation(c.x, c.y + s.lift, c.z);
+    s.mesh.matrix.copy(tmp).multiply(rot).multiply(back); s.mesh.matrixWorldNeedsUpdate = true;
+  };
+  return {
+    id: "nitinol", tab: "Hinged + nitinol", speedTag: "lags in real time", group,
+    name: "Inline · 12 hinged segments", meta: "Cast silver segments · nitinol wire along both rails",
+    view: { pos: [26, 30, 46], target: [0, -1, 0] },
+    caption: "Inline is cut into 12 rigid silver segments joined by hinges whose pins point away from the finger. A nitinol wire runs along each rail across every hinge; heating the upper or lower wire pulls the band up or down there, so the whistle's contour travels along the ring and then relaxes. Silver never flexes. Wire 0.08 mm thick needs about 1 s to pull and 0.2 s to cool, so at real time the motion lags; at ¼ speed it keeps up.",
+    facts: [["Speed", "About 1 s to pull, 0.2 s to relax (0.003″ wire)"], ["Parts, roughly", "€60–120: Flexinol wire, crimps, ESP32 + microphone, MOSFETs, small LiPo"], ["Livia adds", "Hinged segments, printed and cast as usual"], ["Precedent", "Becker's kinetic rings; Galatea's shape-memory bloom"]],
+    update(t, dt, sound) {
+      const gain = 2.0, prof = profiles(sound, fr, t), fade = t > sound.duration_s ? 0 : 1;
+      segments.forEach((s) => {
+        s.target = fade * gain * M.lift * circular(prof.lift, s.theta);
+        const contracting = Math.abs(s.target) > Math.abs(s.lift), tau = contracting ? 0.35 : 0.2;
+        s.lift += (s.target - s.lift) * (1 - Math.exp(-dt / tau));
+      });
+      const ds = (fr.span * fr.r_ref) / N;
+      segments.forEach((s, i) => {
+        const a = segments[Math.max(0, i - 1)].lift, b = segments[Math.min(N - 1, i + 1)].lift;
+        s.tilt = Math.atan2(b - a, (Math.min(N - 1, i + 1) - Math.max(0, i - 1)) * ds);
+        place(s, i);
+      });
+      pins.forEach((p) => { p.pin.matrix.copy(segments[p.i].mesh.matrix).multiply(p.base); p.pin.matrixWorldNeedsUpdate = true; });
+      const v = new THREE.Vector3(), w = new THREE.Vector3(), mid = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+      wires.forEach((wr) => {
+        const A = segments[wr.i], B = segments[wr.i + 1];
+        v.copy(rails[wr.i][wr.side]).applyMatrix4(A.mesh.matrix);
+        w.copy(rails[wr.i + 1][wr.side]).applyMatrix4(B.mesh.matrix);
+        mid.addVectors(v, w).multiplyScalar(0.5); wr.m.position.copy(mid);
+        const d = w.clone().sub(v); wr.m.scale.set(1, d.length(), 1); wr.m.quaternion.setFromUnitVectors(up, d.normalize());
+        const pull = clamp(wr.side * (B.lift - A.lift) * 0.9 + wr.side * (A.lift + B.lift) * 0.12, 0, 1);
+        wr.m.material.emissive.setRGB(0.9 * pull, 0.32 * pull, 0.05 * pull);
+      });
+      this.state = { t, segments: segments.map((s) => ({ lift: s.lift, target: s.target })), history: (this.state?.history || []).concat([[performance.now(), segments[5].target, segments[5].lift]]).slice(-240) };
+    },
+    schema(g, w, h) {
+      const st = this.state || { segments: [], history: [] }, soft = css("--ink-soft"), heat = css("--heat"), ink = css("--ink"), wax = css("--wax");
+      chain(g, ["recording or mic", "pitch along the ring", "heat upper or lower wire"], 20, 24, w - 40);
+      // Side view of three segments around the middle hinge.
+      const segs = st.segments.slice(4, 7), cx = w / 2, cy = h * 0.43, L = Math.min(w * 0.26, 130), H = 46;
+      segs.forEach((s, k) => {
+        const x0 = cx + (k - 1.5) * L, y = cy - (s?.lift || 0) * 14;
+        g.fillStyle = css("--rule"); g.strokeStyle = soft; g.lineWidth = 1.5; roundRect(g, x0 + 3, y - H / 2, L - 6, H, 6); g.fill(); g.stroke();
+        for (let j = 1; j < 4; j++) { g.beginPath(); g.moveTo(x0 + (j * L) / 4, y - H / 2 + 5); g.lineTo(x0 + (j * L) / 4, y + H / 2 - 5); g.stroke(); }
+      });
+      segs.forEach((s, k) => { if (k === 2 || !s) return; const n = segs[k + 1]; if (!n) return;
+        const x = cx + (k - 0.5) * L, y1 = cy - s.lift * 14, y2 = cy - n.lift * 14;
+        g.fillStyle = ink; g.beginPath(); g.arc(x, (y1 + y2) / 2, 4, 0, TAU); g.fill();
+        for (const side of [1, -1]) {
+          const pull = clamp(side * (n.lift - s.lift) * 0.9 + side * (s.lift + n.lift) * 0.12, 0, 1);
+          g.strokeStyle = pull > 0.05 ? heat : soft; g.lineWidth = 2 + 2 * pull; g.globalAlpha = 0.5 + 0.5 * pull;
+          g.beginPath(); g.moveTo(x - L * 0.42, y1 - side * (H / 2 - 4)); g.lineTo(x + L * 0.42, y2 - side * (H / 2 - 4)); g.stroke(); g.globalAlpha = 1;
+        }
+      });
+      label(g, "hinge pin", cx - L * 0.5 + 8, cy + H / 2 + 26, ink); label(g, "nitinol wire, heated = pulling", cx - L * 1.5, cy - H / 2 - 30, heat);
+      // Target vs actual for the middle segment.
+      const hist = st.history, gx = 20, gy = h - 92, gw = w - 40, gh = 64;
+      g.strokeStyle = css("--rule"); g.lineWidth = 1; g.strokeRect(gx, gy, gw, gh);
+      if (hist.length > 1) {
+        const t0 = hist[0][0], t1 = hist[hist.length - 1][0], X = (t) => gx + ((t - t0) / Math.max(1, t1 - t0)) * gw, Y = (v) => gy + gh / 2 - v * gh * 0.22;
+        for (const [col, key, dash] of [[wax, 1, [4, 3]], [heat, 2, []]]) {
+          g.strokeStyle = col; g.lineWidth = 1.8; g.setLineDash(dash); g.beginPath();
+          hist.forEach((p, i) => (i ? g.lineTo(X(p[0]), Y(p[key])) : g.moveTo(X(p[0]), Y(p[key])))); g.stroke(); g.setLineDash([]);
+        }
+      }
+      g.font = `11px ${css("--font-data")}`; g.fillStyle = wax; g.fillText("- - sound asks", gx + 6, gy + 13); g.fillStyle = heat; g.fillText("—  wire delivers (middle hinge)", gx + 110, gy + 13);
+    },
+  };
+})());
+
+// 4. Magnetic soft fins on Inline's outer rail, driven by two coil pairs.
+studies.push((() => {
+  const group = new THREE.Group(), K = 30, fr = inline.frame;
+  group.add(new THREE.Mesh(inline.geometry, silver));
+  const shape = new THREE.Shape(); shape.moveTo(0, -0.7); shape.lineTo(2.6, -0.3); shape.quadraticCurveTo(3.0, 0, 2.6, 0.3); shape.lineTo(0, 0.7); shape.lineTo(0, -0.7);
+  const finGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.22, bevelEnabled: false }); finGeo.translate(0, 0, -0.11);
+  const finMat = new THREE.MeshPhysicalMaterial({ color: 0xd9e6ea, roughness: 0.35, metalness: 0, transmission: 0, transparent: true, opacity: 0.9, clearcoat: 0.6, sheen: 0.5 });
+  const fins = [];
+  for (let k = 0; k < K; k++) {
+    const theta = along(inline, (k + 0.5) / K), site = outerSite(inline, theta, 3);
+    if (!site) continue;
+    const holder = new THREE.Group(), pivot = new THREE.Group(), fin = new THREE.Mesh(finGeo, finMat);
+    // Local frame: x radial out, y along the finger, z along the ring; the fin bends about z.
+    holder.position.set(site.r * Math.cos(theta), site.h, -site.r * Math.sin(theta)); holder.rotation.y = theta;
+    fin.rotation.x = Math.PI / 2; pivot.add(fin); holder.add(pivot); group.add(holder);
+    fins.push({ pivot, alpha: (k / K) * TAU * 1.5, bend: 0 });
+  }
+  const stand = makeStand(22, -7); group.add(stand);
+  const coils = [0, 1, 2, 3].map((k) => { const c = coilMesh(1.4, 2.6, 1.8); c.rotation.z = Math.PI / 2; const a = (k * Math.PI) / 2 + Math.PI / 4; c.position.set(21 * Math.cos(a), -4, -21 * Math.sin(a)); c.rotation.y = a; group.add(c); return c; });
+  return {
+    id: "fins", tab: "Magnetic fins", speedTag: "real time", group,
+    name: "Inline · 30 magnetic silicone fins", meta: "Cast silicone, a tiny magnet in each fin · two coil pairs in the stand",
+    view: { pos: [22, 34, 44], target: [0, -1, 0] },
+    caption: "Thin silicone fins along Inline's outer rail each hold a 1 mm magnet set at a slightly different angle. Two coil pairs in the stand turn the field: the whistle's pitch sets its direction and loudness its strength. Fins lined up with the field bend most, so a rising whistle sends the bend travelling around the ring. Magnets in soft silicone respond in milliseconds.",
+    facts: [["Speed", "Real time: milliseconds"], ["Parts, roughly", "€80–150: silicone, 1 mm neodymium magnets, 4 small coils, H-bridge, ESP32"], ["Livia adds", "Printed moulds for the fins; slots in the rail"], ["Precedent", "Kim, Zhao et al., Nature 2018 (printed version of the same idea)"]],
+    update(t, dt, sound) {
+      const s = sample(sound, t), beta = s.pitch * Math.PI, B = s.level;
+      fins.forEach((f) => { const target = 0.95 * B * Math.sin(beta - f.alpha); f.bend += (target - f.bend) * (1 - Math.exp(-dt / 0.02)); f.pivot.rotation.z = f.bend; });
+      coils.forEach((c, k) => { const drive = Math.abs(B * Math.cos(beta - (k * Math.PI) / 2)); c.userData.copper.emissive.setRGB(0.35 * drive, 0.12 * drive, 0.02 * drive); });
+      this.state = { s, beta, B };
+    },
+    schema(g, w, h) {
+      const st = this.state || { beta: 0, B: 0 }, soft = css("--ink-soft"), field = css("--field"), heat = css("--heat"), wax = css("--wax"), ink = css("--ink");
+      chain(g, ["recording or mic", "pitch → field angle, level → strength", "2 coil pairs"], 20, 24, w - 40);
+      const cx = w * 0.5, cy = h * 0.55, R = Math.min(w, h) * 0.24;
+      g.strokeStyle = soft; g.lineWidth = 6; g.globalAlpha = 0.5; g.beginPath(); g.arc(cx, cy, R, 0, TAU); g.stroke(); g.globalAlpha = 1;
+      for (let k = 0; k < 18; k++) { // fins with their magnetisation
+        const a = (k / 18) * TAU, alpha = (k / 18) * TAU * 1.5, resp = st.B * Math.sin(st.beta - alpha);
+        const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a), len = 16 + 10 * Math.abs(resp);
+        g.strokeStyle = resp > 0 ? wax : field; g.lineWidth = 2 + 3 * Math.abs(resp);
+        g.beginPath(); g.moveTo(x, y); g.lineTo(x + len * Math.cos(a + resp * 0.9), y + len * Math.sin(a + resp * 0.9)); g.stroke();
+      }
+      for (let k = 0; k < 4; k++) { const a = (k * Math.PI) / 2, x = cx + R * 1.75 * Math.cos(a), y = cy + R * 1.75 * Math.sin(a), d = Math.abs(st.B * Math.cos(st.beta - a));
+        g.fillStyle = heat; g.globalAlpha = 0.3 + 0.7 * d; roundRect(g, x - 9, y - 9, 18, 18, 4); g.fill(); g.globalAlpha = 1; }
+      const len = R * 0.9 * (0.15 + st.B); arrow(g, cx, cy, cx + len * Math.cos(st.beta), cy + len * Math.sin(st.beta), field, 3);
+      label(g, "field B", cx + len * Math.cos(st.beta) + 6, cy + len * Math.sin(st.beta), field);
+      label(g, "coil", cx + R * 1.75 + 12, cy + 4, heat); label(g, "fins bend most where their magnet lines up with the field", 20, 58, soft);
+    },
+  };
+})());
+
+// 5. Memory cells: bistable domes along Inline, written as the ring turns under a write head.
+studies.push((() => {
+  const group = new THREE.Group(), K = 24, fr = inline.frame;
+  group.add(new THREE.Mesh(inline.geometry, silver));
+  const domeGeo = new THREE.SphereGeometry(1.05, 28, 12, 0, TAU, 0, 1.05);
+  domeGeo.translate(0, -Math.cos(1.05) * 1.05, 0);
+  const upMat = new THREE.MeshStandardMaterial({ color: 0xf6f6f2, metalness: 1, roughness: 0.18 });
+  const downMat = new THREE.MeshStandardMaterial({ color: 0x5c6064, metalness: 0.9, roughness: 0.45 });
+  const cells = [];
+  for (let k = 0; k < K; k++) {
+    const u = (k + 0.5) / K, theta = along(inline, u), site = outerSite(inline, theta, 3);
+    if (!site) continue;
+    const holder = new THREE.Group(), dome = new THREE.Mesh(domeGeo, upMat);
+    holder.position.set((site.r + 0.05) * Math.cos(theta), site.h, -(site.r + 0.05) * Math.sin(theta)); holder.rotation.y = theta; holder.rotation.z = -Math.PI / 2;
+    holder.add(dome); group.add(holder);
+    cells.push({ dome, u, state: 1, shown: 1 });
+  }
+  const head = new THREE.Group();
+  const block = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 2.4), new THREE.MeshStandardMaterial({ color: 0x2a2f33, roughness: 0.5 }));
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 10), new THREE.MeshStandardMaterial({ color: 0x1f6f8b, emissive: 0x000000 }));
+  block.position.set(3.4, 0, 0); tip.position.set(1.6, 0, 0); head.add(block, tip); group.add(head);
+  return {
+    id: "memory", tab: "Memory cells", speedTag: "one write per sound", group, cycle: true,
+    name: "Inline · 24 bistable memory cells", meta: "Snap domes in nitinol or spring steel · a write head on the stand",
+    view: { pos: [22, 36, 44], target: [0, -1, 0] },
+    caption: "Small domes along Inline snap between two stable states, out or in, and stay there without power. On its stand the ring passes under a write head like a record under a stylus: at each moment the whistle's pitch decides whether the cell under the head pops out (above the median) or in (below). When the sound ends, the ring keeps that pattern, and you can wear it until the next whistle rewrites it. This is Hardata II made rewritable.",
+    facts: [["Speed", "Writes as the head passes; holds with no power"], ["Parts, roughly", "€50–120: snap domes with tiny magnets, one coil write head, turntable stand, ESP32"], ["Livia adds", "Dome seats along the band"], ["Precedent", "Chen, Reis et al., Nature 2021: magnetically switched bistable shells"]],
+    update(t, dt, sound) {
+      const s = sample(sound, t), u = clamp(t / sound.duration_s, 0, 1);
+      const theta = along(inline, u), r = fr.r_ref + 6.2;
+      head.position.set(r * Math.cos(theta), 0, -r * Math.sin(theta)); head.rotation.y = theta; head.visible = t <= sound.duration_s;
+      const writing = t <= sound.duration_s && Math.abs(s.pitch) > 0.08;
+      tip.material.emissive.setRGB(0, writing ? 0.5 : 0, writing ? 0.8 : 0);
+      cells.forEach((c) => {
+        if (writing && Math.abs(c.u - u) < 0.5 / K) c.state = s.pitch > 0 ? 1 : -1;
+        c.shown += (c.state - c.shown) * (1 - Math.exp(-dt / 0.03));
+        c.dome.scale.y = c.shown >= 0 ? Math.max(0.05, c.shown) : Math.min(-0.05, c.shown * 0.85);
+        c.dome.material = c.shown >= 0 ? upMat : downMat;
+      });
+      this.state = { s, writing, bits: cells.map((c) => c.state), u, t, sound };
+    },
+    reset() { cells.forEach((c) => { c.state = 1; }); },
+    schema(g, w, h) {
+      const st = this.state || { bits: [], s: { pitch: 0 }, u: 0 }, soft = css("--ink-soft"), field = css("--field"), ink = css("--ink"), wax = css("--wax");
+      chain(g, ["recording", "pitch above / below median", "write head pulse"], 20, 24, w - 40);
+      // Two stable states and the energy between them.
+      const cx = w * 0.3, cy = h * 0.34, R = Math.min(w * 0.11, 46);
+      const s = st.writing ? Math.sign(st.s.pitch) : 0;
+      for (const [k, sign] of [[0, 1], [1, -1]]) {
+        const x = cx + (k ? R * 2.6 : -R * 0.2);
+        g.strokeStyle = sign === s ? field : soft; g.lineWidth = sign === s ? 3 : 2;
+        g.beginPath(); g.moveTo(x - R, cy); g.quadraticCurveTo(x, cy - sign * R * 0.9, x + R, cy); g.stroke();
+        g.strokeStyle = soft; g.lineWidth = 1; g.beginPath(); g.moveTo(x - R * 1.2, cy); g.lineTo(x - R, cy); g.moveTo(x + R, cy); g.lineTo(x + R * 1.2, cy); g.stroke();
+        label(g, sign > 0 ? "out: 1" : "in: 0", x - 18, cy + R * 0.9 + 22, ink);
+      }
+      // Energy landscape.
+      const ex = w * 0.3, ew = w * 0.4, ey = h * 0.72;
+      g.strokeStyle = soft; g.lineWidth = 1.6; g.beginPath();
+      for (let i = 0; i <= 60; i++) { const q = (i / 60) * 2 - 1, e = (q * q - 1) ** 2; const x = ex + (i / 60) * ew, y = ey - e * 40; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.stroke(); const ball = st.bits.length ? (st.bits[Math.min(st.bits.length - 1, Math.floor(st.u * st.bits.length))] || 1) : 1;
+      g.fillStyle = wax; g.beginPath(); g.arc(ex + (ball > 0 ? 0 : 1) * ew, ey - 5, 5, 0, TAU); g.fill();
+      label(g, "out", ex - 6, ey + 16, soft); label(g, "in", ex + ew - 8, ey + 16, soft); label(g, "energy: two wells, so it stays", ex, ey - 52, soft);
+      // The written pattern.
+      const bx = 20, by = h - 46, bw = (w - 40) / Math.max(1, st.bits.length);
+      st.bits.forEach((b, i) => { g.fillStyle = b > 0 ? ink : css("--rule"); roundRect(g, bx + i * bw + 1, by, bw - 2, 18, 3); g.fill(); });
+      g.fillStyle = field; g.fillRect(bx + st.u * (w - 40) - 1, by - 6, 2, 30);
+      g.fillStyle = soft; g.font = `11px ${css("--font-data")}`; g.fillText(`written by ${st.sound?.title || ""} · kept until the next sound`, bx, by + 34);
+    },
+  };
+})());
+
+// ------------------------------------------------------------ drawing helpers for the schematics
+function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function arrow(g, x1, y1, x2, y2, color, width = 1.5) {
+  g.strokeStyle = color; g.fillStyle = color; g.lineWidth = width; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+  const a = Math.atan2(y2 - y1, x2 - x1); g.beginPath(); g.moveTo(x2, y2); g.lineTo(x2 - 8 * Math.cos(a - 0.4), y2 - 8 * Math.sin(a - 0.4)); g.lineTo(x2 - 8 * Math.cos(a + 0.4), y2 - 8 * Math.sin(a + 0.4)); g.closePath(); g.fill();
+}
+function label(g, text, x, y, color) { g.fillStyle = color; g.font = `12px ${css("--font-body")}`; g.fillText(text, x, y); }
+function wrapText(g, text, x, y, maxW, lh) {
+  const words = text.split(" "), lines = []; let line = "";
+  for (const w of words) { const t = line ? line + " " + w : w; if (g.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
+  lines.push(line); lines.forEach((l, i) => g.fillText(l, x, y + (i - (lines.length - 1) / 2) * lh));
+}
+function chain(g, steps, x, y, w) {
+  const soft = css("--ink-soft"), ink = css("--ink");
+  let size = 11.5; g.font = `${size}px ${css("--font-data")}`;
+  const natural = steps.reduce((a, s) => a + g.measureText(s).width + 16, 0) + 14 * (steps.length - 1);
+  if (natural > w) { size = Math.max(8, size * (w / natural)); g.font = `${size}px ${css("--font-data")}`; }
+  const widths = steps.map((s) => g.measureText(s).width + 16), gap = Math.max(10, (w - widths.reduce((a, b) => a + b, 0)) / Math.max(1, steps.length - 1));
+  let cx = x; steps.forEach((s, i) => {
+    g.strokeStyle = css("--rule"); g.lineWidth = 1; roundRect(g, cx, y - 13, widths[i], 24, 6); g.stroke(); g.fillStyle = ink; g.fillText(s, cx + 8, y + 3);
+    if (i < steps.length - 1) arrow(g, cx + widths[i] + 3, y - 1, cx + widths[i] + gap - 3, y - 1, soft, 1.2);
+    cx += widths[i] + gap;
+  });
+}
+
+// ------------------------------------------------------------ sound strip
+function drawStrip(sound, t) {
+  const c = $("strip"), g = c.getContext("2d"), dpr = c.width / c.clientWidth, W = c.clientWidth, H = c.clientHeight;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const wax = css("--wax"), soft = css("--ink-soft"), rule = css("--rule"), left = 40, right = W - 6, D = sound.duration_s, X = (s) => left + (right - left) * (s / D);
+  g.strokeStyle = rule; g.beginPath(); g.moveTo(left, H / 2); g.lineTo(right, H / 2); g.stroke();
+  g.font = `10px ${css("--font-data")}`; g.fillStyle = soft; g.fillText("pitch", 2, 14); g.fillText("level", 2, H - 4);
+  g.globalAlpha = 0.22; g.fillStyle = wax; g.beginPath(); g.moveTo(X(0), H - 2);
+  sound.time_s.forEach((s, i) => g.lineTo(X(s), H - 2 - sound.level[i] * (H - 8))); g.lineTo(X(D), H - 2); g.closePath(); g.fill(); g.globalAlpha = 1;
+  g.strokeStyle = wax; g.lineWidth = 1.6; g.beginPath(); let pen = false;
+  sound.time_s.forEach((s, i) => { if (!sound.pitch[i]) { pen = false; return; } const y = H / 2 - sound.pitch[i] * (H / 2 - 6); pen ? g.lineTo(X(s), y) : g.moveTo(X(s), y); pen = true; }); g.stroke();
+  if (t <= D) { g.strokeStyle = css("--ink"); g.beginPath(); g.moveTo(X(t), 2); g.lineTo(X(t), H - 2); g.stroke(); }
+  g.fillStyle = soft; const txt = `${Math.min(t, D).toFixed(2)} s of ${D.toFixed(2)} s · ${sound.kind}`; g.fillText(txt, right - g.measureText(txt).width, 12);
+}
+
+// ------------------------------------------------------------ clock, tabs, controls
+const state = { study: studies[1], sound: sounds[0], t: 0, playing: !reduced, audio: null, last: performance.now(), hold: 1.6, cycleIndex: 0 };
+studies.forEach((s) => { s.group.visible = false; scene.add(s.group); });
+
+function selectStudy(s) {
+  state.study.group.visible = false; state.study = s; s.group.visible = true; s.reset && s.reset(); s.state = null;
+  $("study-name").textContent = s.name; $("study-meta").textContent = s.meta; $("study-speed").textContent = s.speedTag;
+  $("schema-caption").textContent = s.caption;
+  $("facts").innerHTML = s.facts.map(([k, v]) => `<div class="fact"><span class="label">${k}</span><b>${v}</b></div>`).join("");
+  camera.position.set(...s.view.pos); controls.target.set(...s.view.target); controls.update();
+  [...$("tabs").children].forEach((b) => b.setAttribute("aria-selected", String(b.dataset.id === s.id)));
+  state.t = reduced ? state.sound.duration_s * 0.6 : 0; step(0.016, true);
+}
+$("tabs").innerHTML = studies.map((s) => `<button type="button" role="tab" data-id="${s.id}" aria-selected="false">${s.tab}<small>${s.speedTag}</small></button>`).join("");
+$("tabs").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) selectStudy(studies.find((s) => s.id === b.dataset.id)); });
+$("sound").innerHTML = sounds.map((s) => `<option value="${s.id}">${s.title} · ${s.duration_s.toFixed(2)} s</option>`).join("");
+$("sound").addEventListener("change", (e) => { state.sound = sounds.find((s) => s.id === e.target.value); state.t = 0; state.study.reset && state.study.reset(); });
+$("pause").addEventListener("click", () => { state.playing = !state.playing; $("pause").textContent = state.playing ? "Pause" : "Resume"; if (!state.playing && state.audio) state.audio.pause(); });
+$("listen").addEventListener("click", () => {
+  if (!state.audio) state.audio = new Audio();
+  const a = state.audio; a.src = state.sound.audio; a.preservesPitch = false; a.playbackRate = Number($("speed").value);
+  state.t = 0; state.playing = true; $("pause").textContent = "Pause"; state.study.reset && state.study.reset();
+  a.currentTime = 0; a.play().catch(() => {});
+});
+
+function step(dt, force = false) {
+  const speed = Number($("speed").value), sound = state.sound;
+  if (state.playing || force) {
+    if (state.audio && !state.audio.paused) state.t = state.audio.currentTime;
+    else if (!force) state.t += dt * speed;
+    if (state.t > sound.duration_s + state.hold * speed + (state.study.cycle ? 2.4 * speed : 0)) {
+      state.t = 0;
+      if (state.study.cycle) { state.cycleIndex = (state.cycleIndex + 1) % sounds.length; state.sound = sounds[state.cycleIndex]; $("sound").value = state.sound.id; }
+    }
+  }
+  state.study.update(state.t, dt, state.sound);
+  const c = $("schema"), g = c.getContext("2d"), dpr = c.width / Math.max(1, c.clientWidth);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, c.clientWidth, c.clientHeight);
+  state.study.schema(g, c.clientWidth, c.clientHeight);
+  drawStrip(state.sound, state.t);
+}
+function redraw() {
+  if (!state.study.state) return;
+  const c = $("schema"), g = c.getContext("2d"), dpr = c.width / Math.max(1, c.clientWidth);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, c.clientWidth, c.clientHeight);
+  state.study.schema(g, c.clientWidth, c.clientHeight); drawStrip(state.sound, state.t);
+}
+renderer.setAnimationLoop(() => {
+  const now = performance.now(), dt = Math.min(0.05, (now - state.last) / 1000); state.last = now;
+  if (state.playing) step(dt);
+  controls.update(); renderer.render(scene, camera);
+});
+
+// ------------------------------------------------------------ table, gallery
+$("compare").innerHTML = `<thead><tr><th>Study</th><th>Follows a whistle</th><th>Worn</th><th>Parts, roughly</th><th>Livia adds</th><th>Hardest part</th></tr></thead><tbody>${DATA.compare.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
+$("gallery").innerHTML = DATA.precedents.map((p) => `<a href="${p.url}" target="_blank" rel="noopener"><img src="${p.image}" alt="${p.title}" loading="lazy"><b>${p.title}</b><span>${p.by} · ${p.note}</span></a>`).join("");
+$("credits").textContent = "Ring geometry and photographs: Livia Zaharia. Recordings: OpenWhistle test set, DSWP, and the art brush. Precedent images belong to the linked sources.";
+
+resize(); selectStudy(studies[1]);
+window.__motion = { ready: true, select: (id) => selectStudy(studies.find((s) => s.id === id)), at: (t) => { state.playing = false; state.study.reset && state.study.reset(); for (let s = 0; s <= t; s += 0.01) { state.t = s; step(0.04, true); } renderer.render(scene, camera); } };
+</script>

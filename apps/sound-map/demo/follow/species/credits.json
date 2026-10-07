@@ -1,0 +1,42 @@
+[
+  {
+    "file": "humpback.png",
+    "taxon": "Balaenoptera novaeangliae",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/ce70490a-79a5-47fc-afb9-834e45803ab4/balaenoptera-novaeangliae",
+    "download": "https://images.phylopic.org/images/ce70490a-79a5-47fc-afb9-834e45803ab4/thumbnail/128x128.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "None"
+  },
+  {
+    "file": "dolphin.png",
+    "taxon": "Tursiops truncatus",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/0b5c6b41-3a44-4c9e-869a-63ed54bf7c65/tursiops-truncatus",
+    "download": "https://images.phylopic.org/images/0b5c6b41-3a44-4c9e-869a-63ed54bf7c65/thumbnail/128x128.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "None"
+  },
+  {
+    "file": "sperm-whale.png",
+    "taxon": "Physeter macrocephalus",
+    "author": "Margot Michaud",
+    "source": "https://www.phylopic.org/images/7a808331-75b4-4b5e-8399-4d6933313cd8/physeter-macrocephalus",
+    "download": "https://images.phylopic.org/images/7a808331-75b4-4b5e-8399-4d6933313cd8/thumbnail/128x128.png",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "changes": "None"
+  },
+  {
+    "file": "killer-whale.png",
+    "taxon": "Orcinus orca",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/880129b5-b78b-40a9-88ad-55f7d1dc823f/orcinus-orca",
+    "download": "https://images.phylopic.org/images/880129b5-b78b-40a9-88ad-55f7d1dc823f/thumbnail/128x128.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "None"
+  }
+]

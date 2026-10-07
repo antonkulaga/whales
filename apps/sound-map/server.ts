@@ -12,6 +12,9 @@ const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", ".."
 const OUTPUT = join(ROOT, "data", "output", "follow");
 // Committed bundle (Git LFS, `bun scripts/demo.ts`): read when OUTPUT lacks a file, so a fresh clone plays.
 const DEMO = join(import.meta.dir, "demo", "follow");
+// The Sound to silver tab's files: the bench and motion pages from `main.py art silver`, else the committed copy.
+const SILVER = [join(ROOT, "data", "output", "silver"), join(import.meta.dir, "demo", "silver")];
+const SILVER_TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".jpg": "image/jpeg", ".svg": "image/svg+xml" };
 const SPECS = join(ROOT, "data", "interim", "follow", "combo-specs");
 // Preset names live beside the pieces, not in their manifests: re-running a piece rewrites its manifest,
 // and a name must never change a piece's id.
@@ -173,6 +176,20 @@ async function files(request: Request): Promise<Response> {
   return new Response("Not found", { status: 404 });
 }
 
+async function silverFiles(request: Request): Promise<Response> {
+  const requested = new URL(request.url).pathname.slice("/silver/files/".length);
+  for (const root of SILVER) {
+    const path = safeJoin(root, requested);
+    if (!path) return new Response("Not found", { status: 404 });
+    const file = Bun.file(path);
+    if (await file.exists()) {
+      const type = SILVER_TYPES[path.slice(path.lastIndexOf(".")).toLowerCase()] ?? contentType(path);
+      return new Response(file, { headers: { "content-type": type, "cache-control": "no-cache" } });
+    }
+  }
+  return new Response("Not found", { status: 404 });
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: HOSTNAME,
@@ -180,6 +197,8 @@ const server = Bun.serve({
   idleTimeout: 255, // ACE-Step runs can take a minute; keep the stream open
   routes: {
     "/": index,
+    "/silver": () => Response.redirect("/?view=silver", 302), // the page is now a tab; old #idea links keep their hash
+    "/silver/files/*": { GET: silverFiles },
     "/api/catalog": { GET: catalog },
     "/api/combos": { GET: combos },
     "/api/combos/:id": { GET: (request) => combo(request.params.id) },
