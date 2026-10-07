@@ -112,9 +112,11 @@ export class AtlasMap {
       const xs = points.map((p) => p[0]);
       const ys = points.map((p) => p[1]);
       const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-      const pad = 50;
-      const k = Math.max(1, Math.min(64, (W - 2 * pad) / Math.max(x1 - x0, 1), (H - 2 * pad) / Math.max(y1 - y0, 1)));
-      transform = zoomIdentity.translate(W / 2 - (k * (x0 + x1)) / 2, H / 2 - (k * (y0 + y1)) / 2).scale(k);
+      // Labels sit to the right of their marks, so the right margin is wider.
+      const [left, right, pad] = [50, 190, 50];
+      const k = Math.max(1, Math.min(64, (W - left - right) / Math.max(x1 - x0, 1), (H - 2 * pad) / Math.max(y1 - y0, 1)));
+      const cx = left + (W - left - right) / 2;
+      transform = zoomIdentity.translate(cx - (k * (x0 + x1)) / 2, H / 2 - (k * (y0 + y1)) / 2).scale(k);
     }
     select(this.svg).call(this.behaviour.transform, transform);
   }

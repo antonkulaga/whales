@@ -318,7 +318,7 @@ async function compose(newTake = false) {
 }
 
 /* ---------- result and playback ---------- */
-function showResult(manifest: Manifest | null, options: { seat: boolean; autoplay?: boolean }) {
+function showResult(manifest: Manifest | null, options: { seat: boolean; autoplay?: boolean; scroll?: boolean }) {
   if (!manifest) return;
   stop();
   player.rewind();
@@ -347,7 +347,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   renderScores($<HTMLElement>("#scores"), manifest);
   $<HTMLElement>("#clock").textContent = `0.0 / ${manifest.duration_s.toFixed(1)} s`;
   if (location.hash.slice(1) !== manifest.id) history.replaceState(null, "", `#${manifest.id}`);
-  section.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
+  if (options.scroll !== false) section.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
   renderDock();
   if (options.autoplay) void play(0);
 }
@@ -484,7 +484,7 @@ async function loadSaved() {
   const recent = saved.filter((c) => !c.preset);
   const group = (title: string, items: ComboSummary[]) => items.length ? `<li class="group-title">${title}</li>${items.map(savedItem).join("")}` : "";
   $<HTMLElement>("#saved").innerHTML = saved.length
-    ? group("Presets", presets) + group(presets.length ? "Recent pieces" : "Pieces", recent)
+    ? (presets.length ? group("Presets", presets) + group("Recent pieces", recent) : recent.map(savedItem).join(""))
     : `<li class="small">None yet. Seat some players and compose; each piece appears here.</li>`;
 }
 $<HTMLElement>("#saved").addEventListener("click", async (event) => {
@@ -505,7 +505,7 @@ orchestraChanged();
 await loadSaved();
 if (isStatic && !location.hash) {
   const first = document.querySelector<HTMLButtonElement>("#saved [data-combo]");
-  if (first) showResult(await piece(first.dataset.combo!), { seat: false });
+  if (first) showResult(await piece(first.dataset.combo!), { seat: false, scroll: false }); // land at the top of the page
 }
 
 // A bare #<piece id> opens that piece and seats its players, so pieces can be linked.
