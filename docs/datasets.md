@@ -189,7 +189,6 @@ as another fully audited corpus here.
 The orchestra stays with whales and dolphins for now. Seals, sea lions and walruses could join
 later. None of the DCLDE releases label pinnipeds. The Watkins metadata in the
 [world map](world-map.md) covers 10 seal, sea-lion and walrus species with recording locations.
-AWI's polar recordings on PANGAEA, the source of the orchestra's Antarctic blue whales and
-bowheads, were also used to study Antarctic seals ([Van Opzeeland 2010, *Acoustic ecology of
+AWI's polar recordings on PANGAEA, the source of the orchestra's Antarctic blue whales, were also used to study Antarctic seals ([Van Opzeeland 2010, *Acoustic ecology of
 marine mammals in polar oceans*](https://doi.org/10.2312/bzpm_0619_2010)), so the same archive
 and loader would be the first place to look.

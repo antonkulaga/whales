@@ -184,12 +184,13 @@ The Hawaiian towed-array windows are the minutes when each group passed closest 
 pantropical spotted dolphins were tried and dropped because their windows were mostly noise,
 as were a Diablo Canyon blue whale window and noisy 40 Hz fin-whale calls. The Orcasound Lab
 killer-whale window was replaced by the clearest annotated window at that hydrophone: its calls
-stand about 19 dB above the background, against 0 dB before. Four AWI recordings from PANGAEA
-(Antarctic blue whales at two Weddell Sea moorings, bowhead whales at two Fram Strait moorings)
-are described in [pangaea-awi.md](pangaea-awi.md).
+stand about 19 dB above the background, against 0 dB before. Two AWI recordings from PANGAEA,
+Antarctic blue whales at two Weddell Sea moorings, are described in [pangaea-awi.md](pangaea-awi.md).
+Bowheads from two Fram Strait moorings were tried and removed: across the whole recorded day at
+each mooring, the song stood only 4–6 dB above the background, so no window was clear enough.
 
 Each new species has its own guide instrument and icon in the app: horn (right whale), tuba
-(fin), organ (blue), bell (minke), cello (bowhead), trumpet (false killer whale), glass harmonica
+(fin), organ (blue), bell (minke), trumpet (false killer whale), glass harmonica
 (pilot whale), pan flute (striped), ocarina (rough-toothed), theremin (spinner), recorder (common)
 and singing saw (Atlantic spotted). Dense whistle choruses would clip the deterministic response,
 so `prepare` scales a source's two response stems by one shared gain when needed and records it

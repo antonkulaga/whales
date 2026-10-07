@@ -41,7 +41,7 @@ uv run stop            # stop the server
 takes a second or two:
 
 1. creates `.env` from `.env.template`;
-2. pulls the demo bundle (29 recordings and 20 finished pieces) with Git LFS;
+2. pulls the demo bundle (27 recordings and 19 finished pieces) with Git LFS;
 3. installs the app's packages with Bun;
 4. downloads and measures the recordings, then writes the catalog;
 5. with an NVIDIA GPU, installs ACE-Step 1.5 into `data/interim/tools/ACE-Step-1.5`,

@@ -706,32 +706,6 @@
       "note": "One complete Z-call from a regular singer who called about every 69 s, logged at 115 dB re 1 µPa by AWI's automated Z-call detector (PANGAEA 960121). The call spans 16 s before to 10 s after its logged time and is trimmed to where 17.5–29 Hz rises 6 dB above the 10-minute recording's background (our choice). AWI Ocean Acoustics Group recording, PANGAEA 973160; 5.3 kHz recorder resampled to 2 kHz."
     },
     {
-      "id": "bowhead-fram-strait-f16",
-      "species": "bowhead whale",
-      "kind": "pangaea",
-      "study": false,
-      "dataset": 967557,
-      "file": "20121111.tar",
-      "member": "20121111-044047_F16-09_SV1021.wav",
-      "start_s": 165.0,
-      "duration_s": 30.0,
-      "rate": 8000,
-      "call_label": "Bowhead whale song",
-      "labels": {
-        "format": "presence",
-        "dataset": 945331
-      },
-      "location": {
-        "label": "Fram Strait, west of Svalbard",
-        "lon": 0.43,
-        "lat": 78.83,
-        "precision": "published",
-        "note": "FRAM mooring F16-9 position from the PANGAEA dataset abstract (rounded)."
-      },
-      "title": "Bowhead whale song, Fram Strait, November 2012",
-      "note": "AWI's hourly table logs bowhead whales in every hour of 11 November 2012 at this recorder (PANGAEA 945331); the song's downswept notes are measured from the waveform in 330–1500 Hz. AWI Ocean Acoustics Group recording, PANGAEA 967557; 5.3 kHz recorder resampled to 8 kHz."
-    },
-    {
       "id": "blue-whale-weddell-59s",
       "species": "blue whale",
       "kind": "pangaea",
@@ -773,33 +747,6 @@
       },
       "title": "Antarctic blue whale Z-call, Southern Ocean 59°S, May 2013",
       "note": "One complete Z-call from a regular singer who called about every 69 s, logged at 120 dB re 1 µPa by AWI's automated Z-call detector (PANGAEA 960031). The call spans 16 s before to 10 s after its logged time and is trimmed to where 17.5–29 Hz rises 6 dB above the 10-minute recording's background (our choice). AWI Ocean Acoustics Group recording, PANGAEA 966612; 5.3 kHz recorder resampled to 2 kHz."
-    },
-    {
-      "id": "bowhead-fram-strait-f5",
-      "species": "bowhead whale",
-      "kind": "pangaea",
-      "study": false,
-      "dataset": 956286,
-      "file": "20161122.tar",
-      "member": "20161122-015425_ARKF05-17_SV1088.wav",
-      "start_s": 170.0,
-      "duration_s": 30.0,
-      "rate": 8000,
-      "call_label": "Bowhead whale song",
-      "labels": {
-        "format": "presence",
-        "dataset": 945392,
-        "song_types": 945404
-      },
-      "location": {
-        "label": "Fram Strait, west of Svalbard (79°N 5.7°E)",
-        "lon": 5.67,
-        "lat": 79.0,
-        "precision": "published",
-        "note": "FRAM mooring F5-17 position from the PANGAEA dataset abstract (rounded)."
-      },
-      "title": "Bowhead whale song, Fram Strait, November 2016",
-      "note": "AWI's hourly table logs bowhead whales in this hour (PANGAEA 945392), and its repertoire analysis lists song types 1.2, 2.1, 3.1, 3.2 and 3.3 on this day (PANGAEA 945404); which type sings in this window is not labelled. The song's arched and downswept notes are measured from the waveform in 330–1500 Hz. AWI Ocean Acoustics Group recording, PANGAEA 956286; 48 kHz recorder resampled to 8 kHz."
     }
   ],
   "downloads": {
@@ -1424,47 +1371,6 @@
         24000
       ],
       "caption": "eerie gentle music, singing saw and soft strings, calm sea, instrumental",
-      "lego_track": "strings"
-    },
-    "bowhead whale": {
-      "material": "tonal",
-      "analysis": {
-        "n_fft": 2048,
-        "hop": 160,
-        "band_hz": [
-          330,
-          1500
-        ],
-        "tonality_db": 14,
-        "bridge_frames": 6,
-        "max_jump_octaves": 0.2,
-        "valley_db": 12,
-        "valley_window_s": 0.2,
-        "min_segment_s": 0.5,
-        "median_frames": 7,
-        "click_highpass_hz": 2000
-      },
-      "target_median_hz": 220,
-      "instrument": {
-        "name": "cello tone",
-        "harmonics": [
-          1,
-          0.7,
-          0.5,
-          0.35,
-          0.25,
-          0.15,
-          0.1
-        ],
-        "attack_s": 0.06,
-        "release_s": 0.15,
-        "level": 0.45
-      },
-      "spectrogram_hz": [
-        50,
-        2000
-      ],
-      "caption": "slow arctic chamber music, solo cello and low strings, dark ice and long echoes, searching and melancholic, instrumental",
       "lego_track": "strings"
     }
   },

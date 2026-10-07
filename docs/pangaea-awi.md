@@ -1,7 +1,7 @@
 # AWI Ocean Acoustics recordings on PANGAEA
 
-**Antarctic blue whales and Arctic bowhead whales from the polar moorings of the Alfred Wegener
-Institute, seated in the orchestra next to the DCLDE sources.**
+**Antarctic blue whales from the polar moorings of the Alfred Wegener Institute, seated in the
+orchestra next to the DCLDE sources. Bowhead whales from Fram Strait were tried and removed.**
 
 Checked **8 October 2026** · Loader: [`experiments/follow_pangaea.py`](../experiments/follow_pangaea.py) ·
 Method: [Follow the phrase](follow-the-phrase.md)
@@ -20,8 +20,15 @@ same data.
 |---|---|---|---|---|
 | `blue-whale-weddell-69s` | Antarctic blue whale | Weddell Sea, 69.0°S 0.1°W (HAFOS mooring AWI232-11), 14 Jan 2013 | [PANGAEA 973160](https://doi.org/10.1594/PANGAEA.973160) | Z-call detections with received level, [PANGAEA 960121](https://doi.org/10.1594/PANGAEA.960121) |
 | `blue-whale-weddell-59s` | Antarctic blue whale | Southern Ocean, 59.0°S 0.1°E (HAFOS mooring AWI227-12), 6 May 2013 | [PANGAEA 966612](https://doi.org/10.1594/PANGAEA.966612) | Z-call detections with received level, [PANGAEA 960031](https://doi.org/10.1594/PANGAEA.960031) |
-| `bowhead-fram-strait-f16` | Bowhead whale | Fram Strait, 78.8°N 0.4°E (FRAM mooring F16-9), 11 Nov 2012 | [PANGAEA 967557](https://doi.org/10.1594/PANGAEA.967557) | Hourly presence, [PANGAEA 945331](https://doi.org/10.1594/PANGAEA.945331) |
-| `bowhead-fram-strait-f5` | Bowhead whale | Fram Strait, 79.0°N 5.7°E (FRAM mooring F5-17), 22 Nov 2016 | [PANGAEA 956286](https://doi.org/10.1594/PANGAEA.956286) | Hourly presence, [PANGAEA 945392](https://doi.org/10.1594/PANGAEA.945392); song types heard that day, [PANGAEA 945404](https://doi.org/10.1594/PANGAEA.945404) |
+
+Removed on 8 October 2026: `bowhead-fram-strait-f16` (FRAM mooring F16-9, 11 Nov 2012, audio
+[PANGAEA 967557](https://doi.org/10.1594/PANGAEA.967557), hourly presence
+[945331](https://doi.org/10.1594/PANGAEA.945331)) and `bowhead-fram-strait-f5` (F5-17, 22 Nov 2016,
+audio [956286](https://doi.org/10.1594/PANGAEA.956286), presence [945392](https://doi.org/10.1594/PANGAEA.945392),
+song types [945404](https://doi.org/10.1594/PANGAEA.945404)). The song in their windows stood only
+about 6 and 4 dB above the background, below a rumble that set the playback level. A scan of every
+30 s window of both recorded days found nothing clearly better: the chosen windows ranked 13th of
+5,184 and 4th of 5,472. Their method notes stay below for reference.
 
 Input → Schema → Output for each source:
 
@@ -34,7 +41,7 @@ Input → Schema → Output for each source:
   window is mostly call, so its own median is not the background. The pitch contour is then
   measured inside the call and smoothed over 0.5 s, which suits a call that changes over seconds. *Output:* one measured contour per site, a ~26.5 Hz tone falling to
   ~18.5 Hz, played two to three octaves up by the organ guide.
-- **Bowhead whales.** *Input:* 30 s of song from each of two Fram Strait moorings, in hours in
+- **Bowhead whales (removed, see above).** *Input:* 30 s of song from each of two Fram Strait moorings, in hours in
   which AWI's tables log bowhead whales. On 22 Nov 2016 AWI's repertoire analysis lists song types
   1.2, 2.1, 3.1, 3.2 and 3.3; which one sings in the window is not labelled. *Schema:* a presence
   table names no individual calls, so notes are measured from the waveform in 330–1500 Hz. A 0.5 s

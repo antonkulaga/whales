@@ -536,6 +536,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   $<HTMLElement>("#part-toggles").innerHTML = "<legend>Players</legend>" + manifest.parts.map((p, i) =>
     `<button class="toggle" type="button" data-part="${i}" aria-pressed="true" title="${esc(p.title)} · guide: ${esc(p.instrument)} · Mute this player's recording and guide"><i class="swatch" style="--c:${partColor(p)}"></i>${i + 1} ${esc(capital(p.species))} ${instrumentIcon(p.instrument)}</button>`).join("");
   $<HTMLElement>("#individual-track-count").textContent = `${manifest.parts.length} recordings · shared timeline`;
+  $<HTMLDetailsElement>("details.individual-tracks").open = true; // each new piece shows its voices, even if the last one was folded
   setIndividualPlayhead = renderIndividualTracks($<HTMLElement>("#individual-lanes"), manifest, sourceById, (t) => void play(t));
   setPlayhead = renderLanes($<HTMLElement>("#lanes"), manifest, (t) => void play(t), ["guide", manifest.stems.ace ? "ace" : "response"]);
   document.querySelectorAll<HTMLButtonElement>("#saved [data-combo]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.combo === manifest.id)));
