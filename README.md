@@ -42,6 +42,13 @@ the port, host and ACE-Step choice in `.env` (`ORCHESTRA_PORT`, `ORCHESTRA_HOST`
 `ORCHESTRA_ACE`) or per run (`uv run start --port 3071 --ace no`); `bun run dev`
 reads the same `.env`.
 
+ACE-Step automatically uses CUDA when available and falls back to CPU otherwise.
+For a CPU-only installation, run `uv run start --ace yes` (or set
+`ORCHESTRA_ACE=yes`). CPU generation needs sufficient RAM for the model and takes
+longer; finished pieces play immediately on either kind of server. Compose shows
+an activity bar and the engine's current stage, with a CPU notice only when the
+server detects no CUDA.
+
 - **Seat players.** Click a site to seat its recording and click again to remove it.
   A site with several recordings opens a short list. The recordings list under the
   map works too, with a Listen button and a spectrogram strip for each recording.

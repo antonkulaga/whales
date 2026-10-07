@@ -140,7 +140,8 @@ class CombineTests(unittest.TestCase):
         from experiments.data import write_json
         write_json(first, stale)
         combine(self.layout, self.config, spec, run_model=False)
-        self.assertEqual(read_json(first)["render_version"], 1)  # renders from older code are rebuilt
+        from experiments.follow_combine import RENDER_VERSION
+        self.assertEqual(read_json(first)["render_version"], RENDER_VERSION)  # renders from older code are rebuilt
 
     def test_catalog_lists_located_sources_and_dataset_points(self):
         from experiments.data import read_json

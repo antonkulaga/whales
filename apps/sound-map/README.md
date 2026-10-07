@@ -30,9 +30,10 @@ voices remain playable. The technical tab links the dataset paper and scopes its
 
 - **Concert hall:** a title and one paragraph above a map spanning the available
   screen width; playable original recordings below it, ensemble controls, and finished
-  pieces. A collapsible programme in one scrollable column beside the desktop map
-  fills the orchestra without starting playback or moving away from the map. On
-  phones it expands below the geography. The current piece shows individual source
+  pieces. A highlighted programme to the right of the desktop map opens by default,
+  with larger piece titles and a **Listen now** button for immediate playback.
+  Choosing a piece from its list fills the orchestra without starting playback.
+  On phones the programme appears above the geography. The current piece shows individual source
   excerpts on a shared timeline, then the combined guide and generated composition.
 - **Technical score:** Input → Schema → Guide → Output diagrams; a recording selector
   with actual spectrograms, measured onsets and pitch contours, playable original and
@@ -65,6 +66,9 @@ voices remain playable. The technical tab links the dataset paper and scopes its
   **Update piece** after any change and **Play** when the current piece matches the ensemble.
   **New take** keeps the players with a new ACE-Step seed. Ctrl+Enter triggers the
   main button.
+  Compose and Play are large, centered actions. During composition, an activity
+  bar stays visible and the status follows the engine's current stage. A CPU
+  notice appears only if the ACE-Step environment reports that CUDA is absent.
 - **Presets:** a piece is named only when saved as a preset under the result. Opening
   any programme piece seats its players again; use Play to listen, or change the
   ensemble to compose a variation. The drawer's Escape key collapses it.
@@ -107,6 +111,13 @@ Environment, read from the repository's `.env` by `uv run start` and both Bun sc
 `ORCHESTRA_PORT` (3070), `ORCHESTRA_HOST` (127.0.0.1); `PORT` and `HOST` still work.
 `WHALES_ROOT` overrides the repository root.
 The server binds to localhost and runs one combination at a time, because the GPU is shared.
+
+ACE-Step selects CUDA through `torch.cuda.is_available()`, otherwise CPU. CPU
+inference uses float32 without GPU quantization or offloading; allow enough RAM
+and a longer wait. `uv run start --ace yes` installs ACE-Step even without an
+NVIDIA GPU. `/api/runtime` probes the same isolated Python environment as the
+runner; an unavailable environment is reported as unknown, not as CPU-only.
+Static hosting plays the exported pieces and does not run composition.
 
 ## How it fits together
 

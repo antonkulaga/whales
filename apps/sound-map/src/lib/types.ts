@@ -158,3 +158,8 @@ export type CombineMessage =
   | { type: "log"; text: string }
   | { type: "done"; manifest: Manifest }
   | { type: "error"; message: string };
+export interface GenerationRuntime {
+  ace_available: boolean;
+  cuda_available: boolean | null;
+  device: "cuda" | "cpu" | null;
+}

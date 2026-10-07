@@ -272,10 +272,10 @@ def ace_step(report: Report, mode: Ace, layout: Layout):
     card = gpu()
     if card is None and mode is Ace.auto:
         report.warn("No NVIDIA GPU found (nvidia-smi), so ACE-Step is skipped and pieces get their guide and "
-                    "deterministic response only. Set ORCHESTRA_ACE=yes in .env to install it anyway.")
+                    "deterministic response only. Set ORCHESTRA_ACE=yes in .env to enable CPU generation.")
         return
     if card is None:
-        report.warn("No NVIDIA GPU found. ACE-Step is installed as asked, but it runs on CUDA, so composing with it will fail here.")
+        report.note("No NVIDIA GPU found. ACE-Step will use the CPU; generation is slower than on a GPU.")
     else:
         name, used, total = card
         report.ok(f"{name}: {used / 1024:.1f} of {total / 1024:.1f} GiB in use")

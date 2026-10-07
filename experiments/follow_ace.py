@@ -16,6 +16,13 @@ import tempfile
 import time
 
 
+def runtime_info():
+    import torch
+
+    cuda = torch.cuda.is_available()
+    return {"cuda_available": cuda, "device": "cuda" if cuda else "cpu"}
+
+
 def main(jobs_path: str):
     spec = json.loads(Path(jobs_path).read_text(encoding="utf-8"))
     root = spec["ace_root"]
@@ -28,9 +35,13 @@ def main(jobs_path: str):
     revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True).stdout.strip()
     handler = AceStepHandler()
     started = time.perf_counter()
-    status, ready = handler.initialize_service(project_root=root, config_path=spec["model"], device="cuda",
-                                               offload_to_cpu=spec["offload"], offload_dit_to_cpu=spec["offload"],
-                                               quantization=spec["quantization"])
+    device = runtime_info()["device"]
+    offload = spec["offload"] if device == "cuda" else False
+    quantization = spec["quantization"] if device == "cuda" else None
+    print(f"ACE-Step: loading the music model on {device.upper()}" + ("; CPU generation is slower" if device == "cpu" else ""), flush=True)
+    status, ready = handler.initialize_service(project_root=root, config_path=spec["model"], device=device,
+                                               offload_to_cpu=offload, offload_dit_to_cpu=offload,
+                                               quantization=quantization)
     if not ready:
         raise SystemExit(f"ACE-Step did not initialize: {status}")
     load_s = time.perf_counter() - started
@@ -49,7 +60,7 @@ def main(jobs_path: str):
         config = GenerationConfig(batch_size=1, use_random_seed=False, seeds=[job["seed"]], audio_format="wav")
         with tempfile.TemporaryDirectory() as scratch:
             began = time.perf_counter()
-            result = generate_music(handler, llm, params, config, save_dir=scratch)
+            result = generate_music(handler, llm, params, config, save_dir=scratch, progress=report_progress)
             elapsed = time.perf_counter() - began
             if not result.success or not result.audios:
                 raise SystemExit(f"{job['id']}: {result.error or result.status_message}")
@@ -61,11 +72,24 @@ def main(jobs_path: str):
             "status": result.status_message,
         }
         print(f"{job['id']}: {elapsed:.0f} s → {output.name}", flush=True)
-        previous |= {"ace_root": root, "ace_git_revision": revision, "model": spec["model"], "offload": spec["offload"],
-                     "quantization": spec["quantization"], "model_load_s": round(load_s, 1), "torch": torch.__version__,
-                     "device": torch.cuda.get_device_name(0), "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES")}
+        previous |= {"ace_root": root, "ace_git_revision": revision, "model": spec["model"], "offload": offload,
+                     "quantization": quantization, "model_load_s": round(load_s, 1), "torch": torch.__version__,
+                     "device_type": device, "device": torch.cuda.get_device_name(0) if device == "cuda" else "CPU",
+                     "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES")}
         results_path.write_text(json.dumps(previous, indent=2) + "\n", encoding="utf-8")
 
 
+def report_progress(_value=None, desc=None, **_kwargs):
+    if desc and desc != report_progress.last_description:
+        print(f"ACE-Step: {desc}", flush=True)
+        report_progress.last_description = desc
+
+
+report_progress.last_description = None
+
+
 if __name__ == "__main__":
-    main(sys.argv[1])
+    if sys.argv[1] == "--runtime":
+        print(json.dumps(runtime_info()))
+    else:
+        main(sys.argv[1])

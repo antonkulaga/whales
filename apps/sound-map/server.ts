@@ -6,7 +6,7 @@ import { mkdir, readdir, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import index from "./src/index.html";
 import { contentType, readableLog, safeJoin } from "./src/lib/paths.ts";
-import type { CombineMessage, ComboSummary, Manifest } from "./src/lib/types.ts";
+import type { CombineMessage, ComboSummary, GenerationRuntime, Manifest } from "./src/lib/types.ts";
 
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
@@ -28,6 +28,28 @@ const PYTHON = ["uv", "run", "--group", "art", "--group", "viz", "main.py", "fol
 const MAX_SPEC_BYTES = 64 * 1024;
 
 let running: Promise<unknown> | null = null; // one combination at a time: the GPU is shared
+let runtimeProbe: { expires: number; result: Promise<GenerationRuntime> } | null = null;
+
+async function generationRuntime(): Promise<Response> {
+  if (!runtimeProbe || runtimeProbe.expires < Date.now()) {
+    const result = (async (): Promise<GenerationRuntime> => {
+      const unavailable: GenerationRuntime = { ace_available: false, cuda_available: null, device: null };
+      const executable = join(ROOT, "data", "interim", "tools", "ACE-Step-1.5", ".venv", "bin", "python");
+      if (!(await Bun.file(executable).exists())) return unavailable;
+      try {
+        // Ask the same PyTorch environment and detector used by the music runner, not nvidia-smi.
+        const child = Bun.spawn([executable, join(ROOT, "experiments", "follow_ace.py"), "--runtime"], {
+          cwd: ROOT, env: process.env, stdout: "pipe", stderr: "ignore",
+        });
+        const output = await new Response(child.stdout).text();
+        if (await child.exited !== 0) return unavailable;
+        return { ace_available: true, ...JSON.parse(output) } as GenerationRuntime;
+      } catch { return unavailable; }
+    })();
+    runtimeProbe = { expires: Date.now() + 30_000, result };
+  }
+  return Response.json(await runtimeProbe.result, { headers: { "cache-control": "no-store" } });
+}
 
 async function python(args: string[], onLine?: (line: string) => void): Promise<{ code: number; tail: string[] }> {
   const child = Bun.spawn([...PYTHON, ...args], {
@@ -139,6 +161,11 @@ async function combine(request: Request): Promise<Response> {
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       const send = (message: CombineMessage) => controller.enqueue(encoder.encode(JSON.stringify(message) + "\n"));
+      // Blank NDJSON lines keep long CPU jobs connected without adding messages to the UI.
+      const heartbeat = setInterval(() => {
+        try { controller.enqueue(encoder.encode("\n")); }
+        catch { clearInterval(heartbeat); }
+      }, 20_000);
       const job = (async () => {
         const args = ["combine", specPath, ...(model ? [] : ["--no-model"])];
         const { code, tail } = await python(args, (line) => {
@@ -155,6 +182,7 @@ async function combine(request: Request): Promise<Response> {
       running = job;
       job.catch((error) => send({ type: "error", message: String(error) }))
         .finally(() => {
+          clearInterval(heartbeat);
           running = null;
           controller.close();
         });
@@ -194,12 +222,13 @@ const server = Bun.serve({
   port: PORT,
   hostname: HOSTNAME,
   development: process.env.NODE_ENV !== "production",
-  idleTimeout: 255, // ACE-Step runs can take a minute; keep the stream open
+  idleTimeout: 255, // Heartbeats keep slow ACE-Step CPU runs connected.
   routes: {
     "/": index,
     "/silver": () => Response.redirect("/?view=silver", 302), // the page is now a tab; old #idea links keep their hash
     "/silver/files/*": { GET: silverFiles },
     "/api/catalog": { GET: catalog },
+    "/api/runtime": { GET: generationRuntime },
     "/api/combos": { GET: combos },
     "/api/combos/:id": { GET: (request) => combo(request.params.id) },
     "/api/combos/:id/preset": { POST: (request) => savePreset(request, request.params.id) },

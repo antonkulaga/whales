@@ -28,7 +28,6 @@
         <button id="silver-tab" type="button" role="tab" aria-selected="false" aria-controls="silver-panel" tabindex="-1" data-view="silver" data-server-only>Sound to silver <span class="tab-note">(optional)</span></button>
         <button id="about-tab" type="button" role="tab" aria-selected="false" aria-controls="about-panel" tabindex="-1" data-view="about">About</button>
       </nav>
-      <a class="edition" href="#proposal"><span class="edition-dot"></span>Pre-project prototype <span aria-hidden="true">↗</span></a>
     </header>
 
     <p class="load-error" id="load-error" role="alert" hidden></p>
@@ -36,9 +35,9 @@
     <main id="concert-panel" class="view-panel" role="tabpanel" aria-labelledby="concert-tab" tabindex="0">
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">Whale & Dolphin <em>Orchestra.</em></h1>
+        <span class="prototype-badge">Working prototype</span>
         <p>Marine biodiversity has a sound of its own. This orchestra transforms real recordings from <a href="https://www.dclde.org/challenges-and-data-sets" target="_blank" rel="noopener noreferrer">DCLDE</a> and other waters into music for human ears, guided by measured rhythms and pitch contours. Choose your musicians on the map, or hear a finished piece.</p>
-        <div class="prototype-cue"><span class="prototype-badge">Working prototype</span><span>Select recordings on the map and listen here.</span></div>
-        <button id="hear-piece" class="text-link" type="button" disabled>Hear a composition <span aria-hidden="true">↗</span></button>
+        <div class="prototype-cue"><span>Select recordings on the map and listen here.</span></div>
       </section>
 
       <section class="stage" aria-label="Choose the orchestra">
@@ -52,9 +51,9 @@
             <div class="map-hint" id="map-hint">Select a site to add a voice. Scroll or pinch to explore.</div>
           </div>
           <aside class="programme-drawer" aria-label="Finished ensembles">
-            <button class="programme-toggle" id="programme-toggle" type="button" aria-expanded="true" aria-controls="programme-panel" title="Collapse the listening programme"><span class="programme-chevron" aria-hidden="true">›</span><span class="programme-toggle-label">Across the same ocean</span></button>
+            <button class="programme-toggle" id="programme-toggle" type="button" aria-expanded="true" aria-controls="programme-panel" title="Collapse the listening programme"><span class="programme-chevron" aria-hidden="true">›</span><span class="programme-toggle-label">Listen to finished pieces</span></button>
             <section class="programme-panel" id="programme-panel" aria-labelledby="programme-title">
-              <div class="programme-head"><span class="section-number">The listening programme</span><h2 id="programme-title">Across the same ocean.</h2><p>Choose a piece to fill the orchestra. Then play it or change its musicians.</p></div>
+              <div class="programme-head"><span class="programme-cue">Start here · ready to play</span><h2 id="programme-title">Across the same ocean.</h2><p>Hear a finished composition immediately, or choose a piece below to explore its musicians.</p><button class="primary" id="programme-listen" type="button" disabled>▶ Listen now</button></div>
               <ul id="saved" aria-label="Pieces that prefill the orchestra"></ul>
               <p class="programme-status" id="programme-status" role="status"></p>
             </section>
@@ -69,6 +68,8 @@
         </div>
         <ol class="players" id="players" aria-label="Players in the orchestra"></ol>
         <div class="dock-actions"><p class="status" id="status" role="status"></p><button class="btn quiet" id="clear" type="button">Clear</button><button class="btn" id="take" type="button" title="Same players, a new ACE-Step seed">New take</button><button class="btn" id="dock-play" type="button" aria-pressed="false" hidden>▶ Play</button><button class="primary" id="combine" type="button">Compose piece</button></div>
+        <p class="compose-runtime" id="compose-runtime" hidden>This server has no CUDA GPU. Composing runs on the CPU and may take a while. Finished pieces are ready to play immediately.</p>
+        <div class="compose-progress" id="compose-progress" hidden><progress aria-label="Composition in progress"></progress><span class="small">Preparing your piece. You can keep listening while it is being made.</span></div>
       </section>
         <aside class="composer roster" aria-labelledby="roster-title">
           <div class="panel-head"><div><span class="section-number">03 / The musicians</span><h2 id="roster-title">Listen. Then take a seat.</h2></div><span class="small" id="roster-count"></span></div>

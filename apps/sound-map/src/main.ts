@@ -5,7 +5,7 @@ import { Composer } from "./composer.ts";
 import { renderIndividualTracks, renderLanes, renderScores, partColor } from "./lanes.ts";
 import { catalogUrl, comboUrl, combosUrl, fileUrl, isStatic } from "./lib/api.ts";
 import { activePulses, soundingParts } from "./lib/pulses.ts";
-import type { Catalog, CombineMessage, ComboSummary, Manifest, Source, Species, StemName } from "./lib/types.ts";
+import type { Catalog, CombineMessage, ComboSummary, GenerationRuntime, Manifest, Source, Species, StemName } from "./lib/types.ts";
 import { AtlasMap, SPECIES_COLOR, sitesOf, type Countries, type MapPart, type Site } from "./map.ts";
 import { Player, type Track } from "./player.ts";
 import "./silver.ts"; // the Sound to silver tab: its idea tabs and images
@@ -29,7 +29,7 @@ function setProgrammeOpen(open: boolean) {
   $("#programme-panel").toggleAttribute("hidden", !open);
   $("#map-workspace").classList.toggle("programme-collapsed", !open);
 }
-setProgrammeOpen(!matchMedia("(max-width: 850px)").matches);
+setProgrammeOpen(true);
 programmeToggle.addEventListener("click", () => setProgrammeOpen(programmeToggle.getAttribute("aria-expanded") !== "true"));
 document.addEventListener("keydown", event => {
   if (event.key === "Escape" && programmeToggle.getAttribute("aria-expanded") === "true" && document.activeElement?.closest(".programme-drawer")) {
@@ -106,6 +106,11 @@ const preview = new Audio();
 let pieceKey: string | null = null; // the orchestra spec the piece on screen was made from
 const rendered = new Map<string, string>(); // orchestra spec → piece id, for every piece composed or opened this session
 let busy = false;
+let generationRuntime: GenerationRuntime | null = null;
+if (!isStatic) void json<GenerationRuntime>("/api/runtime").then(runtime => {
+  generationRuntime = runtime;
+  renderDock();
+}).catch(() => {}); // An unknown runtime must not imply that CUDA is absent.
 let flash = "";
 let flashTimer = 0;
 let openSiteKey: string | null = null;
@@ -147,11 +152,12 @@ $("#measurement-example").addEventListener("click", (event) => {
   if (button && source) listen(source, button, button.dataset.stem === "guide" ? "guide" : "animal");
 });
 $<HTMLElement>("#catalog-summary").textContent = `${catalog.sources.length} recordings / ${sites.length} sites / ${new Set(catalog.sources.map((s) => s.species)).size} species`;
-$<HTMLButtonElement>("#hear-piece").addEventListener("click", async () => {
+async function hearPiece() {
   const first = [...summaries.values()].find((p) => p.preset && p.ace) ?? [...summaries.values()].find((p) => p.ace) ?? [...summaries.values()][0];
   if (result) { showView("concert"); $("#result").scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth" }); void play(); }
   else if (first) await openPiece(first.id);
-});
+}
+$<HTMLButtonElement>("#programme-listen").addEventListener("click", () => void hearPiece());
 
 const map = new AtlasMap($<SVGSVGElement>("#map"), countries, catalog.points, sites, clickSite);
 let composer: Composer | undefined;
@@ -364,6 +370,9 @@ function renderDock() {
   const take = $<HTMLButtonElement>("#take");
   const ready = !busy && ids.length > 0 && issues.length === 0;
   const fresh = result !== null && key === pieceKey;
+  $<HTMLElement>("#compose-progress").hidden = !busy;
+  $<HTMLElement>("#compose-runtime").hidden = generationRuntime?.cuda_available !== false || !composer.aceOn || (fresh && !busy) || ids.length === 0;
+  $("#dock").setAttribute("aria-busy", String(busy));
   combine.disabled = !ready || fresh;
   combine.textContent = busy ? "Composing…" : result ? "Update piece" : "Compose piece";
   combine.hidden = fresh && !busy;
@@ -382,7 +391,7 @@ function renderDock() {
     : issues.length ? issues[0]!
     : fresh ? `“${pieceTitle(result!.title, result!.parts.map((p) => p.source))}” is ready to play.`
     : result ? `Changed since “${pieceTitle(result.title, result.parts.map((p) => p.source))}”.`
-    : `${ids.length} player${ids.length === 1 ? "" : "s"} ready${composer.aceOn ? "; composing takes about a minute" : ""}.`);
+    : `${ids.length} player${ids.length === 1 ? "" : "s"} ready.`);
 }
 
 function renderHallSeats(ids: string[]) {
@@ -450,6 +459,7 @@ async function compose(newTake = false) {
     const response = await fetch(`/api/combine?model=${spec.ace ? 1 : 0}`, { method: "POST", body: JSON.stringify(spec) });
     if (!response.ok || !response.body) throw new Error((await response.json().catch(() => ({}))).error ?? `Server answered ${response.status}`);
     const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let completed = false;
     let buffer = "";
     for (;;) {
       const { value, done } = await reader.read();
@@ -462,10 +472,11 @@ async function compose(newTake = false) {
         if (message.type === "log") {
           log.textContent += message.text + "\n";
           log.scrollTop = log.scrollHeight;
-          status.textContent = "Composing your piece… Details in the technical score.";
+          status.textContent = message.text.startsWith("ACE-Step:") ? message.text.slice("ACE-Step:".length).trim() : "Composing your piece…";
         }
         if (message.type === "error") throw new Error(message.message);
         if (message.type === "done") {
+          completed = true;
           pieceKey = key;
           rendered.set(key, message.manifest.id);
           busy = false;
@@ -474,6 +485,7 @@ async function compose(newTake = false) {
         }
       }
     }
+    if (!completed) throw new Error("The connection ended before the piece was ready. Please try again");
   } catch (error) {
     busy = false;
     renderDock();
@@ -494,7 +506,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   result = manifest;
   if (options.scroll !== false) showView("concert");
   $("#load-error").setAttribute("hidden", "");
-  $<HTMLButtonElement>("#hear-piece").disabled = false;
+  $<HTMLButtonElement>("#programme-listen").disabled = false;
   if (options.seat && composer && !isStatic) {
     composer.load(manifest);
     pieceKey = JSON.stringify(composer.spec());
@@ -682,7 +694,7 @@ async function piece(id: string): Promise<Manifest> {
 async function loadSaved() {
   const saved = await json<ComboSummary[]>(combosUrl()).catch(() => [] as ComboSummary[]);
   summaries = new Map(saved.map((c) => [c.id, c]));
-  $<HTMLButtonElement>("#hear-piece").disabled = saved.length === 0 && !result;
+  $<HTMLButtonElement>("#programme-listen").disabled = saved.length === 0 && !result;
   const presets = saved.filter((c) => c.preset).sort((a, b) => b.created_at_utc.localeCompare(a.created_at_utc));
   const recent = saved.filter((c) => !c.preset);
   const group = (title: string, items: ComboSummary[]) => items.length ? `<li class="group-title">${title}</li>${items.map(savedItem).join("")}` : "";

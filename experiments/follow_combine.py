@@ -30,7 +30,7 @@ ARRANGEMENTS = ("layer", "sequence")
 TASKS = ("cover", "lego")
 # Bump when rendering, response or scoring code changes: saved renders with another version are rebuilt
 # on their next request. Ids hash the spec and config, not the code. Manifests without the field are version 1.
-RENDER_VERSION = 1
+RENDER_VERSION = 2
 
 
 def prepared_sources(layout: Layout):
