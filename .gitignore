@@ -302,3 +302,6 @@ __marimo__/
 *.pem
 *.key
 .netrc
+
+# Phrase Atlas demo bundle: MP3 stems are committed through Git LFS
+!apps/sound-map/demo/**/*.mp3

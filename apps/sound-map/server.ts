@@ -2,7 +2,7 @@
 // All measurement, generation and scoring happens in Python (`main.py follow ...`); this file only
 // writes a spec, runs the CLI and streams its readable log lines back as NDJSON.
 
-import { mkdir, readdir } from "node:fs/promises";
+import { mkdir, readdir, stat } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import index from "./src/index.html";
 import { contentType, readableLog, safeJoin } from "./src/lib/paths.ts";
@@ -10,6 +10,8 @@ import type { CombineMessage, ComboSummary, Manifest } from "./src/lib/types.ts"
 
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
+// Committed bundle (Git LFS, `bun scripts/demo.ts`): read when OUTPUT lacks a file, so a fresh clone plays.
+const DEMO = join(import.meta.dir, "demo", "follow");
 const SPECS = join(ROOT, "data", "interim", "follow", "combo-specs");
 const PORT = Number(process.env.PORT ?? 3070);
 const HOSTNAME = process.env.HOST ?? "127.0.0.1";
@@ -50,6 +52,11 @@ async function python(args: string[], onLine?: (line: string) => void): Promise<
 
 async function catalog(): Promise<Response> {
   const file = Bun.file(join(OUTPUT, "catalog.json"));
+  const demo = Bun.file(join(DEMO, "catalog.json"));
+  const prepared = await stat(OUTPUT).then(() => true, () => false);
+  if (!(await file.exists()) && !prepared && (await demo.exists())) {
+    return new Response(demo, { headers: { "content-type": "application/json" } });
+  }
   if (!(await file.exists())) {
     const { code, tail } = await python(["catalog"]);
     if (code !== 0) return Response.json({ error: "Could not build the catalog. Run 'main.py follow prepare' first.", log: tail }, { status: 500 });
@@ -58,15 +65,17 @@ async function catalog(): Promise<Response> {
 }
 
 async function combos(): Promise<Response> {
-  const folder = join(OUTPUT, "combos");
-  const names = await readdir(folder).catch(() => [] as string[]);
   const out: ComboSummary[] = [];
-  for (const name of names) {
-    const file = Bun.file(join(folder, name, "manifest.json"));
-    if (!(await file.exists())) continue;
-    const m = (await file.json()) as Manifest;
-    out.push({ id: m.id, title: m.title, created_at_utc: m.created_at_utc, duration_s: m.duration_s,
-               sources: m.parts.map((p) => p.source), ace: Boolean(m.stems.ace) });
+  const seen = new Set<string>();
+  for (const folder of [join(OUTPUT, "combos"), join(DEMO, "combos")]) {
+    for (const name of await readdir(folder).catch(() => [] as string[])) {
+      const file = Bun.file(join(folder, name, "manifest.json"));
+      if (seen.has(name) || !(await file.exists())) continue;
+      seen.add(name);
+      const m = (await file.json()) as Manifest;
+      out.push({ id: m.id, title: m.title, created_at_utc: m.created_at_utc, duration_s: m.duration_s,
+                 sources: m.parts.map((p) => p.source), ace: Boolean(m.stems.ace) });
+    }
   }
   out.sort((a, b) => b.created_at_utc.localeCompare(a.created_at_utc));
   return Response.json(out);
@@ -74,9 +83,11 @@ async function combos(): Promise<Response> {
 
 async function combo(id: string): Promise<Response> {
   if (!/^[0-9a-f]{12}$/.test(id)) return Response.json({ error: "Unknown combination" }, { status: 404 });
-  const file = Bun.file(join(OUTPUT, "combos", id, "manifest.json"));
-  return (await file.exists()) ? new Response(file, { headers: { "content-type": "application/json" } })
-    : Response.json({ error: "Unknown combination" }, { status: 404 });
+  for (const root of [OUTPUT, DEMO]) {
+    const file = Bun.file(join(root, "combos", id, "manifest.json"));
+    if (await file.exists()) return new Response(file, { headers: { "content-type": "application/json" } });
+  }
+  return Response.json({ error: "Unknown combination" }, { status: 404 });
 }
 
 async function combine(request: Request): Promise<Response> {
@@ -125,11 +136,15 @@ async function combine(request: Request): Promise<Response> {
 
 async function files(request: Request): Promise<Response> {
   const requested = new URL(request.url).pathname.slice("/files/".length);
-  const path = safeJoin(OUTPUT, requested);
-  if (!path) return new Response("Not found", { status: 404 });
-  const file = Bun.file(path);
-  if (!(await file.exists())) return new Response("Not found", { status: 404 });
-  return new Response(file, { headers: { "content-type": contentType(path), "cache-control": "no-cache" } });
+  for (const root of [OUTPUT, DEMO]) {
+    const path = safeJoin(root, requested);
+    if (!path) return new Response("Not found", { status: 404 });
+    const file = Bun.file(path);
+    if (await file.exists()) {
+      return new Response(file, { headers: { "content-type": contentType(path), "cache-control": "no-cache" } });
+    }
+  }
+  return new Response("Not found", { status: 404 });
 }
 
 const server = Bun.serve({

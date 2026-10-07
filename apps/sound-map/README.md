@@ -24,6 +24,13 @@ bun test           # arrangement, pulse and path-safety logic
 bun run typecheck
 ```
 
+On a fresh clone you can skip the Python steps: `git lfs pull`, then `bun install` and
+`bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 14 source
+excerpts and 10 finished combinations (MP3 stems and WebP spectrograms in Git LFS, about
+65 MB). Anything in `data/output/follow` takes precedence. Making new combinations still
+needs the pipeline. Refresh the bundle with `bun scripts/demo.ts [id,id,...]`; its
+`README.md` lists the recordings.
+
 Environment: `PORT` (3070), `HOST` (127.0.0.1), `WHALES_ROOT` (the repository root).
 The server binds to localhost and runs one combination at a time, because the GPU is shared.
 
