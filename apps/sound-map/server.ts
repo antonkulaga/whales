@@ -20,7 +20,11 @@ const SPECS = join(ROOT, "data", "interim", "follow", "combo-specs");
 // and a name must never change a piece's id.
 const PRESETS = join(OUTPUT, "presets.json");
 type Presets = Record<string, { name: string; saved_at_utc: string }>;
-const readPresets = async (): Promise<Presets> => Bun.file(PRESETS).json().catch(() => ({})) as Promise<Presets>;
+// The demo bundle ships the names of its presets, so a fresh clone shows them too; names saved here win.
+const readPresets = async (): Promise<Presets> => ({
+  ...(await Bun.file(join(DEMO, "presets.json")).json().catch(() => ({}))),
+  ...(await Bun.file(PRESETS).json().catch(() => ({}))),
+}) as Presets;
 // The repository's .env sets ORCHESTRA_PORT and ORCHESTRA_HOST (`uv run start`, `bun run dev`); PORT and HOST still work.
 const PORT = Number(process.env.ORCHESTRA_PORT ?? process.env.PORT ?? 3070);
 const HOSTNAME = process.env.ORCHESTRA_HOST ?? process.env.HOST ?? "127.0.0.1";

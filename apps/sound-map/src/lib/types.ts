@@ -1,6 +1,9 @@
 // Shapes written by experiments/follow_combine.py (catalog.json, manifest.json) and the spec it reads.
 
-export type Species = "humpback" | "dolphin" | "sperm whale" | "killer whale";
+export type Species =
+  | "humpback" | "right whale" | "fin whale" | "blue whale" | "minke whale" | "bowhead whale"
+  | "sperm whale" | "killer whale" | "false killer whale" | "pilot whale"
+  | "dolphin" | "common dolphin" | "spinner dolphin" | "striped dolphin" | "rough-toothed dolphin" | "Atlantic spotted dolphin";
 
 export interface Location {
   label: string;

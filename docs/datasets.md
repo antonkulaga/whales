@@ -183,3 +183,13 @@ MBARI humpback song-unit categories. They are not counted in this guide's
 16-resource inventory. DORI is an additional prerelease domain-adaptation lead
 in the [DCLDE guide](dclde-2027.md#additional-data-that-may-help); it is not counted
 as another fully audited corpus here.
+
+## Possible extension: seals
+
+The orchestra stays with whales and dolphins for now. Seals, sea lions and walruses could join
+later. None of the DCLDE releases label pinnipeds. The Watkins metadata in the
+[world map](world-map.md) covers 10 seal, sea-lion and walrus species with recording locations.
+AWI's polar recordings on PANGAEA, the source of the orchestra's Antarctic blue whales and
+bowheads, were also used to study Antarctic seals ([Van Opzeeland 2010, *Acoustic ecology of
+marine mammals in polar oceans*](https://doi.org/10.2312/bzpm_0619_2010)), so the same archive
+and loader would be the first place to look.

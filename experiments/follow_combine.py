@@ -20,7 +20,7 @@ from pathlib import Path
 import shutil
 
 from .data import Layout, ROOT, now, read_json, write_json
-from .follow import directories, onsets, respond, render_guide, run_ace, write_wav
+from .follow import contour_at, directories, onsets, respond, render_guide, run_ace, write_wav
 from .follow_gallery import MUSIC_BAND, event_data, listening
 from .follow_metrics import leakage, load_mono, onset_envelope, timing
 
@@ -30,7 +30,7 @@ ARRANGEMENTS = ("layer", "sequence")
 TASKS = ("cover", "lego")
 # Bump when rendering, response or scoring code changes: saved renders with another version are rebuilt
 # on their next request. Ids hash the spec and config, not the code. Manifests without the field are version 1.
-RENDER_VERSION = 2
+RENDER_VERSION = 3
 
 
 def prepared_sources(layout: Layout):
@@ -136,8 +136,15 @@ def plan(spec: dict, config: dict, prepared: dict):
     return combo
 
 
+MIN_CUT_S = .15  # the shortest part of a trimmed call that still sounds in the guide
+
+
 def placed(events: list[dict], trim, offset: float):
-    """Events wholly inside the trim, moved to the part's offset; events cut by the trim are dropped."""
+    """Events inside the trim, moved to the part's offset.
+
+    A call the trim cuts keeps the part of its contour inside the trim, so the guide sounds wherever the
+    recording does. A call cut at its start is marked so it adds no onset.
+    """
     start, end = trim
     moved = offset - start
     out = []
@@ -145,9 +152,20 @@ def placed(events: list[dict], trim, offset: float):
         if event["kind"] == "click":
             if start <= event["time_s"] < end:
                 out.append(event | {"time_s": event["time_s"] + moved})
-        elif event["start_s"] >= start and event["end_s"] <= end:
+            continue
+        if event["start_s"] >= start and event["end_s"] <= end:
             out.append(event | {"start_s": event["start_s"] + moved, "end_s": event["end_s"] + moved,
                                 "time_s": [t + moved for t in event["time_s"]]})
+            continue
+        begin, finish = max(event["start_s"], start), min(event["end_s"], end)
+        if finish - begin < MIN_CUT_S:
+            continue
+        times = [begin] + [t for t in event["time_s"] if begin < t < finish] + [finish]  # the contour, read at the trim's edges too
+        cut_start = event["start_s"] < start or event.get("cut") in ("start", "both")
+        cut_end = event["end_s"] > end or event.get("cut") in ("end", "both")
+        out.append(event | {"start_s": begin + moved, "end_s": finish + moved, "time_s": [t + moved for t in times],
+                            "hz": [float(f) for f in contour_at(event, times)],
+                            "cut": {(True, False): "start", (False, True): "end", (True, True): "both"}[cut_start, cut_end]})
     return out
 
 

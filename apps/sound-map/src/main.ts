@@ -2,6 +2,8 @@
 // (ACE-Step on the combined guide), then listen while each site pulses on its own calls.
 
 import { Composer } from "./composer.ts";
+import { instrumentIcon } from "./instruments.ts";
+import { SPECIES } from "./lib/species.ts";
 import { renderIndividualTracks, renderLanes, renderScores, partColor } from "./lanes.ts";
 import { catalogUrl, comboUrl, combosUrl, fileUrl, isStatic } from "./lib/api.ts";
 import { activePulses, soundingParts } from "./lib/pulses.ts";
@@ -16,8 +18,6 @@ const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PULSE_LIFETIME = 0.9;
 const STEM_LABELS: Record<StemName, string> = { animal: "Recorded voices", guide: "Musical guide", response: "Constructed response", ace: "Generated music" };
-const SPECIES_ICON: Record<Species, string> = { humpback: "humpback", dolphin: "dolphin", "sperm whale": "sperm-whale", "killer whale": "killer-whale" };
-const SEAT_LABEL: Record<Species, string> = { humpback: "Humpback", dolphin: "Dolphin", "sperm whale": "Sperm whale", "killer whale": "Orca" };
 let result: Manifest | null = null;
 $<HTMLImageElement>("#hall-image").src = fileUrl("concert-hall-atlas-v1.png");
 
@@ -139,7 +139,7 @@ function renderMeasurement(source: Source) {
     const file = source.files[stem];
     return `<article class="example-card"><div class="example-head"><div><span class="section-number">${label}</span><h3>${title}</h3></div><button class="btn" type="button" data-example-listen="${esc(source.id)}" data-stem="${stem}" data-label="▶ Listen" aria-label="Listen to ${stem === "animal" ? "recording" : "musical guide"}: ${esc(source.title)}" aria-pressed="false">▶ Listen</button></div><div class="example-spec"><img src="${esc(fileUrl(file.image))}" alt="${stem === "animal" ? "Recording" : "Musical guide"} spectrogram for ${esc(source.title)}"><svg viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">${overlay(file.band, stem === "guide" ? source.register_shift_octaves : 0)}</svg></div><div class="spec-axis"><span>0 s → ${source.duration_s.toFixed(0)} s</span><span>${file.band[0]}–${file.band[1]} Hz · log scale</span></div></article>`;
   };
-  $("#measurement-example").innerHTML = `<div class="example-grid">${card("animal", "Input / Recorded audio", "The animal's voice")}${card("guide", "Guide / Constructed audio", "The measured phrase, played")}</div><div class="measurement-meta"><span><span class="small">Recording site</span><b>${esc(source.location.label)}</b></span><span><span class="small">Measured material</span><b>${source.onsets_s.length} ${source.material === "clicks" ? "click onsets" : "call onsets"}</b></span><span><span class="small">Guide instrument</span><b>${esc(source.instrument)}</b></span><span><span class="small">Register shift</span><b>${source.register_shift_octaves} octaves</b></span></div><p class="measurement-note">${esc(source.note)} Coloured ticks mark measured onsets${source.material === "tonal" ? "; lines trace measured pitch contours" : "; click groups become sequences of mallet strikes"}. The guide changes the sound while preserving those event times.</p>`;
+  $("#measurement-example").innerHTML = `<div class="example-grid">${card("animal", "Input / Recorded audio", "The animal's voice")}${card("guide", "Guide / Constructed audio", "The measured phrase, played")}</div><div class="measurement-meta"><span><span class="small">Recording site</span><b>${esc(source.location.label)}</b></span><span><span class="small">Measured material</span><b>${source.onsets_s.length} ${source.material === "clicks" ? "click onsets" : "call onsets"}</b></span><span><span class="small">Guide instrument</span><b>${instrumentIcon(source.instrument)} ${esc(source.instrument)}</b></span><span><span class="small">Register shift</span><b>${source.register_shift_octaves} octaves</b></span></div><p class="measurement-note">${esc(source.note)} Coloured ticks mark measured onsets${source.material === "tonal" ? "; lines trace measured pitch contours" : "; click groups become sequences of mallet strikes"}. The guide changes the sound while preserving those event times.</p>`;
 }
 technicalSource.addEventListener("change", () => {
   const source = sourceById.get(technicalSource.value);
@@ -151,6 +151,7 @@ $("#measurement-example").addEventListener("click", (event) => {
   const source = button && sourceById.get(button.dataset.exampleListen ?? "");
   if (button && source) listen(source, button, button.dataset.stem === "guide" ? "guide" : "animal");
 });
+$<HTMLElement>("#sources-count").textContent = String(catalog.sources.length);
 $<HTMLElement>("#catalog-summary").textContent = `${catalog.sources.length} recordings / ${sites.length} sites / ${new Set(catalog.sources.map((s) => s.species)).size} species`;
 async function hearPiece() {
   const first = [...summaries.values()].find((p) => p.preset && p.ace) ?? [...summaries.values()].find((p) => p.ace) ?? [...summaries.values()][0];
@@ -164,8 +165,13 @@ let composer: Composer | undefined;
 composer = new Composer(catalog, () => orchestraChanged());
 
 /* ---------- legend and zoom presets ---------- */
-$<HTMLElement>("#legend").innerHTML = (Object.keys(SPECIES_COLOR) as (keyof typeof SPECIES_COLOR)[])
-  .map((species) => `<span><i class="swatch" style="--c:${SPECIES_COLOR[species]}"></i>${species}</span>`).join("") +
+// Species in the table's order (baleen, toothed whales, dolphins), only those with a recording.
+const present = new Set(catalog.sources.map((s) => s.species));
+$<HTMLElement>("#legend").innerHTML = (Object.keys(SPECIES) as Species[]).filter((species) => present.has(species))
+  .map((species) => {
+    const instrument = catalog.species[species]?.instrument ?? "";
+    return `<span title="${esc(capital(species))}: guide played as ${esc(instrument)}"><i class="swatch" style="--c:${SPECIES_COLOR[species]}"></i>${species}${instrument ? ` ${instrumentIcon(instrument)}` : ""}</span>`;
+  }).join("") +
   `<span><i class="swatch" style="--c:var(--muted)"></i>published position</span><span><i class="swatch diamond" style="--c:var(--muted)"></i>approximate</span>` +
   `<span><i class="swatch halo"></i>in the orchestra</span><span><i class="swatch" style="--c:var(--pt-archive);width:6px;height:6px"></i>other datasets, not playable</span>`;
 
@@ -201,7 +207,7 @@ $<HTMLElement>("#roster").innerHTML = sites.map((site) => `<li class="roster-sit
   <ul>${site.sources.map((source) => `<li class="rec" data-id="${esc(source.id)}" style="--c:${SPECIES_COLOR[source.species]}">
     <button class="rec-main" type="button" data-toggle="${esc(source.id)}" aria-pressed="false">
       <span class="seat" aria-hidden="true">+</span>
-      <span class="rec-text"><b>${esc(source.title)}</b><span>${esc(capital(source.species))} · ${source.duration_s.toFixed(0)} s · ${source.onsets_s.length} ${source.material === "clicks" ? "clicks" : "calls"}</span></span>
+      <span class="rec-text"><b>${esc(source.title)}</b><span>${esc(capital(source.species))} · ${instrumentIcon(source.instrument)} ${esc(source.instrument)} · ${source.duration_s.toFixed(0)} s · ${source.onsets_s.length} ${source.material === "clicks" ? "clicks" : "calls"}</span></span>
     </button>
     <button class="listen" type="button" data-listen="${esc(source.id)}" data-label="▶" aria-label="Listen to ${esc(source.title)}">▶</button>
     <span class="thumb" aria-hidden="true"><img src="${esc(fileUrl(source.files.animal.image))}" alt="" loading="lazy"><svg viewBox="0 0 1000 22" preserveAspectRatio="none">${onsetTicks(source)}</svg></span>
@@ -360,7 +366,7 @@ function renderDock() {
   $<HTMLElement>("#players").innerHTML = ids.length ? ids.map((id, i) => {
     const source = sourceById.get(id)!;
     return `<li class="player" data-id="${esc(id)}" style="--c:${SPECIES_COLOR[source.species]}" title="${esc(source.title)}">
-      <span class="seat">${i + 1}</span><span class="who"><b>${esc(capital(source.species))}</b><span>${esc(source.location.label)}</span></span>
+      <span class="seat">${i + 1}</span><span class="who"><b>${esc(capital(source.species))} <i class="inst" title="Guide instrument: ${esc(source.instrument)}">${instrumentIcon(source.instrument)}</i></b><span>${esc(source.location.label)}</span></span>
       <button class="x" type="button" data-remove="${esc(id)}" aria-label="Remove ${esc(source.title)}">×</button></li>`;
   }).join("") : `<li class="players-empty">Empty. Click a site on the map or a recording in the list to seat it.</li>`;
 
@@ -398,9 +404,9 @@ function renderHallSeats(ids: string[]) {
   const chairs = Math.max(catalog.combination.max_parts, ids.length);
   $("#hall-seats").innerHTML = Array.from({ length: chairs }, (_, i) => {
     const source = sourceById.get(ids[i] ?? "");
-    const animal = source ? `<img class="species-icon" src="${esc(fileUrl(`species/${SPECIES_ICON[source.species]}.png`))}" alt="" aria-hidden="true">` : "";
-    const chair = `<span class="seat-figure"><svg viewBox="0 0 36 42" aria-hidden="true"><path d="M8 19V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v12M6 17v13h24V17M9 30v8M27 30v8"/><rect x="9" y="20" width="18" height="8" rx="2"/></svg>${animal}</span><span class="seat-caption">${i + 1}${source ? ` · ${SEAT_LABEL[source.species]}` : " · Empty"}</span>`;
-    return source ? `<li class="occupied" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="${isStatic ? "Inspect" : "Remove"} ${esc(source.title)}" title="${esc(capital(source.species))} · ${esc(source.location.label)}">${chair}</button></li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
+    const animal = source ? `<img class="species-icon" src="${esc(fileUrl(`species/${SPECIES[source.species].icon}.png`))}" alt="" aria-hidden="true"><span class="instrument-badge">${instrumentIcon(source.instrument)}</span>` : "";
+    const chair = `<span class="seat-figure"><svg viewBox="0 0 36 42" aria-hidden="true"><path d="M8 19V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v12M6 17v13h24V17M9 30v8M27 30v8"/><rect x="9" y="20" width="18" height="8" rx="2"/></svg>${animal}</span><span class="seat-caption">${i + 1}${source ? ` · ${SPECIES[source.species].seat}` : " · Empty"}</span>`;
+    return source ? `<li class="occupied" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="${isStatic ? "Inspect" : "Remove"} ${esc(source.title)}, guide played as ${esc(source.instrument)}" title="${esc(capital(source.species))} · ${esc(source.location.label)} · guide: ${esc(source.instrument)}">${chair}</button></li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
   }).join("");
 }
 
@@ -528,7 +534,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   $<HTMLElement>("#stems").innerHTML = "<legend>Listen to</legend>" + stems.map((key) =>
     `<button class="toggle" type="button" data-stem="${key}" aria-pressed="${stemOn[key]}">${STEM_LABELS[key]}</button>`).join("");
   $<HTMLElement>("#part-toggles").innerHTML = "<legend>Players</legend>" + manifest.parts.map((p, i) =>
-    `<button class="toggle" type="button" data-part="${i}" aria-pressed="true" title="${esc(p.title)} · Mute this player's recording and guide"><i class="swatch" style="--c:${partColor(p)}"></i>${i + 1} ${esc(capital(p.species))}</button>`).join("");
+    `<button class="toggle" type="button" data-part="${i}" aria-pressed="true" title="${esc(p.title)} · guide: ${esc(p.instrument)} · Mute this player's recording and guide"><i class="swatch" style="--c:${partColor(p)}"></i>${i + 1} ${esc(capital(p.species))} ${instrumentIcon(p.instrument)}</button>`).join("");
   $<HTMLElement>("#individual-track-count").textContent = `${manifest.parts.length} recordings · shared timeline`;
   setIndividualPlayhead = renderIndividualTracks($<HTMLElement>("#individual-lanes"), manifest, sourceById, (t) => void play(t));
   setPlayhead = renderLanes($<HTMLElement>("#lanes"), manifest, (t) => void play(t), ["guide", manifest.stems.ace ? "ace" : "response"]);

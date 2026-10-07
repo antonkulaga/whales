@@ -6,12 +6,13 @@
 
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
+import { SPECIES_ICON_FILES } from "../src/lib/species.ts";
 import type { Catalog, Manifest } from "../src/lib/types.ts";
 
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
 const DEMO = join(import.meta.dir, "..", "demo", "follow");
-const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", "species/humpback.png", "species/dolphin.png", "species/sperm-whale.png", "species/killer-whale.png", "species/credits.json",
+const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", ...SPECIES_ICON_FILES, "species/credits.json",
   // Retain the About photos and Installation concepts when refreshing the playback bundle.
   "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg",
   "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json"];
@@ -64,6 +65,11 @@ for (const path of [...media].sort()) {
 }
 await write("catalog.json", JSON.stringify(relativize(catalog)));
 for (const m of manifests) await write(`combos/${m.id}/manifest.json`, JSON.stringify(relativize(m), null, 1));
+// Preset names for the bundled pieces travel with them; the server reads them when data/output has none.
+const presetFile = Bun.file(join(OUTPUT, "presets.json"));
+const presets = (await presetFile.exists() ? await presetFile.json() : {}) as Record<string, { name: string; saved_at_utc: string }>;
+const shipped = Object.fromEntries(manifests.filter((m) => presets[m.id]).map((m) => [m.id, presets[m.id]]));
+if (Object.keys(shipped).length) await write("presets.json", JSON.stringify(shipped, null, 1));
 
 const rows = catalog.sources.map((s) => `| \`${s.id}\` | ${s.title} | ${s.location.label} | ${s.note ?? ""} |`);
 const combos = manifests

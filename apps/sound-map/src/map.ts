@@ -5,18 +5,14 @@ import { geoEqualEarth, geoGraticule10, geoPath, type GeoProjection } from "d3-g
 import { select } from "d3-selection";
 import { zoom, zoomIdentity, type D3ZoomEvent, type ZoomBehavior } from "d3-zoom";
 import type { Pulse } from "./lib/pulses.ts";
+import { SPECIES } from "./lib/species.ts";
 import type { DatasetPoint, Location, Source, Species } from "./lib/types.ts";
 
 const NS = "http://www.w3.org/2000/svg";
 const W = 960;
 const H = 500;
 
-export const SPECIES_COLOR: Record<Species, string> = {
-  humpback: "var(--humpback)",
-  dolphin: "var(--dolphin)",
-  "sperm whale": "var(--sperm)",
-  "killer whale": "var(--orca)",
-};
+export const SPECIES_COLOR = Object.fromEntries(Object.entries(SPECIES).map(([name, s]) => [name, s.color])) as Record<Species, string>;
 
 export interface Site {
   key: string;

@@ -38,5 +38,125 @@
     "license": "CC-BY-SA-3.0",
     "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
     "changes": "None"
+  },
+  {
+    "file": "right-whale.png",
+    "taxon": "Eubalaena glacialis",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/fb533874-aa63-4f76-baf0-e9ceacd7333c/eubalaena-glacialis",
+    "download": "https://images.phylopic.org/images/fb533874-aa63-4f76-baf0-e9ceacd7333c/raster/1536x539.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "fin-whale.png",
+    "taxon": "Balaenoptera physalus",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/8366482f-d41c-4ab2-8403-3d70fb04ad5f/balaenoptera-physalus",
+    "download": "https://images.phylopic.org/images/8366482f-d41c-4ab2-8403-3d70fb04ad5f/raster/1536x340.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "blue-whale.png",
+    "taxon": "Balaenoptera musculus",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/16969246-31e0-48e3-90ff-cad9a8746073/balaenoptera-musculus",
+    "download": "https://images.phylopic.org/images/16969246-31e0-48e3-90ff-cad9a8746073/raster/1536x499.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "minke-whale.png",
+    "taxon": "Balaenoptera acutorostrata",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/374accb5-16d5-4cb9-a67a-e881ddfec114/agaphelus-acutorostrata",
+    "download": "https://images.phylopic.org/images/374accb5-16d5-4cb9-a67a-e881ddfec114/raster/1536x521.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "false-killer-whale.png",
+    "taxon": "Pseudorca crassidens",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/4533cdfe-04d6-4b76-a06a-ba2d505b67d2/pseudorca-crassidens",
+    "download": "https://images.phylopic.org/images/4533cdfe-04d6-4b76-a06a-ba2d505b67d2/raster/1536x488.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "pilot-whale.png",
+    "taxon": "Globicephala macrorhynchus",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/671a8126-83a4-4b11-83aa-56b1c18970ef/globicephala-macrorhynchus",
+    "download": "https://images.phylopic.org/images/671a8126-83a4-4b11-83aa-56b1c18970ef/raster/1536x516.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "striped-dolphin.png",
+    "taxon": "Stenella coeruleoalba",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/f00a3f93-cd4b-48d4-bc25-1482eadd1bef/stenella-coeruleoalbus",
+    "download": "https://images.phylopic.org/images/f00a3f93-cd4b-48d4-bc25-1482eadd1bef/raster/1536x566.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "rough-toothed-dolphin.png",
+    "taxon": "Steno bredanensis",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/41a350a0-a19c-41ed-a85e-47e6b4ba7da4/steno-bredanensis",
+    "download": "https://images.phylopic.org/images/41a350a0-a19c-41ed-a85e-47e6b4ba7da4/raster/1536x494.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "spinner-dolphin.png",
+    "taxon": "Stenella longirostris",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/5b7a8b23-54d6-4702-a04a-5d9a24d60f38/stenella-longirostris",
+    "download": "https://images.phylopic.org/images/5b7a8b23-54d6-4702-a04a-5d9a24d60f38/raster/1536x701.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "common-dolphin.png",
+    "taxon": "Delphinus delphis",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/d6fe7b30-3229-48a8-8dc9-22173fafa899/delphinus-delphis",
+    "download": "https://images.phylopic.org/images/d6fe7b30-3229-48a8-8dc9-22173fafa899/raster/1536x584.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "atlantic-spotted-dolphin.png",
+    "taxon": "Stenella frontalis",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/84ad49f0-8974-400f-8ec8-4cecdbf1a678/stenella-frontalis",
+    "download": "https://images.phylopic.org/images/84ad49f0-8974-400f-8ec8-4cecdbf1a678/raster/1536x506.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
+  },
+  {
+    "file": "bowhead-whale.png",
+    "taxon": "Balaena mysticetus",
+    "author": "Chris huh",
+    "source": "https://www.phylopic.org/images/18438875-f6e8-4e46-8fda-5a07bd4c1a85/balaena-mysticetus",
+    "download": "https://images.phylopic.org/images/18438875-f6e8-4e46-8fda-5a07bd4c1a85/raster/1536x509.png",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Recoloured pure black keeping the original alpha, cropped to the silhouette, scaled to 128 px wide, bottom-aligned on a 128x128 transparent canvas"
   }
 ]

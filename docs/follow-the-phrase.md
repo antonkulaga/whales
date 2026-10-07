@@ -162,6 +162,62 @@ layers:
 - **Dense layers:** with three or four overlapping parts, no part reaches z 2.2.
 - **Duet:** "Dominica answers Kachemak" follows the offshore orcas (+2.9) and ignores the codas.
 
+These ten results come from renders made before the cut-call fix described below
+(render version 3), so they slightly undercount following at trims and window edges.
+
+### More species from earlier DCLDE workshops and PANGAEA
+
+Eleven more map sources come from earlier DCLDE workshops in the same NOAA bucket, chosen for
+new species and new places. Each is a 30 s window read with HTTP byte ranges through soundfile,
+so only a few megabytes of each multi-gigabyte file are fetched (`experiments/follow_dclde.py`).
+The label kinds differ by release, and each source's note says which kind it has:
+
+| Release | Sources | Labels | How events are measured |
+|---|---|---|---|
+| 2013, Stellwagen Bank | right whale upcalls, fin whale 20 Hz pulses | Raven log: time and frequency per call | F0 inside each call's box on whitened spectra (2 kHz audio) |
+| 2015, Channel Islands | blue whale D calls | HARP log: start and end time per call | F0 inside each logged call, 25–110 Hz |
+| 2011, Palmyra, Southern California, mid-Atlantic | spinner, short-beaked common and Atlantic spotted dolphins | Analyst-traced whistle contours (silbido `.ann`) | The traced contour is the event; whistles centred above 23.5 kHz are left out |
+| 2022, Hawaiian ship survey | minke, false killer and short-finned pilot whales, striped and rough-toothed dolphins | Encounter level only (minke: detection log) | Detected from one hydrophone's waveform and named "… (detected)" |
+
+The Hawaiian towed-array windows are the minutes when each group passed closest to the ship
+(100–400 m). The minke window has 10 logged boing detections. Melon-headed whales and
+pantropical spotted dolphins were tried and dropped because their windows were mostly noise,
+as were a Diablo Canyon blue whale window and noisy 40 Hz fin-whale calls. The Orcasound Lab
+killer-whale window was replaced by the clearest annotated window at that hydrophone: its calls
+stand about 19 dB above the background, against 0 dB before. Four AWI recordings from PANGAEA
+(Antarctic blue whales at two Weddell Sea moorings, bowhead whales at two Fram Strait moorings)
+are described in [pangaea-awi.md](pangaea-awi.md).
+
+Each new species has its own guide instrument and icon in the app: horn (right whale), tuba
+(fin), organ (blue), bell (minke), cello (bowhead), trumpet (false killer whale), glass harmonica
+(pilot whale), pan flute (striped), ocarina (rough-toothed), theremin (spinner), recorder (common)
+and singing saw (Atlantic spotted). Dense whistle choruses would clip the deterministic response,
+so `prepare` scales a source's two response stems by one shared gain when needed and records it
+as `response_gain`.
+
+### Calls cut by a window or a trim
+
+A call that crossed a window's edge, or a piece's trim, used to be dropped, so the recording
+played it while the guide and the generated music were silent. Now `units_for` and the silbido
+reader keep the inside part of a call the window cuts (at least 0.3 s), and `placed` keeps the
+part of a contour inside a trim, reading the contour at the trim's edges. Such calls are marked
+`cut`; a call cut at its start adds no onset, since it began before the window. Labels are
+re-read even when a window's audio is cached. All pieces were re-rendered with render version 3,
+and the linear sequences were turned into staggered layers whose voices overlap.
+
+### Sources and credits
+
+- **NOAA DCLDE workshop datasets**, NOAA NCEI passive acoustic archive (`noaa-passive-bioacoustic`
+  on Google Cloud): 2027 killer whales and humpbacks (the DCLDE 2027 dataset paper, Sci. Data 2025);
+  2013 NEFSC baleen-whale log for Stellwagen Bank (Nicole Pegg, Alexandra Carroll, Genevieve Davis);
+  2015 Scripps HARP recordings and call logs for the Channel Islands; 2022 PIFSC/SWFSC Hawaiian
+  towed-array survey and detection workbook (Erin Oleson, Ann Allen, Jennifer McCullough);
+  2011 whistle contours (Roch et al., 2025 re-annotation).
+- **PANGAEA**, AWI Ocean Acoustics: see [pangaea-awi.md](pangaea-awi.md) for every DOI.
+- **Orcasound** humpback recording with Emily Vierling's selection table.
+- **OpenWhistle** (Hugging Face `dolphinteam`) and **DSWP** (Hugging Face `orrp/DSWP`).
+- Species silhouettes from **PhyloPic** (Chris huh, CC BY-SA 3.0; Margot Michaud, CC0).
+
 `bun run export` in `apps/sound-map` writes a read-only copy (`atlas.html` and the files
 it lists in `atlas-files.json`), which was published as a private listening page.
 

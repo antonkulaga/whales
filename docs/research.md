@@ -112,8 +112,9 @@ marine researchers determine which contextual layers can responsibly guide the
 work. A useful output could let a viewer move between the recording, its
 annotation, and alternative visual interpretations.
 
-The linked residency listing emphasizes exchange with scientists, new artistic
-work, and presentations at both institutions. It lists 11 October 2026 as the
-application deadline; the official HIFMB call was inaccessible during this
-check, so the deadline is a directory claim pending official confirmation.
+The residency emphasizes exchange with scientists, new artistic work, and
+presentations at both institutions. The
+[official HIFMB call](https://hifmb.de/transfer/art-science/air/) (checked 8 October
+2026) confirms 11 October 2026 as the deadline and asks projects to address
+Ocean Decade Challenge 2, "Protect and restore ecosystems and biodiversity".
 [TransArtists listing](https://www.transartists.org/en/air/helmholtz-institute-functional-marine-biodiversity-hanse-wissenschaftskolleg-institute-advanced)

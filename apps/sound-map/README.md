@@ -6,7 +6,9 @@ plays, each recording site pulses on its own onsets and the arcs between players
 light up.
 
 This is a **pre-project prototype for the HIFMB × HWK ArtWaves residency proposal**
-([residency listing](https://www.transartists.org/en/air/helmholtz-institute-functional-marine-biodiversity-hanse-wissenschaftskolleg-institute-advanced)).
+([call](https://hifmb.de/transfer/art-science/air/)), live at
+[whales.liviazaharia.com](https://whales.liviazaharia.com/); the main
+[README](../../README.md) has screenshots.
 The interface takes its visual cues from a vineyard concert hall: curved seating
 terraces, timber, ivory and brass, alongside warm paper and editorial typography.
 An AI-generated ocean-atlas illustration of whales and dolphins inside a hall forms
@@ -101,9 +103,10 @@ bun run typecheck
 ```
 
 On a fresh clone you can skip the Python steps: `git lfs pull`, then `bun install` and
-`bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 14 source
-excerpts and 10 finished combinations (MP3 stems and WebP spectrograms in Git LFS, about
-65 MB). Anything in `data/output/follow` takes precedence. Making new combinations still
+`bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 29 source
+excerpts and 20 finished combinations (MP3 stems and WebP spectrograms in Git LFS). It also
+carries `presets.json`, the names of its presets, which the server reads beneath any saved in
+`data/output/follow`. Anything in `data/output/follow` takes precedence. Making new combinations still
 needs the pipeline. Refresh the bundle with `bun scripts/demo.ts [id,id,...]`; its
 `README.md` lists the recordings.
 

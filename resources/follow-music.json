@@ -145,11 +145,11 @@
       "class": "KW",
       "call_label": "Southern Resident call",
       "dataset": "orcasound_lab",
-      "soundfile": "1562337136_0005.wav",
-      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/orcasound_lab/1562337136_0005.wav",
-      "generation": "1774987319445109",
+      "soundfile": "OS_9_27_2017_09_02_00__0000.wav",
+      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/orcasound_lab/OS_9_27_2017_09_02_00__0000.wav",
+      "generation": "1774987320299995",
       "size": 4900058,
-      "start_s": 27.394,
+      "start_s": 26.0,
       "duration_s": 30.0,
       "location": {
         "label": "Orcasound Lab, Haro Strait",
@@ -158,8 +158,8 @@
         "precision": "published",
         "note": "Hydrophone position from the DCLDE deployment table (rounded)."
       },
-      "title": "Southern Resident killer whales, Orcasound Lab, July 2019",
-      "note": "20 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
+      "title": "Southern Resident killer whales, Orcasound Lab, September 2017",
+      "note": "11 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only. Chosen as the clearest annotated window at this hydrophone: calls stand about 19 dB above the background in their band."
     },
     {
       "id": "orca-bush-point",
@@ -336,6 +336,470 @@
       },
       "title": "Offshore killer whales, Montague Strait, April 2023",
       "note": "22 annotated killer-whale call rows in this window of the DCLDE 2027 table (UAF_NGOS); certain identifications only."
+    },
+    {
+      "id": "right-whale-stellwagen",
+      "species": "right whale",
+      "kind": "dclde",
+      "release": "2013",
+      "study": false,
+      "object": "dclde/2013/nefsc_sbnms_200903_nopp6_ch10/source-audio/NOPP6_EST_20090401_164500_CH10.wav",
+      "generation": "1687453371494849",
+      "size": 3600044,
+      "start_s": 692.5,
+      "duration_s": 30.0,
+      "call_label": "Right whale upcall",
+      "annotations": {
+        "format": "raven-log",
+        "tables": [
+          {
+            "object": "dclde/2013/nefsc_sbnms_200903_nopp6_ch10/detections/NEFSC_SBNMS_200903_NOPP6_CH10_allbaleen_detection_log_updated-2025-07-02.csv",
+            "generation": "1755123627569289"
+          }
+        ],
+        "species": "RIWH",
+        "confidence": [
+          "Detected"
+        ],
+        "file_start": "2009-04-01T16:45:00-05:00"
+      },
+      "location": {
+        "label": "Stellwagen Bank, Massachusetts",
+        "lon": -70.27,
+        "lat": 42.07,
+        "precision": "published",
+        "note": "NOPP6 site 10 deployment position from the DCLDE 2013 metadata (rounded)."
+      },
+      "title": "North Atlantic right whale upcalls, Stellwagen Bank, April 2009",
+      "note": "Upcalls logged as definite in the NEFSC baleen-whale log for DCLDE 2013 (Nicole Pegg, Alexandra Carroll); 2 kHz bottom recorder."
+    },
+    {
+      "id": "fin-whale-stellwagen",
+      "species": "fin whale",
+      "kind": "dclde",
+      "release": "2013",
+      "study": false,
+      "object": "dclde/2013/nefsc_sbnms_200903_nopp6_ch10/source-audio/NOPP6_EST_20090328_133000_CH10.wav",
+      "generation": "1687453366732288",
+      "size": 3600044,
+      "start_s": 605.5,
+      "duration_s": 30.0,
+      "call_label": "Fin whale 20 Hz pulse",
+      "annotations": {
+        "format": "raven-log",
+        "tables": [
+          {
+            "object": "dclde/2013/nefsc_sbnms_200903_nopp6_ch10/detections/NEFSC_SBNMS_200903_NOPP6_CH10_allbaleen_detection_log_updated-2025-07-02.csv",
+            "generation": "1755123627569289"
+          }
+        ],
+        "species": "FIWH",
+        "confidence": [
+          "Detected"
+        ],
+        "file_start": "2009-03-28T13:30:00-05:00"
+      },
+      "location": {
+        "label": "Stellwagen Bank, Massachusetts",
+        "lon": -70.27,
+        "lat": 42.07,
+        "precision": "published",
+        "note": "NOPP6 site 10 deployment position from the DCLDE 2013 metadata (rounded)."
+      },
+      "title": "Fin whale 20 Hz song, Stellwagen Bank, March 2009",
+      "note": "20 Hz pulses logged as definite in the NEFSC baleen-whale log for DCLDE 2013 (Alexandra Carroll); 2 kHz bottom recorder."
+    },
+    {
+      "id": "blue-whale-channel-islands",
+      "species": "blue whale",
+      "kind": "dclde",
+      "release": "2015",
+      "study": false,
+      "object": "dclde/2015/audio/dclde_2015_cinms-b_18_summer_lf/audio/CINMS18B_d06_120622_055731.d100.x.flac",
+      "generation": "1710978688974420",
+      "size": 647582387,
+      "start_s": 89210.3,
+      "duration_s": 30.0,
+      "call_label": "Blue whale D call",
+      "annotations": {
+        "format": "harp-log",
+        "tables": [
+          {
+            "object": "dclde/2015/products/detections/dclde_2015_cinms-b_annotations_lf_eval/data/CINMS-B.csv",
+            "generation": "1712168211478580"
+          },
+          {
+            "object": "dclde/2015/products/detections/dclde_2015_cinms-b_seasonal_annotations_lf_dev/data/CINMS-B.csv",
+            "generation": "1712168212808224"
+          }
+        ],
+        "species": "Bm",
+        "file_start": "2012-06-22T05:57:31+00:00"
+      },
+      "location": {
+        "label": "Channel Islands, Santa Barbara Channel",
+        "lon": -120.03,
+        "lat": 34.29,
+        "precision": "published",
+        "note": "HARP site CINMS-B position from the DCLDE 2015 deployment record (rounded)."
+      },
+      "title": "Blue whale D calls, Channel Islands, June 2012",
+      "note": "D calls logged with start and end times (no frequency bounds) for the DCLDE 2015 low-frequency task; HARP recording decimated to 2 kHz."
+    },
+    {
+      "id": "minke-whale-niihau",
+      "species": "minke whale",
+      "kind": "dclde",
+      "release": "2022",
+      "study": false,
+      "object": "dclde/2022/dclde_2022_1705/audio/1705_20171108_011833_703.flac",
+      "generation": "1676671356178342",
+      "size": 190289935,
+      "start_s": 15.0,
+      "duration_s": 30.0,
+      "channel": 0,
+      "call_label": "Minke whale boing",
+      "annotations": null,
+      "location": {
+        "label": "West of Niʻihau, Hawaiʻi",
+        "lon": -161.11,
+        "lat": 21.73,
+        "precision": "published",
+        "note": "Ship position at the start of the logged detection (8 Nov 2017, 01:18 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
+      },
+      "title": "Minke whale boings, west of Niʻihau, November 2017",
+      "note": "The release's minke sheet logs 10 boing detections in this window; events are measured from the waveform in 1.0–2.2 kHz. Towed-array hydrophone 1."
+    },
+    {
+      "id": "false-killer-whale-niihau",
+      "species": "false killer whale",
+      "kind": "dclde",
+      "release": "2022",
+      "study": false,
+      "object": "dclde/2022/dclde_2022_1705/audio/1705_20171107_170433_703.flac",
+      "generation": "1676671351386044",
+      "size": 191775154,
+      "start_s": 15.0,
+      "duration_s": 30.0,
+      "channel": 0,
+      "call_label": "False killer whale whistle",
+      "annotations": null,
+      "location": {
+        "label": "Far west of Niʻihau, Hawaiʻi",
+        "lon": -162.23,
+        "lat": 21.93,
+        "precision": "published",
+        "note": "Ship position at the start of the logged detection (7 Nov 2017, 17:02 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
+      },
+      "title": "False killer whales, west of Niʻihau, November 2017",
+      "note": "Acoustic encounter logged as false killer whales; the group passed about 100 m from the array at 17:04 UTC. Whistles are detected from the waveform, so loud clicks and flow noise can also register."
+    },
+    {
+      "id": "pilot-whale-molokai",
+      "species": "pilot whale",
+      "kind": "dclde",
+      "release": "2022",
+      "study": false,
+      "object": "dclde/2022/dclde_2022_1706/audio/1706_20170904_000755_689.flac",
+      "generation": "1676671146319793",
+      "size": 99378191,
+      "start_s": 15.0,
+      "duration_s": 30.0,
+      "channel": 0,
+      "call_label": "Pilot whale whistle",
+      "annotations": null,
+      "location": {
+        "label": "South of Molokaʻi, Hawaiʻi",
+        "lon": -157.2,
+        "lat": 20.9,
+        "precision": "published",
+        "note": "Ship position at the start of the logged detection (3 Sep 2017, 23:51 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
+      },
+      "title": "Short-finned pilot whales, south of Molokaʻi, September 2017",
+      "note": "Acoustic encounter logged as short-finned pilot whales; the group passed about 400 m abeam at 00:08 UTC. Whistles are detected from the waveform; echolocation clicks fill the gaps."
+    },
+    {
+      "id": "striped-dolphin-nwhi",
+      "species": "striped dolphin",
+      "kind": "dclde",
+      "release": "2022",
+      "study": false,
+      "object": "dclde/2022/dclde_2022_1706/audio/1706_20170818_020147_761.flac",
+      "generation": "1676671099400098",
+      "size": 192327065,
+      "start_s": 15.0,
+      "duration_s": 30.0,
+      "channel": 0,
+      "call_label": "Striped dolphin whistle",
+      "annotations": null,
+      "location": {
+        "label": "North of the Northwestern Hawaiian Islands",
+        "lon": -174.57,
+        "lat": 30.4,
+        "precision": "published",
+        "note": "Ship position at the start of the logged detection (18 Aug 2017, 01:55 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
+      },
+      "title": "Striped dolphins, north of the Northwestern Hawaiian Islands, August 2017",
+      "note": "Acoustic encounter logged as striped dolphins; the group passed about 265 m abeam at 02:00 UTC. Whistles are detected from the waveform."
+    },
+    {
+      "id": "rough-toothed-dolphin-kure",
+      "species": "rough-toothed dolphin",
+      "kind": "dclde",
+      "release": "2022",
+      "study": false,
+      "object": "dclde/2022/dclde_2022_1706/audio/1706_20170820_062658_639.flac",
+      "generation": "1676671104963806",
+      "size": 204489904,
+      "start_s": 15.0,
+      "duration_s": 30.0,
+      "channel": 0,
+      "call_label": "Rough-toothed dolphin whistle",
+      "annotations": null,
+      "location": {
+        "label": "North of Kure Atoll",
+        "lon": -178.9,
+        "lat": 31.33,
+        "precision": "published",
+        "note": "Ship position at the start of the logged detection (20 Aug 2017, 06:21 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
+      },
+      "title": "Rough-toothed dolphins, north of Kure Atoll, August 2017",
+      "note": "Acoustic encounter logged as rough-toothed dolphins; the group passed about 150 m abeam at 06:26 UTC. Whistles are detected from the waveform."
+    },
+    {
+      "id": "spinner-dolphin-palmyra",
+      "species": "spinner dolphin",
+      "kind": "dclde",
+      "release": "2011",
+      "study": false,
+      "object": "dclde/2011/dclde_2011/development/spinner/palmyra092007FS192-071011-232000.wav",
+      "generation": "1775686856077052",
+      "size": 48215852,
+      "start_s": 20.0,
+      "duration_s": 30.0,
+      "call_label": "Spinner dolphin whistle",
+      "annotations": {
+        "format": "silbido",
+        "tables": [
+          {
+            "object": "dclde/2011/dclde_2011/annotations2025/development/spinner/palmyra092007FS192-071011-232000.ann",
+            "generation": "1775686032460419"
+          }
+        ],
+        "max_hz": 23500
+      },
+      "location": {
+        "label": "Palmyra Atoll",
+        "lon": -162.08,
+        "lat": 5.88,
+        "precision": "approximate",
+        "note": "Regional anchor: the DCLDE 2011 release names the Palmyra Atoll towed array, not a position."
+      },
+      "title": "Spinner dolphin whistles, Palmyra Atoll, October 2007",
+      "note": "Whistle contours traced by analysts (DCLDE 2011, 2025 re-annotation); observers confirmed a single-species group. Whistles centred above 23.5 kHz are left out."
+    },
+    {
+      "id": "common-dolphin-socal",
+      "species": "common dolphin",
+      "kind": "dclde",
+      "release": "2011",
+      "study": false,
+      "object": "dclde/2011/dclde_2011/evaluation/delphinus_delphis/CC0808-TA22-080824-170000.wav",
+      "generation": "1775686944492090",
+      "size": 63080610,
+      "start_s": 16.5,
+      "duration_s": 30.0,
+      "call_label": "Common dolphin whistle",
+      "annotations": {
+        "format": "silbido",
+        "tables": [
+          {
+            "object": "dclde/2011/dclde_2011/evaluation/delphinus_delphis/CC0808-TA22-080824-170000.ann",
+            "generation": "1775686942308520"
+          }
+        ],
+        "max_hz": 23500
+      },
+      "location": {
+        "label": "Southern California Bight",
+        "lon": -119.0,
+        "lat": 33.0,
+        "precision": "approximate",
+        "note": "Regional anchor: the DCLDE 2011 release names a CalCOFI towed-array cruise in the Southern California Bight, not a position."
+      },
+      "title": "Short-beaked common dolphin whistles, Southern California Bight, August 2008",
+      "note": "Whistle contours traced by analysts (DCLDE 2011 evaluation set); observers confirmed a single-species group. Whistles centred above 23.5 kHz are left out."
+    },
+    {
+      "id": "atlantic-spotted-dolphin-mid-atlantic",
+      "species": "Atlantic spotted dolphin",
+      "kind": "dclde",
+      "release": "2011",
+      "study": false,
+      "object": "dclde/2011/dclde_2011/evaluation/sfrontalis/AMAPPS_MOTU20110714_105951_2min.wav",
+      "generation": "1775686972081171",
+      "size": 46828682,
+      "start_s": 54.0,
+      "duration_s": 30.0,
+      "call_label": "Atlantic spotted dolphin whistle",
+      "annotations": {
+        "format": "silbido",
+        "tables": [
+          {
+            "object": "dclde/2011/dclde_2011/evaluation/sfrontalis/AMAPPS_MOTU20110714_105951_2min.ann",
+            "generation": "1775686971218056"
+          }
+        ],
+        "max_hz": 23500
+      },
+      "location": {
+        "label": "U.S. mid-Atlantic shelf",
+        "lon": -74.8,
+        "lat": 36.5,
+        "precision": "approximate",
+        "note": "Regional anchor: the DCLDE 2011 release names an AMAPPS towed-array survey in the mid-Atlantic, not a position."
+      },
+      "title": "Atlantic spotted dolphin whistles, U.S. mid-Atlantic, July 2011",
+      "note": "Whistle contours traced by analysts (DCLDE 2011 evaluation set); observers confirmed a single-species group. The ship's echosounder ticks near 18 kHz."
+    },
+    {
+      "id": "blue-whale-weddell-69s",
+      "species": "blue whale",
+      "kind": "pangaea",
+      "study": false,
+      "dataset": 973160,
+      "file": "20130114.tar",
+      "member": "20130114-201958_AWI232-11_SV1011.wav",
+      "start_s": 67.0,
+      "duration_s": 30.0,
+      "rate": 2000,
+      "call_label": "Antarctic blue whale Z-call",
+      "labels": {
+        "format": "detections",
+        "dataset": 960121,
+        "call_window_s": [
+          -16,
+          10
+        ],
+        "band_hz": [
+          17.5,
+          29
+        ],
+        "trim_db": 6
+      },
+      "f0": {
+        "range_hz": [
+          15,
+          32
+        ],
+        "annotation_band": true,
+        "median_frames": 41
+      },
+      "location": {
+        "label": "Weddell Sea, 69°S on the Greenwich meridian",
+        "lon": -0.09,
+        "lat": -69.0,
+        "precision": "published",
+        "note": "HAFOS mooring AWI232-11 position from the PANGAEA dataset coverage (rounded)."
+      },
+      "title": "Antarctic blue whale Z-call, Weddell Sea 69°S, January 2013",
+      "note": "One complete Z-call from a regular singer who called about every 69 s, logged at 115 dB re 1 µPa by AWI's automated Z-call detector (PANGAEA 960121). The call spans 16 s before to 10 s after its logged time and is trimmed to where 17.5–29 Hz rises 6 dB above the 10-minute recording's background (our choice). AWI Ocean Acoustics Group recording, PANGAEA 973160; 5.3 kHz recorder resampled to 2 kHz."
+    },
+    {
+      "id": "bowhead-fram-strait-f16",
+      "species": "bowhead whale",
+      "kind": "pangaea",
+      "study": false,
+      "dataset": 967557,
+      "file": "20121111.tar",
+      "member": "20121111-044047_F16-09_SV1021.wav",
+      "start_s": 165.0,
+      "duration_s": 30.0,
+      "rate": 8000,
+      "call_label": "Bowhead whale song",
+      "labels": {
+        "format": "presence",
+        "dataset": 945331
+      },
+      "location": {
+        "label": "Fram Strait, west of Svalbard",
+        "lon": 0.43,
+        "lat": 78.83,
+        "precision": "published",
+        "note": "FRAM mooring F16-9 position from the PANGAEA dataset abstract (rounded)."
+      },
+      "title": "Bowhead whale song, Fram Strait, November 2012",
+      "note": "AWI's hourly table logs bowhead whales in every hour of 11 November 2012 at this recorder (PANGAEA 945331); the song's downswept notes are measured from the waveform in 330–1500 Hz. AWI Ocean Acoustics Group recording, PANGAEA 967557; 5.3 kHz recorder resampled to 8 kHz."
+    },
+    {
+      "id": "blue-whale-weddell-59s",
+      "species": "blue whale",
+      "kind": "pangaea",
+      "study": false,
+      "dataset": 966612,
+      "file": "20130506.tar",
+      "member": "20130506-115639_AWI227-12_SV1025.wav",
+      "start_s": 402.0,
+      "duration_s": 30.0,
+      "rate": 2000,
+      "call_label": "Antarctic blue whale Z-call",
+      "labels": {
+        "format": "detections",
+        "dataset": 960031,
+        "call_window_s": [
+          -16,
+          10
+        ],
+        "band_hz": [
+          17.5,
+          29
+        ],
+        "trim_db": 6
+      },
+      "f0": {
+        "range_hz": [
+          15,
+          32
+        ],
+        "annotation_band": true,
+        "median_frames": 41
+      },
+      "location": {
+        "label": "Southern Ocean, 59°S on the Greenwich meridian",
+        "lon": 0.08,
+        "lat": -59.04,
+        "precision": "published",
+        "note": "HAFOS mooring AWI227-12 position from the PANGAEA dataset coverage (rounded)."
+      },
+      "title": "Antarctic blue whale Z-call, Southern Ocean 59°S, May 2013",
+      "note": "One complete Z-call from a regular singer who called about every 69 s, logged at 120 dB re 1 µPa by AWI's automated Z-call detector (PANGAEA 960031). The call spans 16 s before to 10 s after its logged time and is trimmed to where 17.5–29 Hz rises 6 dB above the 10-minute recording's background (our choice). AWI Ocean Acoustics Group recording, PANGAEA 966612; 5.3 kHz recorder resampled to 2 kHz."
+    },
+    {
+      "id": "bowhead-fram-strait-f5",
+      "species": "bowhead whale",
+      "kind": "pangaea",
+      "study": false,
+      "dataset": 956286,
+      "file": "20161122.tar",
+      "member": "20161122-015425_ARKF05-17_SV1088.wav",
+      "start_s": 170.0,
+      "duration_s": 30.0,
+      "rate": 8000,
+      "call_label": "Bowhead whale song",
+      "labels": {
+        "format": "presence",
+        "dataset": 945392,
+        "song_types": 945404
+      },
+      "location": {
+        "label": "Fram Strait, west of Svalbard (79°N 5.7°E)",
+        "lon": 5.67,
+        "lat": 79.0,
+        "precision": "published",
+        "note": "FRAM mooring F5-17 position from the PANGAEA dataset abstract (rounded)."
+      },
+      "title": "Bowhead whale song, Fram Strait, November 2016",
+      "note": "AWI's hourly table logs bowhead whales in this hour (PANGAEA 945392), and its repertoire analysis lists song types 1.2, 2.1, 3.1, 3.2 and 3.3 on this day (PANGAEA 945404); which type sings in this window is not labelled. The song's arched and downswept notes are measured from the waveform in 330–1500 Hz. AWI Ocean Acoustics Group recording, PANGAEA 956286; 48 kHz recorder resampled to 8 kHz."
     }
   ],
   "downloads": {
@@ -515,6 +979,493 @@
       ],
       "caption": "dark minimal ambient music, low reeds, bowed bass and soft metallic percussion, cold water, instrumental",
       "lego_track": "synth"
+    },
+    "right whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 512,
+        "hop": 40,
+        "band_hz": [
+          40,
+          400
+        ],
+        "tonality_db": 10,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.3,
+        "valley_db": 14,
+        "valley_window_s": 0.2,
+        "min_segment_s": 0.2,
+        "median_frames": 5,
+        "click_highpass_hz": 400
+      },
+      "f0": {
+        "range_hz": [
+          40,
+          400
+        ],
+        "harmonics": 4,
+        "decay": 0.84,
+        "n_fft": 512,
+        "hop": 20,
+        "median_frames": 9,
+        "whiten": true,
+        "annotation_band": true
+      },
+      "target_median_hz": 294,
+      "instrument": {
+        "name": "horn tone",
+        "harmonics": [
+          1,
+          0.8,
+          0.55,
+          0.35,
+          0.22,
+          0.12,
+          0.07
+        ],
+        "attack_s": 0.07,
+        "release_s": 0.15,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        30,
+        400
+      ],
+      "caption": "slow atmospheric music, warm french horns and low strings, foggy coast, spacious, instrumental",
+      "lego_track": "brass"
+    },
+    "fin whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 1024,
+        "hop": 50,
+        "band_hz": [
+          12,
+          60
+        ],
+        "tonality_db": 10,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.3,
+        "valley_db": 14,
+        "valley_window_s": 0.2,
+        "min_segment_s": 0.3,
+        "median_frames": 5,
+        "click_highpass_hz": 400
+      },
+      "f0": {
+        "range_hz": [
+          12,
+          40
+        ],
+        "harmonics": 3,
+        "decay": 0.84,
+        "n_fft": 1024,
+        "hop": 25,
+        "median_frames": 9,
+        "whiten": true,
+        "annotation_band": true
+      },
+      "target_median_hz": 147,
+      "instrument": {
+        "name": "tuba tone",
+        "harmonics": [
+          1,
+          0.85,
+          0.55,
+          0.35,
+          0.2,
+          0.1
+        ],
+        "attack_s": 0.04,
+        "release_s": 0.12,
+        "level": 0.55
+      },
+      "spectrogram_hz": [
+        10,
+        120
+      ],
+      "caption": "deep slow pulse music, tuba and low brass, distant timpani, vast dark ocean, instrumental",
+      "lego_track": "brass"
+    },
+    "blue whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 1024,
+        "hop": 50,
+        "band_hz": [
+          20,
+          120
+        ],
+        "tonality_db": 10,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.3,
+        "valley_db": 14,
+        "valley_window_s": 0.2,
+        "min_segment_s": 0.5,
+        "median_frames": 5,
+        "click_highpass_hz": 400
+      },
+      "f0": {
+        "range_hz": [
+          25,
+          110
+        ],
+        "harmonics": 3,
+        "decay": 0.84,
+        "n_fft": 1024,
+        "hop": 25,
+        "median_frames": 11,
+        "whiten": true
+      },
+      "target_median_hz": 131,
+      "instrument": {
+        "name": "organ tone",
+        "harmonics": [
+          1,
+          0.55,
+          0.8,
+          0.3,
+          0.5,
+          0.15,
+          0.3,
+          0.08
+        ],
+        "attack_s": 0.05,
+        "release_s": 0.1,
+        "level": 0.45
+      },
+      "spectrogram_hz": [
+        10,
+        150
+      ],
+      "caption": "slow ambient organ music, sustained pipe organ and soft choir pads, immense and calm, instrumental",
+      "lego_track": "keyboard"
+    },
+    "minke whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 4096,
+        "hop": 480,
+        "band_hz": [
+          1000,
+          2200
+        ],
+        "tonality_db": 12,
+        "bridge_frames": 6,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.3,
+        "median_frames": 9
+      },
+      "target_median_hz": 698,
+      "instrument": {
+        "name": "bell tone",
+        "harmonics": [
+          1,
+          0.05,
+          0.5,
+          0.02,
+          0.25,
+          0.01,
+          0.12
+        ],
+        "attack_s": 0.005,
+        "release_s": 0.6,
+        "level": 0.45
+      },
+      "spectrogram_hz": [
+        500,
+        4000
+      ],
+      "caption": "sparse ambient music, soft bells and vibraphone, tropical night, gentle, instrumental",
+      "lego_track": "percussion"
+    },
+    "false killer whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 392,
+      "instrument": {
+        "name": "trumpet tone",
+        "harmonics": [
+          1,
+          0.9,
+          0.75,
+          0.6,
+          0.45,
+          0.32,
+          0.22,
+          0.15
+        ],
+        "attack_s": 0.02,
+        "release_s": 0.06,
+        "level": 0.4
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "bright cinematic music, muted trumpets and pizzicato strings, open ocean, lively, instrumental",
+      "lego_track": "brass"
+    },
+    "pilot whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 330,
+      "instrument": {
+        "name": "glass tone",
+        "harmonics": [
+          1,
+          0.1,
+          0.04
+        ],
+        "attack_s": 0.08,
+        "release_s": 0.2,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "ethereal ambient music, glass harmonica and soft pads, deep blue water, instrumental",
+      "lego_track": "synth"
+    },
+    "striped dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 659,
+      "instrument": {
+        "name": "pan flute",
+        "harmonics": [
+          1,
+          0.3,
+          0.1,
+          0.04
+        ],
+        "attack_s": 0.05,
+        "release_s": 0.12,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "light airy music, pan flutes and soft marimba, playful, open ocean, instrumental",
+      "lego_track": "woodwinds"
+    },
+    "rough-toothed dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 440,
+      "instrument": {
+        "name": "ocarina tone",
+        "harmonics": [
+          1,
+          0.12,
+          0.03
+        ],
+        "attack_s": 0.03,
+        "release_s": 0.08,
+        "level": 0.5
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "gentle folk ambient music, ocarina and soft nylon guitar, warm island breeze, instrumental",
+      "lego_track": "woodwinds"
+    },
+    "spinner dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 784,
+      "instrument": {
+        "name": "theremin tone",
+        "harmonics": [
+          1,
+          0.35,
+          0.15,
+          0.06
+        ],
+        "attack_s": 0.06,
+        "release_s": 0.15,
+        "level": 0.25
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "dreamy electronic music, theremin and shimmering synth pads, lagoon at dusk, instrumental",
+      "lego_track": "synth"
+    },
+    "common dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 587,
+      "instrument": {
+        "name": "recorder tone",
+        "harmonics": [
+          1,
+          0.45,
+          0.18,
+          0.1,
+          0.04
+        ],
+        "attack_s": 0.02,
+        "release_s": 0.05,
+        "level": 0.35
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "bright baroque-inspired music, recorders and harpsichord, quick and playful, instrumental",
+      "lego_track": "woodwinds"
+    },
+    "Atlantic spotted dolphin": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 480,
+        "band_hz": [
+          3000,
+          24000
+        ],
+        "tonality_db": 18,
+        "bridge_frames": 4,
+        "max_jump_octaves": 0.2,
+        "min_segment_s": 0.08,
+        "median_frames": 5
+      },
+      "target_median_hz": 494,
+      "instrument": {
+        "name": "singing saw",
+        "harmonics": [
+          1,
+          0.12,
+          0.04
+        ],
+        "attack_s": 0.12,
+        "release_s": 0.25,
+        "level": 0.15
+      },
+      "spectrogram_hz": [
+        2000,
+        24000
+      ],
+      "caption": "eerie gentle music, singing saw and soft strings, calm sea, instrumental",
+      "lego_track": "strings"
+    },
+    "bowhead whale": {
+      "material": "tonal",
+      "analysis": {
+        "n_fft": 2048,
+        "hop": 160,
+        "band_hz": [
+          330,
+          1500
+        ],
+        "tonality_db": 14,
+        "bridge_frames": 6,
+        "max_jump_octaves": 0.2,
+        "valley_db": 12,
+        "valley_window_s": 0.2,
+        "min_segment_s": 0.5,
+        "median_frames": 7,
+        "click_highpass_hz": 2000
+      },
+      "target_median_hz": 220,
+      "instrument": {
+        "name": "cello tone",
+        "harmonics": [
+          1,
+          0.7,
+          0.5,
+          0.35,
+          0.25,
+          0.15,
+          0.1
+        ],
+        "attack_s": 0.06,
+        "release_s": 0.15,
+        "level": 0.45
+      },
+      "spectrogram_hz": [
+        50,
+        2000
+      ],
+      "caption": "slow arctic chamber music, solo cello and low strings, dark ice and long echoes, searching and melancholic, instrumental",
+      "lego_track": "strings"
     }
   },
   "combination": {

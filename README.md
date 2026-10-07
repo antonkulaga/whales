@@ -14,6 +14,20 @@ The repository also holds the research behind it, made for Livia's marine art
 residency proposal: which recordings exist, what their labels support, which
 models can use them, and what artists have already done with cetacean sound.
 
+**Live:** [whales.liviazaharia.com](https://whales.liviazaharia.com/), the working
+prototype for the HIFMB × HWK [ArtWaves residency](https://hifmb.de/transfer/art-science/air/).
+
+| | |
+|---|---|
+| ![Concert hall: a world map of recording sites beside a list of finished pieces](docs/screenshots/concert-hall.png) | ![Four voices seated on the stage, with the recordings they came from](docs/screenshots/seated-orchestra.png) |
+| **Concert hall.** Choose recording sites on the map, or play a finished piece. | **The orchestra.** Each seated voice is a real recording that can be played on its own. |
+| ![A piece playing: spectrograms of four recordings on one timeline, above their combined musical guide](docs/screenshots/now-playing.png) | ![Technical score: recorded, measured, constructed and generated stages](docs/screenshots/technical-score.png) |
+| **Now playing.** The recordings, their musical guides and the generated music share one timeline. | **Technical score.** From the recording to the measured phrase, the guide and the generated music. |
+| ![Installation concept: visitors around a printed ocean map table with whale figures and a wall screen](docs/screenshots/installation.png) | ![Sound to silver: a whistle bends Livia's cast-silver rings](docs/screenshots/sound-to-silver.png) |
+| **Installation.** The proposed listening room (AI-generated concept image). | **Sound to silver.** Whistles bend Livia's rings within casting limits. |
+
+Screenshots of the live site, taken 8 October 2026.
+
 ## Play the orchestra
 
 With [uv](https://docs.astral.sh/uv/) and [Bun](https://bun.sh) installed:
@@ -27,7 +41,7 @@ uv run stop            # stop the server
 takes a second or two:
 
 1. creates `.env` from `.env.template`;
-2. pulls the demo bundle (14 recordings and 10 finished pieces) with Git LFS;
+2. pulls the demo bundle (29 recordings and 20 finished pieces) with Git LFS;
 3. installs the app's packages with Bun;
 4. downloads and measures the recordings, then writes the catalog;
 5. with an NVIDIA GPU, installs ACE-Step 1.5 into `data/interim/tools/ACE-Step-1.5`,
@@ -93,6 +107,14 @@ Other steps toward silver: CLAP-directed jewelry concepts and silver geometry
 studies ([artistic experiments](docs/artistic-experiments.md)) and the human
 [sound brush](docs/sound-brush.md). [Livia's brief](docs/livia-experiment-brief.md)
 describes the pieces these build on.
+
+The same move, measured biology shaping a printable form, drove
+[Materialized Enhancements](https://enhancement.bio/), started at the CODAME
+ART+TECH festival *The New Human* in Milan in 2026 by the GlucoseDAO and Longevity
+Genie team ([source](https://github.com/longevity-genie/materialized-enhancements)).
+Visitors pick real genes from real organisms, such as tardigrade radiation
+shielding or naked-mole-rat cancer resistance. Livia's parametric geometry turns
+the protein properties of their picks into a 3D-printable Voronoi crystal.
 
 ## Documentation
 

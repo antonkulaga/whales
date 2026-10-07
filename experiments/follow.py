@@ -85,8 +85,10 @@ def fetch(layout: Layout, config: dict):
     from huggingface_hub import HfApi
 
     from .follow_dclde import fetch_dclde
+    from .follow_pangaea import fetch_pangaea
 
     fetch_dclde(layout, config)
+    fetch_pangaea(layout, config)
 
     for relative, item in config["downloads"].items():
         download(item["url"], layout.input / relative, item.get("sha256"))
@@ -163,6 +165,10 @@ def load_source(layout: Layout, source: dict):
         from .follow_dclde import load_dclde
 
         return load_dclde(layout, source)
+    if source["kind"] == "pangaea":
+        from .follow_pangaea import load_pangaea
+
+        return load_pangaea(layout, source)
     if source["kind"] == "assembled":
         waveform, rate, clips = assemble(layout, source)
         return waveform, rate, {"clips": clips, "gap_s": source["gap_s"], "dataset": source["dataset"]}, None
@@ -226,8 +232,12 @@ def f0_track(waveform, rate: int, start_s: float, end_s: float, settings: dict, 
     return times[keep].tolist(), (2 ** log2f[keep]).tolist()
 
 
-def measure_events(waveform, rate: int, species: dict, units: list[dict] | None = None, f0: dict | None = None):
-    """Tonal events with contours, or click events grouped into codas, measured from the waveform."""
+def measure_events(waveform, rate: int, species: dict, units: list[dict] | None = None, f0: dict | None = None,
+                   label: str = "whistle"):
+    """Tonal events with contours, or click events grouped into codas, measured from the waveform.
+
+    Unlabelled tonal events are named `label` + " (detected)": the source's call name, or "whistle".
+    """
     import numpy as np
 
     from .brush import measure
@@ -241,19 +251,25 @@ def measure_events(waveform, rate: int, species: dict, units: list[dict] | None 
     tonal = [s for s in segments if s["kind"] == "tonal"]
     if units is None:
         events = [{"kind": "tonal", "start_s": s["time_s"][0], "end_s": s["time_s"][-1] + measured["frame_hop_s"],
-                   "time_s": s["time_s"], "hz": s["hz"], "label": "whistle (detected)", "origin": "measured",
+                   "time_s": s["time_s"], "hz": s["hz"], "label": f"{label} (detected)", "origin": "measured",
                    "contour": "measured ridge"} for s in tonal]
         return events, {"tonal_segments": len(tonal)}
-    events, settings = [], f0 or species["f0"]
+    events, settings = [], f0 or species.get("f0", {})
     floor = noise_floor(waveform, settings) if settings.get("whiten") else None
     for unit in units:
+        if unit.get("contour"):  # an analyst traced this whistle; its contour is the measurement
+            contour = unit["contour"]
+            events.append({"kind": "tonal", "start_s": unit["start_s"], "end_s": unit["end_s"], "time_s": contour["time_s"], "hz": contour["hz"],
+                           "label": unit["label"], "origin": f"annotation {unit['selection']}", "contour": "analyst-traced contour (silbido)"}
+                          | ({"cut": unit["cut"]} if unit.get("cut") else {}))
+            continue
         band = (unit.get("low_hz"), unit.get("high_hz")) if settings.get("annotation_band") else None
         track = f0_track(waveform, rate, unit["start_s"], unit["end_s"], settings, floor, band)
         if track is None:
             continue
         events.append({"kind": "tonal", "start_s": unit["start_s"], "end_s": unit["end_s"], "time_s": track[0], "hz": track[1],
                        "label": unit["label"], "origin": f"annotation {unit['selection']}",
-                       "contour": "subharmonic-summation F0 inside the annotated unit"})
+                       "contour": "subharmonic-summation F0 inside the annotated unit"} | ({"cut": unit["cut"]} if unit.get("cut") else {}))
     return events, {"annotated_units": len(units), "tonal_segments_in_excerpt": len(tonal)}
 
 
@@ -284,8 +300,8 @@ def perturb(events: list[dict], duration: float):
 
 
 def onsets(events: list[dict]):
-    """Reference event times: tonal starts and every click."""
-    return sorted(e["start_s"] if e["kind"] == "tonal" else e["time_s"] for e in events)
+    """Reference event times: tonal starts and every click. A call cut at its start began before the window."""
+    return sorted(e["start_s"] if e["kind"] == "tonal" else e["time_s"] for e in events if e.get("cut") not in ("start", "both"))
 
 
 # --- Rendering ------------------------------------------------------------------------------
@@ -425,7 +441,7 @@ def prepare(layout: Layout, config: dict, only: list[str] | None = None):
         waveform, native_rate, provenance, units = load_source(layout, source)
         duration = len(waveform) / native_rate
         f0 = species["f0"] | source["f0"] if "f0" in species and "f0" in source else species.get("f0")
-        events, counts = measure_events(waveform, native_rate, species, units, f0)
+        events, counts = measure_events(waveform, native_rate, species, units, f0, source.get("call_label", "whistle"))
         if not events:
             raise ValueError(f"{source['id']}: nothing was measured; check the analysis band")
         shift = register_shift(events, species["target_median_hz"]) if species["material"] == "tonal" else 0
@@ -434,19 +450,23 @@ def prepare(layout: Layout, config: dict, only: list[str] | None = None):
         animal = resample(waveform - waveform.mean(), native_rate, rate)
         peak = float(np.max(np.abs(animal)))
         gain = .8 / peak
+        # Dense whistle choruses stack chords past full scale; one shared gain keeps the twin responses comparable.
+        answers = [respond(e, duration, rate, shift, config["response"]) for e in (events, mirrored)]
+        response_gain = min(1.0, .95 / max(1e-12, *(float(np.max(np.abs(a))) for a in answers)))
         stems = {
             "animal": write_wav(folder / "animal.wav", animal * gain, rate),
             "guide": write_wav(folder / "guide.wav", render_guide(events, duration, rate, species["instrument"], shift), rate),
             "perturbed": write_wav(folder / "perturbed.wav", render_guide(mirrored, duration, rate, species["instrument"], shift), rate),
-            "response": write_wav(folder / "response.wav", respond(events, duration, rate, shift, config["response"]), rate),
-            "response-perturbed": write_wav(folder / "response-perturbed.wav", respond(mirrored, duration, rate, shift, config["response"]), rate),
+            "response": write_wav(folder / "response.wav", answers[0] * response_gain, rate),
+            "response-perturbed": write_wav(folder / "response-perturbed.wav", answers[1] * response_gain, rate),
         }
         previous[source["id"]] = {
             "id": source["id"], "species": source["species"], "title": source["title"], "note": source["note"],
             "duration_s": duration, "native_rate": native_rate, "provenance": provenance, "units": units,
             "events": events, "perturbed_events": mirrored, "onsets_s": onsets(events), "perturbed_onsets_s": onsets(mirrored),
             "counts": counts, "register_shift_octaves": shift, "instrument": species["instrument"],
-            "playback_gain": gain, "playback_note": "Animal stem: mean removed, resampled to 48 kHz, one gain to 0.8 peak. Energy above 24 kHz is removed.",
+            "playback_gain": gain, "response_gain": response_gain,
+            "playback_note": "Animal stem: mean removed, resampled to 48 kHz, one gain to 0.8 peak. Energy above 24 kHz is removed.",
             "stems": {name: str(path.relative_to(output)) for name, path in stems.items()},
         }
         print(f"{source['id']}: {len(events)} events {counts}, shift {shift:+d} octaves, {duration:.1f} s", flush=True)

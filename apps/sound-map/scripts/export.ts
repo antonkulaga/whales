@@ -6,12 +6,13 @@
 
 import { readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { SPECIES_ICON_FILES } from "../src/lib/species.ts";
 import type { Catalog, ComboSummary, Manifest } from "../src/lib/types.ts";
 
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", "..", ".."));
 const OUTPUT = join(ROOT, "data", "output", "follow");
 const APP = join(import.meta.dir, "..");
-const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", "species/humpback.png", "species/dolphin.png", "species/sperm-whale.png", "species/killer-whale.png", "species/credits.json",
+const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", ...SPECIES_ICON_FILES, "species/credits.json",
   // About and Installation photos (Livia Zaharia's portrait and pieces, Anton Kulaga's GitHub portrait)
   "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg",
   "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json"];
