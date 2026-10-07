@@ -103,8 +103,8 @@ bun run typecheck
 ```
 
 On a fresh clone you can skip the Python steps: `git lfs pull`, then `bun install` and
-`bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 27 source
-excerpts and 19 finished combinations (MP3 stems and WebP spectrograms in Git LFS). It also
+`bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 20 source
+excerpts and 22 finished combinations (MP3 stems and WebP spectrograms in Git LFS). It also
 carries `presets.json`, the names of its presets, which the server reads beneath any saved in
 `data/output/follow`. Anything in `data/output/follow` takes precedence. Making new combinations still
 needs the pipeline. Refresh the bundle with `bun scripts/demo.ts [id,id,...]`; its

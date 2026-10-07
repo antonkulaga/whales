@@ -79,7 +79,8 @@
       "duration_s": 30.0,
       "title": "Bottlenose dolphin whistles, OpenWhistle sequence 37",
       "note": "Whistles are detected from the waveform, not annotated.",
-      "study": true
+      "study": true,
+      "map": false
     },
     {
       "id": "sperm-a",
@@ -135,7 +136,8 @@
       "gap_s": 0.8,
       "title": "Sperm-whale codas: DSWP rows 8–15 in sequence",
       "note": "Separate coda clips placed one after another; the 0.8 s silences between clips are ours.",
-      "study": true
+      "study": true,
+      "map": false
     },
     {
       "id": "orca-orcasound-lab",
@@ -183,30 +185,6 @@
         "note": "Deployment position from the DCLDE 2027 deployment table."
       },
       "title": "Southern Resident killer whales, Bush Point, September 2020",
-      "note": "13 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
-    },
-    {
-      "id": "orca-port-townsend",
-      "species": "killer whale",
-      "kind": "dclde",
-      "study": false,
-      "class": "KW",
-      "call_label": "Southern Resident call",
-      "dataset": "port_townsend",
-      "soundfile": "rpi-port-townsend_2020_09_29_19_25_00.wav",
-      "object": "dclde/2027/dclde_2027_killer_whales/orcasound/audio/port_townsend/rpi-port-townsend_2020_09_29_19_25_00.wav",
-      "generation": "1774987324173140",
-      "size": 11518030,
-      "start_s": 15.685,
-      "duration_s": 30.0,
-      "location": {
-        "label": "Port Townsend",
-        "lon": -122.76,
-        "lat": 48.14,
-        "precision": "published",
-        "note": "Deployment position from the DCLDE 2027 deployment table."
-      },
-      "title": "Southern Resident killer whales, Port Townsend, September 2020",
       "note": "13 annotated killer-whale call rows in this window of the DCLDE 2027 table (OrcaSound); certain identifications only."
     },
     {
@@ -288,30 +266,6 @@
           1200
         ]
       }
-    },
-    {
-      "id": "orca-kachemak",
-      "species": "killer whale",
-      "kind": "dclde",
-      "study": false,
-      "class": "KW",
-      "call_label": "Offshore killer whale call",
-      "dataset": "KB_67383303",
-      "soundfile": "67383303.220512170806.wav",
-      "object": "dclde/2027/dclde_2027_killer_whales/uaf/audio/kb/67383303.220512170806.wav",
-      "generation": "1774987331986861",
-      "size": 14398764,
-      "start_s": 173.523,
-      "duration_s": 30.0,
-      "location": {
-        "label": "Kachemak Bay, Alaska",
-        "lon": -151.85,
-        "lat": 59.88,
-        "precision": "published",
-        "note": "Deployment position from the DCLDE 2027 deployment table."
-      },
-      "title": "Offshore killer whales, Kachemak Bay, May 2022",
-      "note": "28 annotated killer-whale call rows in this window of the DCLDE 2027 table (UAF_NGOS); certain identifications only."
     },
     {
       "id": "orca-montague",
@@ -471,54 +425,6 @@
       "note": "The release's minke sheet logs 10 boing detections in this window; events are measured from the waveform in 1.0–2.2 kHz. Towed-array hydrophone 1."
     },
     {
-      "id": "false-killer-whale-niihau",
-      "species": "false killer whale",
-      "kind": "dclde",
-      "release": "2022",
-      "study": false,
-      "object": "dclde/2022/dclde_2022_1705/audio/1705_20171107_170433_703.flac",
-      "generation": "1676671351386044",
-      "size": 191775154,
-      "start_s": 15.0,
-      "duration_s": 30.0,
-      "channel": 0,
-      "call_label": "False killer whale whistle",
-      "annotations": null,
-      "location": {
-        "label": "Far west of Niʻihau, Hawaiʻi",
-        "lon": -162.23,
-        "lat": 21.93,
-        "precision": "published",
-        "note": "Ship position at the start of the logged detection (7 Nov 2017, 17:02 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
-      },
-      "title": "False killer whales, west of Niʻihau, November 2017",
-      "note": "Acoustic encounter logged as false killer whales; the group passed about 100 m from the array at 17:04 UTC. Whistles are detected from the waveform, so loud clicks and flow noise can also register."
-    },
-    {
-      "id": "pilot-whale-molokai",
-      "species": "pilot whale",
-      "kind": "dclde",
-      "release": "2022",
-      "study": false,
-      "object": "dclde/2022/dclde_2022_1706/audio/1706_20170904_000755_689.flac",
-      "generation": "1676671146319793",
-      "size": 99378191,
-      "start_s": 15.0,
-      "duration_s": 30.0,
-      "channel": 0,
-      "call_label": "Pilot whale whistle",
-      "annotations": null,
-      "location": {
-        "label": "South of Molokaʻi, Hawaiʻi",
-        "lon": -157.2,
-        "lat": 20.9,
-        "precision": "published",
-        "note": "Ship position at the start of the logged detection (3 Sep 2017, 23:51 UTC), DCLDE 2022 detection workbook; the towed array trails about 350 m behind."
-      },
-      "title": "Short-finned pilot whales, south of Molokaʻi, September 2017",
-      "note": "Acoustic encounter logged as short-finned pilot whales; the group passed about 400 m abeam at 00:08 UTC. Whistles are detected from the waveform; echolocation clicks fill the gaps."
-    },
-    {
       "id": "striped-dolphin-nwhi",
       "species": "striped dolphin",
       "kind": "dclde",
@@ -597,38 +503,6 @@
       },
       "title": "Spinner dolphin whistles, Palmyra Atoll, October 2007",
       "note": "Whistle contours traced by analysts (DCLDE 2011, 2025 re-annotation); observers confirmed a single-species group. Whistles centred above 23.5 kHz are left out."
-    },
-    {
-      "id": "common-dolphin-socal",
-      "species": "common dolphin",
-      "kind": "dclde",
-      "release": "2011",
-      "study": false,
-      "object": "dclde/2011/dclde_2011/evaluation/delphinus_delphis/CC0808-TA22-080824-170000.wav",
-      "generation": "1775686944492090",
-      "size": 63080610,
-      "start_s": 16.5,
-      "duration_s": 30.0,
-      "call_label": "Common dolphin whistle",
-      "annotations": {
-        "format": "silbido",
-        "tables": [
-          {
-            "object": "dclde/2011/dclde_2011/evaluation/delphinus_delphis/CC0808-TA22-080824-170000.ann",
-            "generation": "1775686942308520"
-          }
-        ],
-        "max_hz": 23500
-      },
-      "location": {
-        "label": "Southern California Bight",
-        "lon": -119.0,
-        "lat": 33.0,
-        "precision": "approximate",
-        "note": "Regional anchor: the DCLDE 2011 release names a CalCOFI towed-array cruise in the Southern California Bight, not a position."
-      },
-      "title": "Short-beaked common dolphin whistles, Southern California Bight, August 2008",
-      "note": "Whistle contours traced by analysts (DCLDE 2011 evaluation set); observers confirmed a single-species group. Whistles centred above 23.5 kHz are left out."
     },
     {
       "id": "atlantic-spotted-dolphin-mid-atlantic",
@@ -1126,79 +1000,6 @@
       "caption": "sparse ambient music, soft bells and vibraphone, tropical night, gentle, instrumental",
       "lego_track": "percussion"
     },
-    "false killer whale": {
-      "material": "tonal",
-      "analysis": {
-        "n_fft": 2048,
-        "hop": 480,
-        "band_hz": [
-          3000,
-          24000
-        ],
-        "tonality_db": 18,
-        "bridge_frames": 4,
-        "max_jump_octaves": 0.2,
-        "min_segment_s": 0.08,
-        "median_frames": 5
-      },
-      "target_median_hz": 392,
-      "instrument": {
-        "name": "trumpet tone",
-        "harmonics": [
-          1,
-          0.9,
-          0.75,
-          0.6,
-          0.45,
-          0.32,
-          0.22,
-          0.15
-        ],
-        "attack_s": 0.02,
-        "release_s": 0.06,
-        "level": 0.4
-      },
-      "spectrogram_hz": [
-        2000,
-        24000
-      ],
-      "caption": "bright cinematic music, muted trumpets and pizzicato strings, open ocean, lively, instrumental",
-      "lego_track": "brass"
-    },
-    "pilot whale": {
-      "material": "tonal",
-      "analysis": {
-        "n_fft": 2048,
-        "hop": 480,
-        "band_hz": [
-          3000,
-          24000
-        ],
-        "tonality_db": 18,
-        "bridge_frames": 4,
-        "max_jump_octaves": 0.2,
-        "min_segment_s": 0.08,
-        "median_frames": 5
-      },
-      "target_median_hz": 330,
-      "instrument": {
-        "name": "glass tone",
-        "harmonics": [
-          1,
-          0.1,
-          0.04
-        ],
-        "attack_s": 0.08,
-        "release_s": 0.2,
-        "level": 0.5
-      },
-      "spectrogram_hz": [
-        2000,
-        24000
-      ],
-      "caption": "ethereal ambient music, glass harmonica and soft pads, deep blue water, instrumental",
-      "lego_track": "synth"
-    },
     "striped dolphin": {
       "material": "tonal",
       "analysis": {
@@ -1302,42 +1103,6 @@
       ],
       "caption": "dreamy electronic music, theremin and shimmering synth pads, lagoon at dusk, instrumental",
       "lego_track": "synth"
-    },
-    "common dolphin": {
-      "material": "tonal",
-      "analysis": {
-        "n_fft": 2048,
-        "hop": 480,
-        "band_hz": [
-          3000,
-          24000
-        ],
-        "tonality_db": 18,
-        "bridge_frames": 4,
-        "max_jump_octaves": 0.2,
-        "min_segment_s": 0.08,
-        "median_frames": 5
-      },
-      "target_median_hz": 587,
-      "instrument": {
-        "name": "recorder tone",
-        "harmonics": [
-          1,
-          0.45,
-          0.18,
-          0.1,
-          0.04
-        ],
-        "attack_s": 0.02,
-        "release_s": 0.05,
-        "level": 0.35
-      },
-      "spectrogram_hz": [
-        2000,
-        24000
-      ],
-      "caption": "bright baroque-inspired music, recorders and harpsichord, quick and playful, instrumental",
-      "lego_track": "woodwinds"
     },
     "Atlantic spotted dolphin": {
       "material": "tonal",

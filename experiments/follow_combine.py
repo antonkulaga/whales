@@ -49,7 +49,7 @@ def catalog(layout: Layout, config: dict):
     sources = []
     for source in config["sources"]:
         item = prepared.get(source["id"])
-        if item is None:
+        if item is None or source.get("map") is False:  # "map": false keeps a source for the study only
             continue
         species = config["species"][item["species"]]
         files = {}

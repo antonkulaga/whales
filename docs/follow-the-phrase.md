@@ -176,8 +176,8 @@ The label kinds differ by release, and each source's note says which kind it has
 |---|---|---|---|
 | 2013, Stellwagen Bank | right whale upcalls, fin whale 20 Hz pulses | Raven log: time and frequency per call | F0 inside each call's box on whitened spectra (2 kHz audio) |
 | 2015, Channel Islands | blue whale D calls | HARP log: start and end time per call | F0 inside each logged call, 25–110 Hz |
-| 2011, Palmyra, Southern California, mid-Atlantic | spinner, short-beaked common and Atlantic spotted dolphins | Analyst-traced whistle contours (silbido `.ann`) | The traced contour is the event; whistles centred above 23.5 kHz are left out |
-| 2022, Hawaiian ship survey | minke, false killer and short-finned pilot whales, striped and rough-toothed dolphins | Encounter level only (minke: detection log) | Detected from one hydrophone's waveform and named "… (detected)" |
+| 2011, Palmyra, mid-Atlantic | spinner and Atlantic spotted dolphins | Analyst-traced whistle contours (silbido `.ann`) | The traced contour is the event; whistles centred above 23.5 kHz are left out |
+| 2022, Hawaiian ship survey | minke whales, striped and rough-toothed dolphins | Encounter level only (minke: detection log) | Detected from one hydrophone's waveform and named "… (detected)" |
 
 The Hawaiian towed-array windows are the minutes when each group passed closest to the ship
 (100–400 m). The minke window has 10 logged boing detections. Melon-headed whales and
@@ -189,9 +189,15 @@ Antarctic blue whales at two Weddell Sea moorings, are described in [pangaea-awi
 Bowheads from two Fram Strait moorings were tried and removed: across the whole recorded day at
 each mooring, the song stood only 4–6 dB above the background, so no window was clear enough.
 
+After listening, recordings whose noise outweighed the animal were removed from the map (8 October
+2026): the Port Townsend and Kachemak Bay killer whales, the Hawaiian false killer and pilot whales,
+and the Southern California common dolphins; `dolphin-b` and `sperm-b` are marked `"map": false`, so
+they stay in the registered study but are not offered as players. Pieces whose voices were removed
+use clean recordings of the same kind instead. Blue and fin whales stay unchanged at their real
+pitch, and every piece that has them also has an audible voice above them.
+
 Each new species has its own guide instrument and icon in the app: horn (right whale), tuba
-(fin), organ (blue), bell (minke), trumpet (false killer whale), glass harmonica
-(pilot whale), pan flute (striped), ocarina (rough-toothed), theremin (spinner), recorder (common)
+(fin), organ (blue), bell (minke), pan flute (striped), ocarina (rough-toothed), theremin (spinner)
 and singing saw (Atlantic spotted). Dense whistle choruses would clip the deterministic response,
 so `prepare` scales a source's two response stems by one shared gain when needed and records it
 as `response_gain`.
