@@ -24,8 +24,13 @@ that command and streams its log back as NDJSON.
 
 ## Run
 
+From the repository root, `uv run start` does everything below and serves the app in the
+background; `uv run stop` stops it (see `orchestra.py`). The same steps by hand:
+
 ```bash
-# Once, from the repository root: sources, stems and the catalog
+# Once, from the repository root: inputs, stems and the catalog
+uv run --group art --group viz main.py dclde metadata    # annotations that cut the orca excerpts
+uv run --group art --group viz python -c "from experiments.data import Layout, fetch_long_samples; fetch_long_samples(Layout())"
 uv run --group art --group viz main.py follow fetch
 uv run --group art --group viz main.py follow prepare
 uv run --group art --group viz main.py follow catalog
@@ -45,7 +50,9 @@ excerpts and 10 finished combinations (MP3 stems and WebP spectrograms in Git LF
 needs the pipeline. Refresh the bundle with `bun scripts/demo.ts [id,id,...]`; its
 `README.md` lists the recordings.
 
-Environment: `PORT` (3070), `HOST` (127.0.0.1), `WHALES_ROOT` (the repository root).
+Environment, read from the repository's `.env` by `uv run start` and both Bun scripts:
+`ORCHESTRA_PORT` (3070), `ORCHESTRA_HOST` (127.0.0.1); `PORT` and `HOST` still work.
+`WHALES_ROOT` overrides the repository root.
 The server binds to localhost and runs one combination at a time, because the GPU is shared.
 
 ## How it fits together

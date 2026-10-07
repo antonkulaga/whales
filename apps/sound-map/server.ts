@@ -18,8 +18,9 @@ const SPECS = join(ROOT, "data", "interim", "follow", "combo-specs");
 const PRESETS = join(OUTPUT, "presets.json");
 type Presets = Record<string, { name: string; saved_at_utc: string }>;
 const readPresets = async (): Promise<Presets> => Bun.file(PRESETS).json().catch(() => ({})) as Promise<Presets>;
-const PORT = Number(process.env.PORT ?? 3070);
-const HOSTNAME = process.env.HOST ?? "127.0.0.1";
+// The repository's .env sets ORCHESTRA_PORT and ORCHESTRA_HOST (`uv run start`, `bun run dev`); PORT and HOST still work.
+const PORT = Number(process.env.ORCHESTRA_PORT ?? process.env.PORT ?? 3070);
+const HOSTNAME = process.env.ORCHESTRA_HOST ?? process.env.HOST ?? "127.0.0.1";
 const PYTHON = ["uv", "run", "--group", "art", "--group", "viz", "main.py", "follow"];
 const MAX_SPEC_BYTES = 64 * 1024;
 

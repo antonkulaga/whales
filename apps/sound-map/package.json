@@ -4,8 +4,8 @@
   "type": "module",
   "description": "Whale and Dolphin Orchestra: seat recordings from the map and hear one ACE-Step piece composed from their measured phrases.",
   "scripts": {
-    "dev": "bun --hot server.ts",
-    "start": "NODE_ENV=production bun server.ts",
+    "dev": "bun --env-file=../../.env --hot server.ts",
+    "start": "NODE_ENV=production bun --env-file=../../.env server.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "export": "bun scripts/export.ts"

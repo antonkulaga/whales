@@ -16,12 +16,31 @@ models can use them, and what artists have already done with cetacean sound.
 
 ## Play the orchestra
 
+With [uv](https://docs.astral.sh/uv/) and [Bun](https://bun.sh) installed:
+
 ```bash
-git lfs pull           # demo recordings and finished pieces, about 65 MB
-cd apps/sound-map
-bun install
-bun run dev            # http://127.0.0.1:3070
+uv run start           # set up what is missing, then serve http://127.0.0.1:3070 in the background
+uv run stop            # stop the server
 ```
+
+`uv run start` does each step only when it is missing, so after the first run it
+takes a second or two:
+
+1. creates `.env` from `.env.template`;
+2. pulls the demo bundle (14 recordings and 10 finished pieces) with Git LFS;
+3. installs the app's packages with Bun;
+4. downloads and measures the recordings, then writes the catalog;
+5. with an NVIDIA GPU, installs ACE-Step 1.5 into `data/interim/tools/ACE-Step-1.5`,
+   with the code and weights pinned to the versions that made the demo pieces
+   (about 22 GB, once);
+6. starts the server, which logs to `data/interim/orchestra/server.log`.
+
+When a step fails, it prints a warning with the fix and the rest carries on. Without
+Git LFS the finished demo pieces are missing. Without ACE-Step a piece keeps its guide
+and deterministic response. Only a missing Bun or a busy port stops the start. Set
+the port, host and ACE-Step choice in `.env` (`ORCHESTRA_PORT`, `ORCHESTRA_HOST`,
+`ORCHESTRA_ACE`) or per run (`uv run start --port 3071 --ace no`); `bun run dev`
+reads the same `.env`.
 
 - **Seat players.** Click a site to seat its recording and click again to remove it.
   A site with several recordings opens a short list. The recordings list under the
@@ -34,18 +53,8 @@ bun run dev            # http://127.0.0.1:3070
   preset** under the result. Presets and recent pieces are listed at the bottom,
   and opening one seats its players so you can change it and update.
 
-A fresh clone plays the 14 recordings and 10 finished pieces committed in
-`apps/sound-map/demo/` (Git LFS). Composing new pieces needs the Python pipeline
-and ACE-Step 1.5 in its own environment:
-
-```bash
-uv run --group art --group viz main.py follow fetch
-uv run --group art --group viz main.py follow prepare
-uv run --group art --group viz main.py follow catalog
-# ACE-Step 1.5: clone into data/interim/tools/ACE-Step-1.5 and run `uv sync` there
-```
-
-An orchestra holds up to six players (`combination.max_parts` in
+The individual steps behind `uv run start` are listed in
+[apps/sound-map/README.md](apps/sound-map/README.md#run). An orchestra holds up to six players (`combination.max_parts` in
 `resources/follow-music.json`). Without ACE-Step a piece still renders its guide
 and a deterministic response. The method, the measurements and the tests of
 whether the music follows the animals are in [Follow the phrase](docs/follow-the-phrase.md);
@@ -123,8 +132,8 @@ Legacy WhAM/ImageBind environments should be separate experiments.
 The core dependencies are Polars for table export, Hugging Face Hub for
 metadata/authentication, and Typer for the CLI. `uv.lock` records exact versions.
 
-For a new checkout, copy `.env.template` to `.env` and set `HF_TOKEN` locally
-when authenticated Hub access is needed. Use `uv run --env-file .env` to load
+For a new checkout, `uv run start` creates `.env` from `.env.template` (or copy it
+yourself); set `HF_TOKEN` there when authenticated Hub access is needed. Use `uv run --env-file .env` to load
 those settings; the local `.env` is ignored. `HF_HOME` keeps the Hub cache in
 `data/interim/huggingface`, which is also ignored.
 
@@ -210,7 +219,7 @@ were registered in the code before the first run. See the
 [report](docs/follow-the-phrase.md).
 
 To seat several recordings in the [Whale and Dolphin Orchestra](#play-the-orchestra),
-run `main.py follow catalog`, then `bun install && bun run dev` in [apps/sound-map](apps/sound-map/README.md).
+run `uv run start`.
 
 ### DCLDE label audit for population, spatial and abundance questions
 

@@ -21,6 +21,7 @@ project for people; this file covers what you need to change it safely.
 | Path | Contents |
 |---|---|
 | `main.py` | Typer CLI: `catalog`, `inspect`, `contours`, and the `art`, `dclde`, `follow`, `inscription` groups |
+| `orchestra.py` | `uv run start` / `uv run stop` (console scripts in `pyproject.toml`): one-command setup and a background server |
 | `experiments/` | Experiment modules: CLAP/FLUX art, sound brush, follow the phrase, inscription, silver |
 | `apps/sound-map/` | Bun + TypeScript orchestra app: `server.ts`, `src/`, `tests/`, `scripts/demo.ts`, `scripts/export.ts` |
 | `apps/sound-map/demo/follow/` | Committed playback bundle (Git LFS) so a fresh clone plays without the pipeline |
@@ -34,6 +35,10 @@ ACE-Step 1.5 lives in its own uv environment at `data/interim/tools/ACE-Step-1.5
 ## Commands
 
 ```bash
+# Whole orchestra: set up what is missing, serve in the background; settings in .env
+uv run start                # --port, --host, --ace auto|yes|no override ORCHESTRA_* in .env
+uv run stop
+
 # Python 3.12 via uv (pyproject allows >=3.11,<3.14); optional groups: art, viz, mesh, midi
 uv run python -m unittest discover -s tests
 uv run --group art --group viz main.py follow catalog
@@ -42,7 +47,7 @@ uv run --group art --group viz main.py follow catalog
 cd apps/sound-map
 bun install
 bun test && bun run typecheck
-bun run dev                 # http://127.0.0.1:3070; PORT, HOST, WHALES_ROOT override
+bun run dev                 # http://127.0.0.1:3070; ORCHESTRA_PORT/HOST from ../../.env, WHALES_ROOT
 bun scripts/demo.ts         # refresh demo/follow from data/output/follow
 bun run export              # static copy into data/output/follow (atlas.html and friends)
 ```
