@@ -1,6 +1,6 @@
 /* Sound to silver (optional): the orchestra's jewelry tab, in the concert hall's paper and brass.
    Each idea is a numbered panel behind its own tab bar; the bench and motion studies run live inside. */
-.view-tabs .tab-note { margin-left: 3px; font-size: .74rem; color: var(--muted) }
+.view-tabs .tab-note { margin-left: 3px; font-size: .82em; color: var(--muted) }
 .view-tabs button[aria-selected="true"] .tab-note { color: inherit }
 /* Same paper behind the hero text as the Installation and About views, so it reads over the hall image. */
 .silver-view .technical-hero > p, .silver-view .technical-hero > .eyebrow { width: fit-content; background: #faf8f2e6; box-shadow: 0 0 0 8px #faf8f2e6 }
