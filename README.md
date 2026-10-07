@@ -1,5 +1,20 @@
 # Whale and Dolphin Orchestra
 
+<p align="center">
+  <a href="https://whales.liviazaharia.com/"><img src="docs/screenshots/now-playing.png" width="100%" alt="The piece Giants and singers: spectrograms of a blue whale, a humpback, a fin whale and a killer whale on one timeline, above the combined guide built from their calls and the music generated from it"></a>
+</p>
+<p align="center"><sub><b>Giants and singers</b>, a blue whale, a humpback, a fin whale and a killer whale.
+Top: their recordings on one timeline. Middle: the guide built from their measured calls.
+Bottom: the music ACE-Step 1.5 generated from that guide.</sub></p>
+
+<p align="center">
+  <a href="https://whales.liviazaharia.com/"><b>Live prototype</b></a> ·
+  <a href="#play-the-orchestra">Run it locally</a> ·
+  <a href="docs/follow-the-phrase.md">How the music follows the animals</a> ·
+  <a href="#next-sound-to-silver-in-progress">Sound to silver</a> ·
+  <a href="#documentation">Research</a>
+</p>
+
 Click recording sites on a world map to seat whales and dolphins in an orchestra,
 then hear one piece composed from all of them. Every player is a real recording:
 humpback song from Haro Strait, killer-whale calls from the Salish Sea and Alaska,
@@ -17,16 +32,30 @@ models can use them, and what artists have already done with cetacean sound.
 **Live:** [whales.liviazaharia.com](https://whales.liviazaharia.com/), the working
 prototype for the HIFMB × HWK [ArtWaves residency](https://hifmb.de/transfer/art-science/air/).
 
-| | |
-|---|---|
-| ![Concert hall: a world map of recording sites beside a list of finished pieces](docs/screenshots/concert-hall.png) | ![Four voices seated on the stage, with the recordings they came from](docs/screenshots/seated-orchestra.png) |
-| **Concert hall.** Choose recording sites on the map, or play a finished piece. | **The orchestra.** Each seated voice is a real recording that can be played on its own. |
-| ![A piece playing: spectrograms of four recordings on one timeline, above their combined musical guide](docs/screenshots/now-playing.png) | ![Technical score: recorded, measured, constructed and generated stages](docs/screenshots/technical-score.png) |
-| **Now playing.** The recordings, their musical guides and the generated music share one timeline. | **Technical score.** From the recording to the measured phrase, the guide and the generated music. |
-| ![Installation concept: visitors around a printed ocean map table with whale figures and a wall screen](docs/screenshots/installation.png) | ![Sound to silver: a whistle bends Livia's cast-silver rings](docs/screenshots/sound-to-silver.png) |
-| **Installation.** The proposed listening room (AI-generated concept image). | **Sound to silver.** Whistles bend Livia's rings within casting limits. |
+| 1 · Recorded | 2 · Measured | 3 · Guide | 4 · Generated |
+|---|---|---|---|
+| Short hydrophone excerpts from NOAA's DCLDE workshops and AWI's polar moorings | Onsets, durations, click groups and pitch contours, from signal analysis | Each species plays its measurements on its own instrument and register | ACE-Step 1.5 composes one piece from the combined guide |
 
-Screenshots of the live site, taken 8 October 2026.
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/concert-hall.png" alt="Concert hall: a world map with four dolphin recording sites joined by arcs from Palmyra Atoll to Eilat, beside the list of finished pieces"></td>
+    <td width="50%"><img src="docs/screenshots/seated-orchestra.png" alt="Four dolphins seated on the stage, with the recordings they came from"></td>
+  </tr>
+  <tr>
+    <td><b>Concert hall.</b> Choose recording sites on the map, or play a finished piece. Arcs join the players of <i>Whistles across three oceans</i>.</td>
+    <td><b>The orchestra.</b> Each seated voice is a real recording that can be played on its own.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/technical-score.png" alt="Technical score: recorded, measured, constructed and generated stages"></td>
+    <td><img src="docs/screenshots/installation.png" alt="Installation concept: visitors around a printed ocean map table with whale figures and a wall screen"></td>
+  </tr>
+  <tr>
+    <td><b>Technical score.</b> From the recording to the measured phrase, the guide and the generated music.</td>
+    <td><b>Installation.</b> The proposed listening room (AI-generated concept image).</td>
+  </tr>
+</table>
+
+Screenshots of the app, taken 8 October 2026.
 
 ## Play the orchestra
 
@@ -95,6 +124,11 @@ fins and memory cells. Nothing has been cast yet.
 
 All of it is in the orchestra app's **Sound to silver (optional)** tab, after
 Installation, with the bench and the animations running inside it.
+
+<p align="center">
+  <img src="docs/screenshots/sound-to-silver.png" width="100%" alt="Sound to silver: a whistle bends Livia's cast-silver rings">
+  <br><sub>The Sound to silver tab: whistles bend Livia's rings within casting limits.</sub>
+</p>
 
 One silver piece already exists as a pilot. **Hardata II** (implemented and run)
 engraves a dolphin whistle as a contour groove around a ring band and reads it back
