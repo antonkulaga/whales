@@ -1,7 +1,6 @@
-// Copy what the "Sound to silver" page shows into apps/sound-map/demo/silver, so a fresh clone can
-// open it without the silver pipeline: the bench and motion pages from data/output/silver (written by
-// `main.py art silver` and `art silver-motion`), the study's figures, the CLAP/FLUX concept renders and
-// photographs of Livia's pieces. Images and pages are stored with Git LFS.
+// Copy the live ring viewer and its retained research media into the demo bundle, so a fresh clone
+// can open the animation without the silver pipeline. The public view reuses index.html's data and engine; the unlinked
+// research notebook also uses motion.html and the figures. Images and pages are stored with Git LFS.
 // Run: bun scripts/silver.ts
 
 import { mkdir, rm } from "node:fs/promises";
@@ -21,6 +20,7 @@ const FILES: Record<string, string> = {
   "media/pilot-band.jpg": "docs/atlas/media/pilot-band.jpg",
   "media/livia-hardata.jpg": "docs/atlas/media/livia-hardata.jpg",
   "media/livia-mitoring.jpg": "docs/atlas/media/livia-mitoring.jpg",
+  "media/livia-inline-2022.jpg": "docs/atlas/media/livia-inline-2022.jpg",
   "media/livia-mycelium.jpg": "docs/atlas/media/livia-mycelium.jpg",
   "media/livia-nanot.jpg": "docs/atlas/media/livia-nanot.jpg",
   "media/mitoring-whistle.png": "data/output/jewelry/mitoring-whistle.png",

@@ -77,6 +77,25 @@ changes in their areas.
   link and the `./main.ts` script tag. Keep them when editing the page.
 - **Pages and galleries** follow Input → Schema → Output. Keep original recordings
   playable, and label recorded, measured and generated material separately.
+- **Visual design:** the project owner dislikes too many separate panels and
+  slogan-like headings. Prefer one clear composition and concise copy; don't repeat
+  what an image or interaction already shows. Setup concepts should be image-led,
+  with selections updating one central preview.
+- **Readable, continuous pages:** preserve background artwork in open areas and
+  keep body text on a calm surface with enough opacity to read clearly. Use normal
+  readable body type and ordinary paragraphs
+  for related explanations; do not split short copy into cards, bordered panels,
+  side notes or separate heading strips.
+- **Links and navigation:** do not append diagonal arrows or external-link icons
+  to links or buttons. Remove redundant standalone "explore", "read more", "back"
+  and "open full screen" links that repeat navigation or linked titles. Put useful
+  source and credit links directly in the relevant text.
+- **Ring animation:** integrate the viewer directly into the project page, using
+  the full available width and one page scrollbar. Do not embed a second scrolling
+  page in an iframe. Make playback prominent, with large recording choices in a
+  right sidebar; omit obscure laboratory controls from the project view. Show the
+  selected cast ring as a small photograph below the animation. Never reserve a
+  side column for the photograph or add a fullscreen link as a layout workaround.
 - **Claims:** onsets and pitch contours come from signal analysis; ACE-Step and FLUX
   are generative models. Never present an output as decoded animal meaning.
 - **Licenses:** this is an art and research project. Credit sources, but don't add

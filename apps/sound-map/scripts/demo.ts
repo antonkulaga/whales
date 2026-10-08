@@ -14,8 +14,10 @@ const OUTPUT = join(ROOT, "data", "output", "follow");
 const DEMO = join(import.meta.dir, "..", "demo", "follow");
 const artwork = ["concert-hall-atlas-v1.png", "concert-hall-atlas-v1.prompt.json", ...SPECIES_ICON_FILES, "species/credits.json",
   // Retain the About photos and Installation concepts when refreshing the playback bundle.
-  "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg",
-  "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json"];
+  "about/livia.jpg", "about/anton.jpg", "about/inline-ring.jpg", "about/roots-ring.jpg", "about/hardata.jpg", "about/livistone.jpg", "about/livistone-centre.jpg", "about/mitoring.jpg", "about/enhancement-preview.png", "about/nanot-open.jpg", "about/nut-of-power.jpg", "about/dark-nut-of-power.jpg",
+  "installation/listening-room-v1.png", "installation/whale-figures-v1.png", "installation/concepts-v1.prompt.json",
+  "installation/orchestra-core-v1.png", "installation/map-table-v1.png", "installation/map-dashboard-v1.png", "installation/map-dashboard-v2.png", "installation/map-wall-v1.png", "installation/map-floor-v1.png",
+  "installation/map-dashboard-v3.png", "installation/map-table-v2.png", "installation/map-wall-v2.png", "installation/map-floor-v2.png", "installation/orchestra-setups-v2.prompt.json"];
 // Preserve the shared artwork before replacing the demo, even after a fresh measurement run.
 for (const path of artwork) {
   if (!(await Bun.file(join(OUTPUT, path)).exists())) {

@@ -112,35 +112,37 @@ the app is described in [apps/sound-map/README.md](apps/sound-map/README.md).
 
 ## Next: sound to silver (in progress)
 
-The second idea turns sound into Livia's own material: a recording bends one of
-her cast-silver rings (Inline, Roots). Time runs along the metal, pitch lifts the
-band along the finger, level swells it outward and pitch slope leans it, while
-casting checks guard wall thickness, gaps and the finger bore. The bending study
-has run on both rings: Roots moves by up to 4 mm and Inline by about 2 mm, the
-finger hole is unchanged in all 20 runs, and a live 3D bench plays each recording
-while the ring bends ([report](docs/sound-to-silver-bending.md)). Animated studies
-keep the metal moving after casting: ferrofluid stones, hinged nitinol, magnetic
-fins and memory cells. Nothing has been cast yet.
+The second idea brings a recorded whale or dolphin phrase into Livia's material.
+The circular animation plays the recording as its measured contour travels
+around one of her rings and shapes the band. The bending study has run on her
+Inline and Roots rings: Roots moves by up to 4 mm and Inline by about 2 mm, while
+the finger hole stays unchanged in all 20 runs
+([report](docs/sound-to-silver-bending.md)).
 
-All of it is in the orchestra app's **Sound to silver (optional)** tab, after
-Installation, with the bench and the animations running inside it.
+The **Sound to silver** view centers on that animation. The next edition is
+planned in three forms: website visitors will generate and download an STL from a
+chosen recording; installations will have 3D-printed pieces prepared in advance
+for the default sound combinations; and a limited run of cast-silver rings will
+be offered to donors supporting marine-science and conservation causes. No
+sound-shaped ring has been cast yet. Livia's Inline Ring is the prototype; the
+same mapping can shape other forms she designs.
 
 <p align="center">
   <img src="docs/screenshots/sound-to-silver.png" width="100%" alt="Sound to silver: a whistle bends Livia's cast-silver rings">
   <br><sub>The Sound to silver tab: whistles bend Livia's rings within casting limits.</sub>
 </p>
 
-One silver piece already exists as a pilot. **Hardata II** (implemented and run)
+One separate silver piece already exists as a pilot. **Hardata II** (implemented and run)
 engraves a dolphin whistle as a contour groove around a ring band and reads it back
 into sound. A 2026 dolphin encoder kept 75% of its whistle-type score from a
 272-bit groove (macro-F1 0.62 against 0.82 on the original audio). Run it with
 `uv run --group art main.py inscription fetch|run|matched`; see the
 [pilot report](docs/hardata-ii-pilot.md) and the [visual atlas](docs/atlas/index.html).
 
-Other steps toward silver: CLAP-directed jewelry concepts and silver geometry
-studies ([artistic experiments](docs/artistic-experiments.md)) and the human
-[sound brush](docs/sound-brush.md). [Livia's brief](docs/livia-experiment-brief.md)
-describes the pieces these build on.
+Other research experiments, including CLAP-directed jewelry concepts and the
+human [sound brush](docs/sound-brush.md), remain documented separately.
+[Livia's brief](docs/livia-experiment-brief.md) describes the pieces these build
+on.
 
 The same move, measured biology shaping a printable form, drove
 [Materialized Enhancements](https://enhancement.bio/), started at the CODAME

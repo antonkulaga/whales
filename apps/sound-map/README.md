@@ -41,15 +41,19 @@ voices remain playable. The technical tab links the dataset paper and scopes its
   with actual spectrograms, measured onsets and pitch contours, playable original and
   guide audio; composition scores, fine-tuning, model controls, and engine logs.
   `?view=technical` opens this tab, including alongside a `#<piece id>` link.
-- **Installation:** the proposed physical room, led by two AI-generated concept
-  images: an oak table with a printed ocean map, tactile whale and dolphin figures
-  with selection buttons, a large wall display of recorded → measured → generated
-  sound, and speakers around the visitors. One button selects one recording; pressing
-  again removes it, with a light and the screen confirming up to six seated voices.
-  A small touchscreen handles composition and playback. The original recordings and
-  guides could be routed to separate speakers; generated music is a shared mix.
-  A three-step visit and the physical setup form the main page; build details and
-  scientific collaborations expand below, with a link to the separate Silver tab.
+- **Installation:** four proposed setups share one central image preview: a
+  touchscreen map blackboard, a printed map table with wired site buttons, a
+  physical wall map with buttons, or a floor map with a nearby touchscreen.
+  The orchestra has more than six permanent species positions, arranged like an
+  orchestra pit with curved rows of chairs, music stands and miniature guide
+  instruments. Visitors select up to six chairs per composition; the figures stay
+  in place. LEDs mark selected chairs, vary in brightness as each animal plays,
+  and use colour to show conservation status from `src/lib/status.ts`.
+  A PC handles audio combination, generation, playback and the display. Proper
+  room speakers play the orchestra, while a separate screen shows spectrograms
+  and the recorded → measured → generated layers with a shared playback playhead.
+  Practical details and a short invitation to collaborate with researchers follow
+  the images. The concepts show the proposed controls and orchestra-pit layout.
   The room is a proposal to build with residency or other
   funding; hardware selection, screen synchronisation and spatial playback still need
   development. Images and generation prompts are in `demo/follow/installation/`,
@@ -132,7 +136,7 @@ Static hosting plays the exported pieces and does not run composition.
 | `src/player.ts` | WebAudio playback: every stem starts on the same clock; toggles change gains only |
 | `src/lanes.ts` | Spectrogram lanes with each part's onsets and contours, envelopes, scores |
 | `src/lib/` | Pure logic shared by UI, server and tests |
-| `src/silver.ts`, `src/silver.css` | The **Sound to silver (optional)** tab (`?view=silver&idea=bend`): six idea tabs, with the live bench and moving-silver studies embedded from `/silver/files/` (`data/output/silver`, else `demo/silver`; refresh the copy with `bun scripts/silver.ts`). `/silver` redirects to it; the static export hides it |
+| `src/silver-viewer.ts`, `src/silver.css` | The **Sound to silver** view (`?view=silver`): the ring-bending animation integrated into the page, the selected ring's photograph and planned STL/download and installation editions. The viewer module is served from `/silver/viewer.js` using `/silver/files/` data (`data/output/silver`, else `demo/silver`; refresh the copy with `bun scripts/silver.ts`). The six exploratory tabs remain in unlinked `research/silver-ideas.html`; `/silver` redirects to the public view, and the static export hides it |
 
 A combination spec looks like this:
 

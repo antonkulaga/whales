@@ -222,6 +222,60 @@ async function silverFiles(request: Request): Promise<Response> {
   return new Response("Not found", { status: 404 });
 }
 
+// Reuse the generated bench's rendering and sound analysis inside the project page.
+// A shadow root keeps its controls separate from the orchestra's own IDs and styles.
+async function silverViewerModule(): Promise<Response> {
+  for (const root of SILVER) {
+    const file = Bun.file(join(root, "index.html"));
+    if (!(await file.exists())) continue;
+    const html = await file.text();
+    const source = html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
+    if (!source) return new Response("The ring viewer module is missing", { status: 500 });
+    const module = source
+      .replace('from "three"', 'from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"')
+      .replace(/from "three\/addons\/([^\"]+)"/g, 'from "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/$1"')
+      .replace('const DATA = JSON.parse(document.getElementById("silver-data").textContent);', 'export function mountViewer(root, DATA) {')
+      .replace('document.getElementById(id)', 'root.getElementById(id)')
+      .replace('getComputedStyle(document.documentElement)', 'getComputedStyle(root.host)')
+      .replace('const w = stage.clientWidth, h = stage.clientHeight;', 'const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;')
+      .replace(' · ${piece.triangle_count.toLocaleString()} triangles shown', '')
+      .replace('mode: "silver", ghost: true', 'mode: "silver", ghost: false')
+      .replace('ghost.visible = true; scene.add(ghost);', 'ghost.visible = false; scene.add(ghost);')
+      .replaceAll('"Play and bend"', '"▶ Play sound"')
+      .replace('textContent = "Stop"', 'textContent = "■ Stop sound"')
+      .replace('Drag to turn the ring. Play bends it as the sound plays.', 'Drag to turn the ring.');
+    return new Response(`${module}
+let previewOrigin = performance.now(), lastPreview = 0, previousPlaying = false;
+let previewSound = state.sound, previewPiece = state.piece;
+function animateViewer() {
+  const now = performance.now(), sound = state.live || state.sound;
+  if (state.playing !== previousPlaying || sound !== previewSound || state.piece !== previewPiece) {
+    previewOrigin = now; previousPlaying = state.playing; previewSound = sound; previewPiece = state.piece;
+  }
+  if (!state.playing && now - lastPreview >= 50) {
+    // A silent loop makes the sound-to-form interaction visible before the first click.
+    const elapsed = (now - previewOrigin) / 1000 * Number($("speed").value);
+    state.t = Math.min(elapsed % (sound.duration_s + 0.35), sound.duration_s);
+    update(); lastPreview = now;
+  }
+  $("preview-note").textContent = state.playing ? "Playing at ¼ speed" : "Silent preview";
+  $("play").setAttribute("aria-pressed", String(state.playing));
+  arcLine.visible = state.playing;
+  controls.update(); renderer.render(scene, camera);
+}
+return { setActive(active) {
+  if (!active) stop();
+  renderer.setAnimationLoop(active ? animateViewer : null);
+  if (active) resize();
+} };
+}
+`, {
+      headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" },
+    });
+  }
+  return new Response("The ring viewer is missing", { status: 404 });
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: HOSTNAME,
@@ -230,6 +284,7 @@ const server = Bun.serve({
   routes: {
     "/": index,
     "/silver": () => Response.redirect("/?view=silver", 302), // the page is now a tab; old #idea links keep their hash
+    "/silver/viewer.js": { GET: silverViewerModule },
     "/silver/files/*": { GET: silverFiles },
     "/api/catalog": { GET: catalog },
     "/api/runtime": { GET: generationRuntime },

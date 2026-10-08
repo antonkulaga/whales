@@ -5,11 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="An imagined symphony of marine biodiversity: real whale and dolphin recordings from across oceans, transformed into music through their measured rhythms and pitch contours. A pre-project prototype for the HIFMB × HWK ArtWaves residency proposal.">
   <title>Whale and Dolphin Orchestra</title>
+  <script defer src="https://umami.glucosedao.org/script.js" data-website-id="31bdfd5f-5c0f-4d95-8311-d5a08f887ea7"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./silver.css">
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+  </script>
 </head>
 <body>
   <svg class="sprite" aria-hidden="true"><symbol id="gh-icon" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></symbol></svg>
@@ -25,7 +29,7 @@
         <button id="concert-tab" type="button" role="tab" aria-selected="true" aria-controls="concert-panel" data-view="concert">Concert hall</button>
         <button id="technical-tab" type="button" role="tab" aria-selected="false" aria-controls="technical-panel" tabindex="-1" data-view="technical">Technical score</button>
         <button id="installation-tab" type="button" role="tab" aria-selected="false" aria-controls="installation-panel" tabindex="-1" data-view="installation">Installation</button>
-        <button id="silver-tab" type="button" role="tab" aria-selected="false" aria-controls="silver-panel" tabindex="-1" data-view="silver" data-server-only>Sound to silver <span class="tab-note">(optional)</span></button>
+        <button id="silver-tab" type="button" role="tab" aria-selected="false" aria-controls="silver-panel" tabindex="-1" data-view="silver" data-server-only>Sound to silver</button>
         <button id="about-tab" type="button" role="tab" aria-selected="false" aria-controls="about-panel" tabindex="-1" data-view="about">About</button>
       </nav>
     </header>
@@ -36,7 +40,7 @@
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title">Whale & Dolphin <em>Orchestra.</em></h1>
         <span class="prototype-badge">Working prototype</span>
-        <p>Marine biodiversity has a sound of its own. This orchestra transforms real recordings into music for human ears, guided by measured rhythms and pitch contours. The prototype plays a small selection of short excerpts from open research collections, chiefly NOAA's <a href="https://www.dclde.org/challenges-and-data-sets" target="_blank" rel="noopener noreferrer">DCLDE</a> workshop datasets and the Alfred Wegener Institute's polar recordings on <a href="https://www.pangaea.de" target="_blank" rel="noopener noreferrer">PANGAEA</a> (<a href="#sources">all sources</a>). Choose your musicians on the map, or hear a finished piece.</p>
+        <p>Marine biodiversity has a sound of its own. This orchestra transforms real recordings into music for human ears, guided by measured rhythms and pitch contours. The prototype plays a small selection of short excerpts from <a href="?view=technical#sources" data-show-view="technical" data-view-section="sources">open research collections</a>. Choose your musicians on the map, or hear a finished piece.</p>
         <div class="prototype-cue"><span>Select recordings on the map and listen here.</span></div>
       </section>
 
@@ -71,11 +75,6 @@
         <p class="compose-runtime" id="compose-runtime" hidden>This server has no CUDA GPU. Composing runs on the CPU and may take a while. Finished pieces are ready to play immediately.</p>
         <div class="compose-progress" id="compose-progress" hidden><progress aria-label="Composition in progress"></progress><span class="small">Preparing your piece. You can keep listening while it is being made.</span></div>
       </section>
-        <aside class="composer roster" aria-labelledby="roster-title">
-          <div class="panel-head"><div><span class="section-number">03 / The musicians</span><h2 id="roster-title">Listen. Then take a seat.</h2></div><span class="small" id="roster-count"></span></div>
-          <p class="roster-note small">▶ Hear the original recording. + Add it to your orchestra.</p>
-          <ul class="roster-list" id="roster" aria-label="Recordings you can seat"></ul>
-        </aside>
       </section>
 
 
@@ -88,31 +87,11 @@
         <details class="individual-tracks" open><summary>Individual voices <span id="individual-track-count"></span></summary><div id="individual-lanes" aria-label="Individual recordings on the shared timeline"></div></details>
         <p class="merge-label"><span aria-hidden="true">↓</span> Their musical guides, combined on the same timeline</p>
         <div class="lanes" id="lanes"></div>
-        <div class="result-foot"><form class="preset" id="preset-form"><label class="sr-only" for="preset-name">Preset name</label><input id="preset-name" type="text" maxlength="120" placeholder="Give this piece a name"><button class="btn" id="preset-save" type="submit">Save preset</button><span class="small" id="preset-status" role="status"></span></form><button class="text-link" type="button" data-show-technical>Explore how it was made <span aria-hidden="true">↗</span></button></div>
+        <div class="result-foot"><form class="preset" id="preset-form"><label class="sr-only" for="preset-name">Preset name</label><input id="preset-name" type="text" maxlength="120" placeholder="Give this piece a name"><button class="btn" id="preset-save" type="submit">Save preset</button><span class="small" id="preset-status" role="status"></span></form></div>
       </section>
 
-      <section class="sources" id="sources" aria-labelledby="sources-title">
-        <div class="section-heading"><div><span class="section-number">Sound sources</span><h2 id="sources-title">Where the voices come from.</h2></div>
-          <p>The prototype plays <b id="sources-count">a few dozen</b> excerpts, each under half a minute. They are a small subset, chosen by hand from open collections that hold years of recordings and many thousands of annotated calls. Each card says what we took.</p></div>
-        <ul class="source-cards">
-          <li class="featured"><span class="section-number">Featured collection · PANGAEA</span><h3>Alfred Wegener Institute polar recordings</h3>
-            <p>Recorders on AWI moorings listen to the polar oceans year-round, and the Ocean Acoustics group publishes the recordings and their detection tables on PANGAEA. We take Antarctic blue whales from two moorings on the Greenwich meridian in the Weddell Sea, choosing each window from the published detections. Ilse Van Opzeeland, a co-author of both Weddell Sea recordings, works at AWI's Ocean Acoustics Lab and leads the <a href="https://hifmb.de/research/working-groups/marine-acoustic-underwater-diversity-maud/" target="_blank" rel="noopener noreferrer">Marine Acoustic Underwater Diversity (MAUD)</a> group at the Helmholtz Institute for Functional Marine Biodiversity (HIFMB) in Oldenburg.</p>
-            <p class="credit">Audio: Thomisch, Spiesecke, Lefering, Menze, Preis, Van Opzeeland &amp; Boebel (2024), <a href="https://doi.org/10.1594/PANGAEA.973160" target="_blank" rel="noopener noreferrer">AWI232-11</a>; Thomisch, Spiesecke, Van Opzeeland &amp; Boebel (2024), <a href="https://doi.org/10.1594/PANGAEA.966612" target="_blank" rel="noopener noreferrer">AWI227-12</a>. Detections: Thomisch, El-Gabbas, Spiesecke &amp; Boebel (2023), <a href="https://doi.org/10.1594/PANGAEA.960121" target="_blank" rel="noopener noreferrer">AWI232-11</a> and <a href="https://doi.org/10.1594/PANGAEA.960031" target="_blank" rel="noopener noreferrer">AWI227-12</a>.</p>
-            <a class="text-link" href="https://opus.aq" target="_blank" rel="noopener noreferrer">Listen to AWI's recordings on OPUS <span aria-hidden="true">↗</span></a></li>
-          <li class="featured"><span class="section-number">NOAA · DCLDE workshops</span><h3>Annotated workshop datasets</h3>
-            <p>The DCLDE workshops publish recordings with analysts' labels for detection and classification research. 2027: killer whales and humpbacks from the Salish Sea, the outer coast and Alaska. 2013: right and fin whales at Stellwagen Bank. 2015: blue whales off the Channel Islands. 2022: minke whales, striped and rough-toothed dolphins on a Hawaiian survey. 2011: dolphin whistles traced at Palmyra Atoll and in the mid-Atlantic.</p>
-            <p class="credit">NOAA NCEI passive acoustic archive; data from NOAA NEFSC, PIFSC and SWFSC, Scripps Institution of Oceanography, Fisheries and Oceans Canada, JASCO, ONC, Orcasound, SIMRES, SMRU Consulting and the University of Alaska.</p>
-            <a class="text-link" href="https://www.ncei.noaa.gov/products/passive-acoustic-data" target="_blank" rel="noopener noreferrer">NOAA passive acoustic data <span aria-hidden="true">↗</span></a> <a class="text-link" href="https://www.nature.com/articles/s41597-025-05281-5" target="_blank" rel="noopener noreferrer">DCLDE 2027 dataset paper <span aria-hidden="true">↗</span></a></li>
-          <li><span class="section-number">Orcasound</span><h3>Haro Strait humpback song</h3><p>Humpback song at the Orcasound Lab hydrophone, with Emily Vierling's call annotations.</p><a class="text-link" href="https://www.orcasound.net" target="_blank" rel="noopener noreferrer">orcasound.net <span aria-hidden="true">↗</span></a></li>
-          <li><span class="section-number">OpenWhistle</span><h3>Eilat dolphin whistles</h3><p>Bottlenose dolphin whistle sequences recorded at Dolphin Reef, Eilat.</p><a class="text-link" href="https://huggingface.co/datasets/dolphinteam/OpenWhistle-Pretraining" target="_blank" rel="noopener noreferrer">OpenWhistle on Hugging Face <span aria-hidden="true">↗</span></a></li>
-          <li><span class="section-number">DSWP</span><h3>Dominica sperm-whale codas</h3><p>Coda clips from the Dominica Sperm Whale Project, placed in sequence with short silences we added.</p><a class="text-link" href="https://huggingface.co/datasets/orrp/DSWP" target="_blank" rel="noopener noreferrer">DSWP on Hugging Face <span aria-hidden="true">↗</span></a></li>
-          <li><span class="section-number">PhyloPic</span><h3>Species silhouettes</h3><p>Chair and legend silhouettes by Chris huh (CC BY-SA 3.0) and Margot Michaud (CC0).</p><a class="text-link" href="https://www.phylopic.org" target="_blank" rel="noopener noreferrer">phylopic.org <span aria-hidden="true">↗</span></a></li>
-        </ul>
-        <p class="small sources-note">Only the animal recordings come from these collections. The guides, the constructed responses and the generated music are made by this project.</p>
-      </section>
-
-      <aside class="development-note" aria-label="Development and music generation">
-        <p>Music: <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5</a>, run locally. Coding assistance: Claude Code and OpenAI Codex. Artistic and methodological decisions: Livia Zaharia and Anton Kulaga. <a href="?view=technical" data-show-view="technical">How it works ↗</a></p>
+      <aside class="prototype-context" aria-label="Project direction">
+        <p>This is an early digital prototype. With funding, we would develop it further and present it alongside a <a href="?view=installation" data-show-view="installation">listening installation</a><span data-server-only> and Livia Zaharia's <a href="?view=silver" data-show-view="silver">sound-shaped parametric jewellery</a></span>. For the method and sources, see <a href="?view=technical" data-show-view="technical">Technical score</a>.</p>
       </aside>
 
       <dialog class="voice-card" id="voice-card" aria-labelledby="voice-card-title"></dialog>
@@ -128,15 +107,35 @@
       </section>
       <p class="diagram-note small">The diagrams above illustrate the process. The spectrograms and phrase marks below come from the selected recording.</p>
 
-      <section class="research-context" aria-labelledby="research-title"><div><span class="section-number">Research foundation / DCLDE</span><h2 id="research-title">A diversity of calls,<br>populations, and places.</h2><p>We selected excerpts from the DCLDE killer-whale detection and classification collection for its regional and acoustic diversity. Its authors describe it as the largest curated DCLDE audio-and-annotation dataset at the time of publication in 2025.</p><a class="text-link" href="https://www.nature.com/articles/s41597-025-05281-5" target="_blank" rel="noopener noreferrer">Read the dataset paper <span aria-hidden="true">↗</span></a></div><div><div class="research-stats"><span><b>1.6 TB</b><small>audio in the research collection</small></span><span><b>225,000+</b><small>annotations reported by its authors</small></span></div><p>These figures describe the research collection. This prototype uses a small selection of its excerpts, together with excerpts from earlier DCLDE workshops (2011–2022), the Alfred Wegener Institute's polar recordings on PANGAEA, and Orcasound, OpenWhistle and Dominica Sperm Whale Project recordings, to bring different waters and species into the same composition. The orchestra page lists every source.</p><p>Human and marine-mammal hearing differ. Registers can be shifted into a musical range, while measured event times and contour shapes remain the guide. The timing scores below test how closely the generated music follows the measured event times.</p><a class="research-source" href="https://www.fisheries.noaa.gov/national/science-data/sounds-ocean-mammals" target="_blank" rel="noopener noreferrer">NOAA: the variety of marine mammal sounds ↗</a></div></section>
+      <section class="research-context" aria-labelledby="research-title"><div><span class="section-number">Research foundation / DCLDE</span><h2 id="research-title">A diversity of calls,<br>populations, and places.</h2><p>We selected excerpts from the DCLDE killer-whale detection and classification collection for its regional and acoustic diversity. Its authors describe it as the largest curated DCLDE audio-and-annotation dataset at the time of publication in 2025.</p><a href="https://www.nature.com/articles/s41597-025-05281-5" target="_blank" rel="noopener noreferrer">Dataset paper</a></div><div><div class="research-stats"><span><b>1.6 TB</b><small>audio in the research collection</small></span><span><b>225,000+</b><small>annotations reported by its authors</small></span></div><p>These figures describe the research collection. This prototype uses a small selection of its excerpts, together with excerpts from earlier DCLDE workshops (2011–2022), the Alfred Wegener Institute's polar recordings on PANGAEA, and Orcasound, OpenWhistle and Dominica Sperm Whale Project recordings, to bring different waters and species into the same composition. The source collections are listed below.</p><p>Human and marine-mammal hearing differ. Registers can be shifted into a musical range, while measured event times and contour shapes remain the guide. The timing scores below test how closely the generated music follows the measured event times.</p><a class="research-source" href="https://www.fisheries.noaa.gov/national/science-data/sounds-ocean-mammals" target="_blank" rel="noopener noreferrer">NOAA: the variety of marine mammal sounds</a></div></section>
 
       <section class="measurement" aria-labelledby="measurement-title"><div class="section-heading"><div><span class="section-number">Look inside a phrase</span><h2 id="measurement-title">The recording becomes the score.</h2></div><label class="source-picker"><span class="small">Choose a recording</span><select id="technical-source" aria-label="Recording to inspect"></select></label></div><div id="measurement-example" aria-live="polite"></div></section>
-      <section class="technical-result" id="technical-result" hidden aria-labelledby="technical-result-title"><div class="section-heading"><div><span class="section-number">Output / The current composition</span><h2 id="technical-result-title"></h2></div><button class="text-link" type="button" data-show-concert>Return to the concert <span aria-hidden="true">↗</span></button></div><p class="small" id="result-note"></p><div class="technical-transport"><button class="play" id="technical-play" type="button" aria-pressed="false">▶ Play</button><span class="clock" id="technical-clock">0.0 s</span><span class="small">Plays the mix selected in the concert hall. Select a strip to seek.</span></div><div class="lanes" id="technical-lanes"></div><div class="scores" id="scores"></div></section>
+      <section class="technical-result" id="technical-result" hidden aria-labelledby="technical-result-title"><div class="section-heading"><div><span class="section-number">Output / The current composition</span><h2 id="technical-result-title"></h2></div></div><p class="small" id="result-note"></p><div class="technical-transport"><button class="play" id="technical-play" type="button" aria-pressed="false">▶ Play</button><span class="clock" id="technical-clock">0.0 s</span><span class="small">Plays the mix selected in the concert hall. Select a strip to seek.</span></div><div class="lanes" id="technical-lanes"></div><div class="scores" id="scores"></div></section>
       <section class="method-notes"><article><span class="section-number">What is being tested?</span><h2>Does the music follow the phrase?</h2><p>Timing scores compare musical onsets with the animal's measured onsets, against the same output shifted in time. They help distinguish a response to this phrase from music that simply sounds appropriate.</p></article><article><span class="section-number">What is the artwork?</span><h2>A musical interpretation.</h2><p>The recordings are animal sounds. The measurements are signal analysis. The guide is a human-designed mapping and the composition is generated music. This process does not decode animal meaning.</p></article></section>
 
       <section class="research-context" aria-labelledby="development-title">
-        <div><span class="section-number">Development &amp; models</span><h2 id="development-title">Tools, choices and authorship.</h2><p>We used Claude Code and OpenAI Codex to help develop and debug the software. Livia Zaharia and Anton Kulaga define the project concept, artistic direction and methodological choices, make the final decisions, and take responsibility for the work.</p><a class="text-link" href="https://github.com/antonkulaga/whales" target="_blank" rel="noopener noreferrer">Inspect the source code <span aria-hidden="true">↗</span></a></div>
-        <div><p><b>Measuring the recordings.</b> Signal analysis extracts call timing and pitch contours. Our code maps those measurements to instruments and registers, then combines them into a playable audio guide.</p><p><b>Generating the music.</b> We run <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5's pretrained base checkpoint</a> locally. Its diffusion transformer generates music from the combined audio guide and a caption. Our current pipeline leaves the model's optional language-model planning stage disabled.</p><p><b>Checking the response.</b> A deterministic musical response provides a comparison, and timing scores test how closely the generated music follows the measured events. Original recordings, constructed guides and generated music remain separately playable.</p><a class="text-link" href="https://github.com/antonkulaga/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">Generation settings and phrase tests <span aria-hidden="true">↗</span></a></div>
+        <div><span class="section-number">Development &amp; models</span><h2 id="development-title">Tools, choices and authorship.</h2><p>We used Claude Code and OpenAI Codex to help develop and debug the software. Livia Zaharia and Anton Kulaga define the project concept, artistic direction and methodological choices, make the final decisions, and take responsibility for the work.</p></div>
+        <div><p><b>Measuring the recordings.</b> Signal analysis extracts call timing and pitch contours. Our code maps those measurements to instruments and registers, then combines them into a playable audio guide.</p><p><b>Generating the music.</b> We run <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5's pretrained base checkpoint</a> locally. Its diffusion transformer generates music from the combined audio guide and a caption. Our current pipeline leaves the model's optional language-model planning stage disabled.</p><p><b>Checking the response.</b> A deterministic musical response provides a comparison, and timing scores test how closely the generated music follows the measured events. Original recordings, constructed guides and generated music remain separately playable.</p><a href="https://github.com/antonkulaga/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">Generation settings and phrase tests</a></div>
+      </section>
+
+      <section class="sources" id="sources" aria-labelledby="sources-title">
+        <div class="section-heading"><div><span class="section-number">Sound sources</span><h2 id="sources-title">Where the voices come from.</h2></div>
+          <p>The prototype plays <b id="sources-count">a few dozen</b> excerpts, each under half a minute. They are a small subset, chosen by hand from open collections that hold years of recordings and many thousands of annotated calls. Each card says what we took.</p></div>
+        <ul class="source-cards">
+          <li class="featured"><span class="section-number">Featured collection · PANGAEA</span><h3>Alfred Wegener Institute polar recordings</h3>
+            <p>Recorders on AWI moorings listen to the polar oceans year-round, and the Ocean Acoustics group publishes the recordings and their detection tables on PANGAEA. We take Antarctic blue whales from two moorings on the Greenwich meridian in the Weddell Sea, choosing each window from the published detections. Ilse Van Opzeeland, a co-author of both Weddell Sea recordings, works at AWI's Ocean Acoustics Lab and leads the <a href="https://hifmb.de/research/working-groups/marine-acoustic-underwater-diversity-maud/" target="_blank" rel="noopener noreferrer">Marine Acoustic Underwater Diversity (MAUD)</a> group at the Helmholtz Institute for Functional Marine Biodiversity (HIFMB) in Oldenburg.</p>
+            <p class="credit">Audio: Thomisch, Spiesecke, Lefering, Menze, Preis, Van Opzeeland &amp; Boebel (2024), <a href="https://doi.org/10.1594/PANGAEA.973160" target="_blank" rel="noopener noreferrer">AWI232-11</a>; Thomisch, Spiesecke, Van Opzeeland &amp; Boebel (2024), <a href="https://doi.org/10.1594/PANGAEA.966612" target="_blank" rel="noopener noreferrer">AWI227-12</a>. Detections: Thomisch, El-Gabbas, Spiesecke &amp; Boebel (2023), <a href="https://doi.org/10.1594/PANGAEA.960121" target="_blank" rel="noopener noreferrer">AWI232-11</a> and <a href="https://doi.org/10.1594/PANGAEA.960031" target="_blank" rel="noopener noreferrer">AWI227-12</a>.</p>
+            <a href="https://opus.aq" target="_blank" rel="noopener noreferrer">OPUS recording archive</a></li>
+          <li class="featured"><span class="section-number">NOAA · DCLDE workshops</span><h3>Annotated workshop datasets</h3>
+            <p>The DCLDE workshops publish recordings with analysts' labels for detection and classification research. 2027: killer whales and humpbacks from the Salish Sea, the outer coast and Alaska. 2013: right and fin whales at Stellwagen Bank. 2015: blue whales off the Channel Islands. 2022: minke whales, striped and rough-toothed dolphins on a Hawaiian survey. 2011: dolphin whistles traced at Palmyra Atoll and in the mid-Atlantic.</p>
+            <p class="credit">NOAA NCEI passive acoustic archive; data from NOAA NEFSC, PIFSC and SWFSC, Scripps Institution of Oceanography, Fisheries and Oceans Canada, JASCO, ONC, Orcasound, SIMRES, SMRU Consulting and the University of Alaska.</p>
+            <a href="https://www.ncei.noaa.gov/products/passive-acoustic-data" target="_blank" rel="noopener noreferrer">NOAA passive acoustic data</a> <a href="https://www.nature.com/articles/s41597-025-05281-5" target="_blank" rel="noopener noreferrer">DCLDE 2027 dataset paper</a></li>
+          <li><span class="section-number">Orcasound</span><h3>Haro Strait humpback song</h3><p>Humpback song at the Orcasound Lab hydrophone, with Emily Vierling's call annotations.</p><a href="https://www.orcasound.net" target="_blank" rel="noopener noreferrer">orcasound.net</a></li>
+          <li><span class="section-number">OpenWhistle</span><h3>Eilat dolphin whistles</h3><p>Bottlenose dolphin whistle sequences recorded at Dolphin Reef, Eilat.</p><a href="https://huggingface.co/datasets/dolphinteam/OpenWhistle-Pretraining" target="_blank" rel="noopener noreferrer">OpenWhistle on Hugging Face</a></li>
+          <li><span class="section-number">DSWP</span><h3>Dominica sperm-whale codas</h3><p>Coda clips from the Dominica Sperm Whale Project, placed in sequence with short silences we added.</p><a href="https://huggingface.co/datasets/orrp/DSWP" target="_blank" rel="noopener noreferrer">DSWP on Hugging Face</a></li>
+          <li><span class="section-number">PhyloPic</span><h3>Species silhouettes</h3><p>Chair and legend silhouettes by Chris huh (CC BY-SA 3.0) and Margot Michaud (CC0).</p><a href="https://www.phylopic.org" target="_blank" rel="noopener noreferrer">phylopic.org</a></li>
+        </ul>
+        <p class="small sources-note">Only the animal recordings come from these collections. The guides, the constructed responses and the generated music are made by this project.</p>
       </section>
 
       <section class="settings" aria-label="Technical controls">
@@ -144,247 +143,139 @@
         <details class="panel model" id="model"><summary><span class="sum-title">Composition model</span><span class="small" id="model-summary"></span></summary><div class="panel-body"><label class="check"><input id="ace-on" type="checkbox" checked> Compose with ACE-Step 1.5</label><fieldset class="segmented" id="ace-task"><legend>Task</legend><label><input type="radio" name="ace-task" value="cover" checked> Cover</label><label><input type="radio" name="ace-task" value="lego"> Lego track</label></fieldset><label class="field"><span>Cover strength <output id="strength-out">0.6</output></span><input id="strength" type="range" min="0.2" max="1" step="0.05" value="0.6"></label><label class="field"><span>Caption</span><textarea id="caption" rows="2" maxlength="400"></textarea></label><p class="small">In the first study, cover follows the guide's timing more closely. Lego tracks mostly ignore it.</p></div></details>
         <details class="panel" id="log-panel"><summary><span class="sum-title">Engine log</span><span class="small">Session activity</span></summary><div class="panel-body"><pre class="log" id="log">Nothing composed in this session yet.</pre></div></details>
       </section>
-      <button class="text-link technical-return" type="button" data-show-concert>Back to your orchestra <span aria-hidden="true">↗</span></button>
+
     </main>
 
     <main id="installation-panel" class="view-panel technical installation" role="tabpanel" aria-labelledby="installation-tab" tabindex="0" hidden>
       <section class="inst-intro" aria-labelledby="installation-title">
         <div class="technical-hero">
-          <span class="eyebrow">Physical installation</span>
-          <h1 id="installation-title">An ocean you can<br><em>gather around.</em></h1>
-          <p>Visitors gather around a printed ocean map, choosing recordings with buttons beside small whale and dolphin figures. A large wall screen shows how the calls become music.</p>
-          <a class="text-link" href="#inst-visit">How a visit works <span aria-hidden="true">↓</span></a>
-        </div>
-        <figure class="inst-concept">
-          <img data-file="installation/listening-room-v1.png" alt="AI-generated concept of visitors around a printed world map table with ivory whale figures and selection buttons, speakers around the room, and a large wall screen showing recorded, measured and generated sound" width="1536" height="1024" loading="lazy" decoding="async">
-          <figcaption><span>The listening room</span><span>AI-generated concept</span></figcaption>
-        </figure>
-      </section>
-
-      <section class="inst-status" role="note" aria-label="Status of the installation"><span class="section-number">Proposal · not yet built</span><p>The website is the working prototype. We would develop the room with scientists through a residency or other funding.</p></section>
-
-      <section class="visit" id="inst-visit" aria-labelledby="visit-title">
-        <div class="section-heading"><h2 id="visit-title">How a visit works</h2></div>
-        <ol class="visit-steps">
-          <li><span class="section-number">01 / Choose</span><h3>Choose your voices</h3><p>Each button adds one recording and plays a short preview of its original call. It lights while selected; press again to remove the voice. Up to six recordings can join, with the screen showing when the ensemble is full.</p></li>
-          <li><span class="section-number">02 / Compose</span><h3>Hear the piece</h3><p>Press Compose on the shared touchscreen. The wall screen follows the recorded spectrogram, measured onsets and pitch contours, and generated music with one playhead. Each stage is labelled, and the musical guide is available to hear. Saved pieces play while a new one is made.</p></li>
-          <li><span class="section-number">03 / Listen</span><h3>Listen again</h3><p>A bench with headphones offers a quieter place to compare the original calls with the music. A QR link lets visitors replay their saved piece at home and share it.</p></li>
-        </ol>
-      </section>
-
-      <section class="inst-objects" aria-labelledby="objects-title">
-        <figure class="inst-concept">
-          <img data-file="installation/whale-figures-v1.png" alt="AI-generated close-up concept of a hand pressing a selection button beside an ivory whale figure on a printed ocean map, with other animals on coloured bases" width="1536" height="1024" loading="lazy" decoding="async">
-          <figcaption><span>The figures and buttons</span><span>AI-generated concept</span></figcaption>
-        </figure>
-        <div class="inst-object-copy">
-          <h2 id="objects-title">The table and figures</h2>
-          <p>Ivory 3D prints, about 10 to 15 cm long, would have sturdy fins and broad bases. The species are recognisable by shape; a coloured ring, number and site label identify each recording. Lifting a figure leaves the music unchanged.</p>
-          <p>A matte ocean map on an oak table, roughly 2.2 × 1.2 m, stays readable in ordinary gallery light. Coastal insets separate crowded sites. The map marks recording locations; figures and buttons sit near the edges, within reach of seated visitors.</p>
-          <p>Six speakers could give the original calls and their musical guides separate positions around the room. The generated composition plays as one shared mix. Table height, circulation and sound placement would be tested in the space.</p>
+          <span class="eyebrow">Installation concept</span>
+          <h1 id="installation-title">A portable whale<br><em>orchestra.</em></h1>
+          <p>We envision an interactive map and score display alongside an orchestra of whale and dolphin figures. Visitors choose up to six chairs at a time from the larger stage.</p>
         </div>
       </section>
 
-      <section class="research-context inst-precedent" aria-labelledby="precedent-title">
-        <div><span class="section-number">A precedent at HIFMB</span><h2 id="precedent-title">One whale's journey, <em>many voices.</em></h2><p>Whittaker, Peters &amp; van Opzeeland (2025). Narrators of submersive affective atmospheres: analysing oceanic representations through narratives of sound. <i>Emotion, Space and Society</i> 55, 101067.</p><a class="text-link" href="https://doi.org/10.1016/j.emospa.2025.101067" target="_blank" rel="noopener noreferrer">Read the paper <span aria-hidden="true">↗</span></a></div>
-        <div><p><i>Mirrors</i> (2023), by Geraint Rhys Whittaker, Kimberley Peters and Ilse van Opzeeland of HIFMB and AWI, is a sound installation that follows the acoustic journey of a minke whale from Antarctica to the coast of Namibia. It opened in the mineral vault of the Landesmuseum Natur und Mensch in Oldenburg during an international marine biodiversity symposium. Visitors descend into a darkened room, and a voice from a central speaker leads them through the sounds. Its authors argue that such installations let audiences know the ocean, including human impacts on marine life, through what they call submersive affective atmospheres.</p><p>Our room works the other way round. <i>Mirrors</i> tells one whale's story; here visitors choose the voices themselves, from many species and oceans, and hear what those voices make together. The original recordings stay playable beside the measured phrases and the generated music, so visitors can compare what was recorded, what was measured and what was made. Livia's silver studies carry the same measurements into metal.</p></div>
+      <section class="inst-contexts" id="inst-system" aria-labelledby="inst-system-title">
+        <div class="section-heading"><h2 id="inst-system-title">Four possible setups.</h2></div>
+        <div class="context-viewer">
+          <div class="context-preview" id="context-preview" aria-live="polite">
+            <article class="context-panel" id="context-dashboard" data-context-panel="dashboard" aria-label="Possible interactive display setup" hidden>
+              <figure class="context-main-image"><img data-file="installation/map-dashboard-v3.png" alt="AI concept render of a touchscreen world map beside a whale and dolphin orchestra pit with chairs, music stands, miniature instruments, selected LED seats and a separate spectrogram display" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>AI concept render · possible display setup</figcaption></figure>
+            </article>
+            <article class="context-panel" id="context-table" data-context-panel="table" aria-label="Possible table setup">
+              <figure class="context-main-image"><img data-file="installation/map-table-v2.png" alt="AI concept render of visitors pressing recording-site buttons on a printed map table beside a whale and dolphin orchestra pit with chairs, miniature instruments, selected LED seats and room speakers" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>AI concept render · possible table setup</figcaption></figure>
+            </article>
+            <article class="context-panel" id="context-wall" data-context-panel="wall" aria-label="Possible wall setup" hidden>
+              <figure class="context-main-image"><img data-file="installation/map-wall-v2.png" alt="AI concept render of a physical wall map with recording-site buttons beside a whale and dolphin orchestra pit with chairs, music stands, miniature instruments and selected LED seats" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>AI concept render · possible wall setup</figcaption></figure>
+            </article>
+            <article class="context-panel" id="context-floor" data-context-panel="floor" aria-label="Possible floor setup" hidden>
+              <figure class="context-main-image"><img data-file="installation/map-floor-v2.png" alt="AI concept render of a flat printed floor map with a nearby touchscreen for site selection, a whale and dolphin orchestra pit with miniature instruments and selected LED seats, and a separate spectrogram display" width="1536" height="1024" loading="lazy" decoding="async"><figcaption>AI concept render · possible floor setup</figcaption></figure>
+            </article>
+          </div>
+          <nav class="context-choices" aria-label="Explore possible installation setups">
+            <button class="context-choice" type="button" data-context-choice="dashboard" aria-controls="context-dashboard" aria-pressed="false"><img data-file="installation/map-dashboard-v3.png" alt="" aria-hidden="true" width="1536" height="1024" loading="lazy" decoding="async"><span>Interactive display</span></button>
+            <button class="context-choice" type="button" data-context-choice="table" aria-controls="context-table" aria-pressed="true"><img data-file="installation/map-table-v2.png" alt="" aria-hidden="true" width="1536" height="1024" loading="lazy" decoding="async"><span>Table</span></button>
+            <button class="context-choice" type="button" data-context-choice="wall" aria-controls="context-wall" aria-pressed="false"><img data-file="installation/map-wall-v2.png" alt="" aria-hidden="true" width="1536" height="1024" loading="lazy" decoding="async"><span>Wall</span></button>
+            <button class="context-choice" type="button" data-context-choice="floor" aria-controls="context-floor" aria-pressed="false"><img data-file="installation/map-floor-v2.png" alt="" aria-hidden="true" width="1536" height="1024" loading="lazy" decoding="async"><span>Floor</span></button>
+          </nav>
+        </div>
+        <p class="inst-context-note">The setup would be developed to suit the venue and available resources.</p>
       </section>
 
-      <details class="inst-development">
-        <summary><span class="section-number">Practical details</span><span class="inst-disclosure-title">What we need to build</span></summary>
-        <div class="inst-disclosure-body">
-          <section class="method-notes inst-needs" aria-label="Ways to build the installation">
-            <article><h2>Start with stereo</h2><p>Wired buttons connect to the app through a small controller. A computer runs playback and the large display, with stereo speakers or headphones. Saved pieces need no GPU; composing new pieces live needs the engine and a GPU computer.</p></article>
-            <article><h2>Develop the room</h2><p>A multichannel audio interface would route the calls and guides to the six speakers. We would synchronise the screen with playback and measure generation times during rehearsals.</p></article>
-          </section>
-        </div>
-      </details>
+      <section class="inst-development" aria-labelledby="inst-needs-title">
+        <div class="inst-section-heading"><span class="section-number">Practical details</span><h2 id="inst-needs-title">What we need to build</h2></div>
+        <section class="method-notes inst-needs" aria-label="Ways to build the installation">
+          <article><h3>Stage</h3><p>The stage is arranged like an orchestra pit, with curved rows of chairs, music stands, species figures and miniature instruments. It has more than six places. Visitors select up to six chairs for each composition. The figures stay in place. LEDs mark the selected chairs, vary in brightness as each animal plays, and use colour to show its conservation status.</p></article>
+          <article><h3>Screen and sound</h3><p>One PC handles audio combination and music generation, playback and the display. Speakers play the orchestra in the room. The display shows spectrograms and follows playback in real time. Visitors select recording sites using wired buttons on a physical map, a touchscreen blackboard, or another interactive map display, depending on the chosen setup.</p></article>
+        </section>
+      </section>
 
-      <details class="inst-development">
-        <summary><span class="section-number">During a residency</span><span class="inst-disclosure-title">Work with researchers</span></summary>
-        <div class="inst-disclosure-body">
-          <section class="ideas" aria-labelledby="ideas-title">
-            <div class="section-heading"><div><h2 id="ideas-title">Possible collaborations at HIFMB</h2></div><p class="small">These are starting points for the <a href="https://hifmb.de/air" target="_blank" rel="noopener noreferrer">ArtWaves residency</a>. The researchers we work with would help decide which to pursue.</p></div>
-            <div class="inst-research-list">
-              <article><h3>Recordings and shipping noise</h3><p>With <a href="https://hifmb.de/research/working-groups/marine-acoustic-underwater-diversity-maud/" target="_blank" rel="noopener noreferrer">Marine Acoustic Underwater Diversity</a>, we could add recordings, check measured phrases against expert annotations, and use a shipping-noise layer to explore how calls become masked.</p></article>
-              <article><h3>Seasonal programmes</h3><p>With <a href="https://hifmb.de/research/working-groups/biodiversitaetstheorie/" target="_blank" rel="noopener noreferrer">Biodiversity Theory</a> and <a href="https://hifmb.de/research/working-groups/ecosystem-data-science/" target="_blank" rel="noopener noreferrer">Ecosystem Data Science</a>, long-term recordings could shape a programme for one site, with fewer voices as a species is heard less often.</p></article>
-              <article><h3>Listening and protection</h3><p><a href="https://hifmb.de/research/working-groups/marine-conservation/" target="_blank" rel="noopener noreferrer">Marine Conservation</a> and <a href="https://hifmb.de/research/working-groups/marine-governance/" target="_blank" rel="noopener noreferrer">Marine Governance</a> could inform map layers showing protected areas and shipping lanes. With the qualitative research lab, visitors' choices and comments could support a study of responses to ocean sound.</p></article>
-            </div>
-          </section>
-          <section class="research-context inst-models" aria-labelledby="models-title">
-            <div><h2 id="models-title">Improving the prototype</h2><p>The prototype was built in three days with models that were ready to use. A residency would give us time to find a better fit for whale and dolphin recordings.</p><a class="text-link" href="https://github.com/antonkulaga/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">Read the current method <span aria-hidden="true">↗</span></a></div>
-            <div><p>We could compare bioacoustic detectors with the current onset and pitch tracking, and try other music models alongside ACE-Step 1.5 or tune them on the guides.</p><p>Musicians and scientists would help choose instruments, registers and timing. We would also extend the timing scores with researchers' measures to test how closely the music follows the calls.</p></div>
-          </section>
+      <section class="inst-research" aria-labelledby="inst-research-title">
+        <h2 id="inst-research-title">For researchers</h2>
+        <div class="inst-research-copy">
+          <p>This is a prototype idea. We'd be happy to extend and adjust it in collaboration with researchers, including during the <a href="https://hifmb.de/air" target="_blank" rel="noopener noreferrer">ArtWaves residency</a> at HIFMB. Some ideas we have:</p>
+          <ul>
+            <li>Add recordings, check our phrase measurements against expert annotations, and explore how shipping noise masks calls with the <a href="https://hifmb.de/research/working-groups/marine-acoustic-underwater-diversity-maud/" target="_blank" rel="noopener noreferrer">Marine Acoustic Underwater Diversity</a> group.</li>
+            <li>Use long-term recordings to show how a site's sound changes across seasons, with researchers in <a href="https://hifmb.de/research/working-groups/biodiversitaetstheorie/" target="_blank" rel="noopener noreferrer">biodiversity theory</a> and <a href="https://hifmb.de/research/working-groups/ecosystem-data-science/" target="_blank" rel="noopener noreferrer">ecosystem data science</a>.</li>
+            <li>Add protected areas and shipping lanes to the map with <a href="https://hifmb.de/research/working-groups/marine-conservation/" target="_blank" rel="noopener noreferrer">Marine Conservation</a> and <a href="https://hifmb.de/research/working-groups/marine-governance/" target="_blank" rel="noopener noreferrer">Marine Governance</a>, and study visitors' responses to ocean sound with the qualitative research lab.</li>
+            <li>Improve the <a href="https://github.com/antonkulaga/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">current method</a> with researchers and musicians: compare bioacoustic detectors and music models, choose instruments and registers, and test how closely the music follows the measured calls.</li>
+          </ul>
+          <p>Related work includes <i>Mirrors</i> (2023), by Geraint Rhys Whittaker, Kimberley Peters and Ilse van Opzeeland, which follows a minke whale's acoustic journey and is described in their <a href="https://doi.org/10.1016/j.emospa.2025.101067" target="_blank" rel="noopener noreferrer">2025 paper</a>.</p>
         </div>
-      </details>
+      </section>
 
-      <aside class="inst-extension" aria-label="Optional silver studies"><p>If time and funding allow, Livia's silver studies shaped by sound could be shown in a small lit case.</p><a class="text-link" href="?view=silver" data-show-view="silver" data-server-only>Explore Sound to silver <span aria-hidden="true">↗</span></a></aside>
-      <button class="text-link technical-return" type="button" data-show-concert>Back to the orchestra <span aria-hidden="true">↗</span></button>
+      <aside class="inst-extension" aria-label="Sound to silver">
+        <p>Recorded whale and dolphin phrases shape the circular form of Livia's silver rings.</p>
+
+      </aside>
+
     </main>
 
     <main id="silver-panel" class="view-panel technical silver-view" role="tabpanel" aria-labelledby="silver-tab" tabindex="0" hidden data-server-only>
       <section class="technical-hero silver-hero" aria-labelledby="silver-tab-title">
-        <span class="eyebrow">Sound to silver · an optional extension</span>
         <h1 id="silver-tab-title">Sound to <em>silver.</em></h1>
-        <p>The orchestra turns whale and dolphin calls into music. These studies follow the same kind of recordings into Livia's cast silver: a whistle that bends a real ring without breaking it, rings that keep moving after casting, a groove that stores a whistle, and the ideas still waiting for the workbench.</p>
+        <p>A whale or dolphin recording reshapes Livia's ring. The preview is silent; press <b>Play sound</b> to listen at ¼ speed. Choose a ring and recording alongside the animation.</p>
       </section>
 
-      <section class="inst-status" role="note" aria-label="Status of the silver studies"><span class="section-number">Status</span><p><b>Optional, studies so far.</b> Nothing has been cast yet. These pieces would be made only if time and funding allow, alongside the orchestra and the listening room.</p></section>
+      <section class="silver-viewer" id="silver-viewer" aria-label="Play a recording and shape the ring">
+        <p class="silver-loading" role="status">Preparing the ring…</p>
+        <figure class="silver-ring-reference" slot="reference">
+          <img data-silver-file="media/livia-inline-2022.jpg" alt="Livia Zaharia's Inline Ring, a silver parametric ring photographed at an angle" loading="lazy" decoding="async">
+          <figcaption><span data-reference-name>Inline Ring</span> · cast silver, <span data-reference-year>2022</span>. Photograph by <a href="https://liviazaharia.com/pieces/" target="_blank" rel="noopener noreferrer">Livia Zaharia</a>.</figcaption>
+        </figure>
+      </section>
 
-      <div class="idea-tabs" role="tablist" aria-label="Sound to silver ideas">
-        <button type="button" role="tab" id="tab-bend" aria-controls="bend" aria-selected="true" tabindex="0" data-tab="bend"><span class="n">01</span><span class="label">Bending a real ring</span><span class="chip done">study run</span></button>
-        <button type="button" role="tab" id="tab-motion" aria-controls="motion" aria-selected="false" tabindex="-1" data-tab="motion"><span class="n">02</span><span class="label">Moving silver</span><span class="chip anim">animated</span></button>
-        <button type="button" role="tab" id="tab-hardata" aria-controls="hardata" aria-selected="false" tabindex="-1" data-tab="hardata"><span class="n">03</span><span class="label">Hardata II</span><span class="chip done">pilot run</span></button>
-        <button type="button" role="tab" id="tab-concepts" aria-controls="concepts" aria-selected="false" tabindex="-1" data-tab="concepts"><span class="n">04</span><span class="label">Sound-directed concepts</span><span class="chip gen">generated</span></button>
-        <button type="button" role="tab" id="tab-next" aria-controls="next" aria-selected="false" tabindex="-1" data-tab="next"><span class="n">05</span><span class="label">Ideas not built yet</span><span class="chip open">proposals</span></button>
-        <button type="button" role="tab" id="tab-pieces" aria-controls="pieces" aria-selected="false" tabindex="-1" data-tab="pieces"><span class="n">06</span><span class="label">Livia's pieces</span><span class="chip open">originals</span></button>
+      <div class="silver-notes">
+        <p>The <a href="https://github.com/antonkulaga/whales/blob/main/docs/sound-to-silver-bending.md" target="_blank" rel="noopener noreferrer">ring-bending study</a> works with Livia's Inline and Roots models and checks how far each can move while remaining suitable for casting. This is an artistic mapping of measured sound; it does not decode animal meaning. The same method can be applied to other forms Livia designs.</p>
+        <p><b>Planned editions.</b> Website visitors will be able to choose a recording and download its sound-shaped STL. At installations, a small batch of 3D printed pieces made from the default sound combinations will be available to take or buy to support the research.</p>
+        <p>A limited cast-silver edition is planned for visitors who donate to marine-science and conservation causes. Each installation will name the beneficiary and state the donation amount.</p>
       </div>
-
-      <section class="idea" id="bend" role="tabpanel" aria-labelledby="tab-bend" tabindex="0">
-        <div class="idea-head">
-          <span class="section-number">01 / Bending a real ring · study run</span>
-          <h2 id="bend-title">A whistle bends Inline and Roots by millimetres. The finger hole never moves.</h2>
-        </div>
-        <div class="idea-body">
-          <div class="prose">
-            <p>Two of Livia's stoneless rings, at full print resolution, are bent by recordings. Time runs along the metal from one end of the open ring to the other. <b>Pitch lifts</b> each cross-section along the finger, <b>level swells</b> the outer metal and <b>pitch slope leans</b> it.</p>
-            <p>This builds on a sound-responsive technique Livia had already explored in her <b>Inline Ring (2022)</b>. Its Grasshopper definition is in her “sound manipulation” folder: it takes microphone level with Sound Capture and uses it to move points along a curve. Here, that approach is applied to measured whale and dolphin calls, with casting checks to keep the resulting bends workable in silver.</p>
-            <p>Every point keeps its angle around the finger and only moves outward or along it, so the ring cannot tear or pass through itself. Casting checks on the full print file then find the largest push that still casts: walls of at least 0.6 mm and openings of at least 0.4 mm, assumed lost-wax limits for the caster to confirm.</p>
-          </div>
-          <dl class="facts">
-            <div><dt>Up to 4 mm</dt><dd>Roots moves at its safe limit.</dd></div>
-            <div><dt>About 2 mm</dt><dd>Inline with lift alone, at exactly the same silver weight.</dd></div>
-            <div><dt>0.000 mm</dt><dd>Change in the finger hole across all 20 runs.</dd></div>
-            <div><dt>2–28 %</dt><dd>Surface made too thin by the usual audio-reactive push at the same strength.</dd></div>
-          </dl>
-        </div>
-        <figure class="frame">
-          <iframe src="/silver/files/index.html" title="Sound to Silver Bench: live 3D viewer of the bent rings" loading="lazy" allow="microphone; autoplay; fullscreen"></iframe>
-          <figcaption><span><b>The bench, live.</b> Choose a ring and a recording, then <i>Play and bend</i>: the ring bends as the sound plays. The push slider is marked at the verified limit, and <i>Whistle live</i> records from your microphone.</span><a class="text-link" href="/silver/files/index.html" target="_blank" rel="noopener">Open full screen <span aria-hidden="true">↗</span></a></figcaption>
-        </figure>
-        <div class="gallery three">
-          <figure><img data-src="/silver/files/media/silver-inline-lift.png" alt="Inline ring bent by lift only, the original shown as a grey ghost" loading="lazy"><figcaption>Inline, lift only, SW_Nana at its 2.22 mm limit. The band follows the whistle's slow rise along the finger.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/silver-roots-all.png" alt="Roots ring with all three gestures applied" loading="lazy"><figcaption>Roots, all three gestures at 3.70 mm. The cups lift and lean by up to 4 mm.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/silver-roots-naive.png" alt="Roots ring pushed along its surface normal, failing areas in red" loading="lazy"><figcaption>The usual push along the surface normal at the same strength: the shank erodes and the cups pass through themselves (red).</figcaption></figure>
-        </div>
-        <p class="small source">Whistles carry the change; a sperm-whale coda, all clicks, only swells the band by about 0.5 mm. Report: <a href="https://github.com/antonkulaga/whales/blob/main/docs/sound-to-silver-bending.md" target="_blank" rel="noopener">Sound to silver: bending a real ring</a>.</p>
-      </section>
-
-      <section class="idea" id="motion" role="tabpanel" aria-labelledby="tab-motion" tabindex="0" hidden>
-        <div class="idea-head">
-          <span class="section-number">02 / Moving silver · animated studies</span>
-          <h2 id="motion-title">A cast bend is frozen. These versions keep moving after casting.</h2>
-        </div>
-        <p class="lede">Each study combines Livia's print-and-cast pipeline with hobby electronics, under €200 in parts per prototype. The page animates them on her real models, driven by the measured pitch and level of the whistles. The animations are schematics with simple lags, not material simulations.</p>
-        <figure class="frame">
-          <iframe src="/silver/files/motion.html" title="Moving Silver Studies: animated mechanisms on Livia's rings" loading="lazy" allow="autoplay; fullscreen"></iframe>
-          <figcaption><span><b>Moving Silver Studies.</b> Pick one of five: the frozen cast as a baseline, then ferrofluid stones, hinged nitinol, magnetic fins and memory cells, each on Livia's real model. Below them: pieces by other makers that already move.</span><a class="text-link" href="/silver/files/motion.html" target="_blank" rel="noopener">Open full screen <span aria-hidden="true">↗</span></a></figcaption>
-        </figure>
-        <div class="table-scroll">
-          <table class="studies">
-            <thead><tr><th>Study</th><th>Follows a whistle</th><th>Worn</th><th>Parts, roughly</th><th>Livia adds</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Ferrofluid stones in Roots' three cups <span class="chip done">start here</span></th><td>Live</td><td>Yes; moves on its stand</td><td>€80–150: display ferrofluid, glass or resin domes, a 12 V electromagnet, ESP32 board, microphone</td><td>Cups for sealed domes; a stand with the coil</td></tr>
-              <tr><th scope="row">Hinged Inline with nitinol wire</th><td>At ¼–⅛ speed</td><td>Yes, with a battery</td><td>€60–120: Flexinol wire, crimps, ESP32 board, MOSFETs, small LiPo</td><td>Twelve hinged segments</td></tr>
-              <tr><th scope="row">Magnetic fins</th><td>Live</td><td>Yes; moves on its stand</td><td>€80–150: silicone, 1 mm magnets, four small coils, H-bridge, ESP32 board</td><td>Fin moulds; slots in the rail</td></tr>
-              <tr><th scope="row">Memory cells</th><td>One write per sound, then holds</td><td>Yes, no electronics</td><td>€50–120: snap domes with tiny magnets, one coil, ESP32 board</td><td>Dome seats along the band</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="idea" id="hardata" role="tabpanel" aria-labelledby="tab-hardata" tabindex="0" hidden>
-        <div class="idea-head">
-          <span class="section-number">03 / Hardata II · pilot run</span>
-          <h2 id="hardata-title">A ring band that stores a dolphin whistle as a readable groove.</h2>
-        </div>
-        <div class="idea-body">
-          <div class="prose">
-            <p>Livia's 2021 <i>Hardata</i> engraved a sound that could not be played back. Hardata II engraves a dolphin whistle as a contour groove around a band, then reads the groove back into sound and asks a 2026 dolphin-trained encoder whether it is still the same kind of whistle.</p>
-            <p>A 272-bit groove kept <b>75 %</b> of the encoder's whistle-type score (macro-F1 0.62 against 0.82 on the original audio). Even 80 bits kept 60 %. The simulated casting blur is shown against the bits it costs.</p>
-            <p class="small source">Report: <a href="https://github.com/antonkulaga/whales/blob/main/docs/hardata-ii-pilot.md" target="_blank" rel="noopener">Hardata II pilot</a>. Run: <code>uv run --group art main.py inscription fetch|run|matched</code>.</p>
-          </div>
-          <div class="gallery two">
-            <figure><img data-src="/silver/files/media/livia-hardata.jpg" alt="Livia's Hardata piece" loading="lazy"><figcaption>Hardata (2021), the piece it continues.</figcaption></figure>
-            <figure><img data-src="/silver/files/media/pilot-band.jpg" alt="The pilot's unrolled groove on a ring band" loading="lazy"><figcaption>The pilot's band: a whistle's contour as a groove.</figcaption></figure>
-          </div>
-        </div>
-        <figure class="chart"><img data-src="/silver/files/media/hardata-ii-rate-distortion.svg" alt="Chart of whistle-type score against inscribed bits for two listeners, with the decoded groove against casting blur" loading="lazy"></figure>
-      </section>
-
-      <section class="idea" id="concepts" role="tabpanel" aria-labelledby="tab-concepts" tabindex="0" hidden>
-        <div class="idea-head">
-          <span class="section-number">04 / Sound-directed concepts · generated images</span>
-          <h2 id="concepts-title">A recording chooses how Mitoring and Mycelium should change.</h2>
-        </div>
-        <p class="lede">CLAP, an audio–text model, scores each recording against three descriptions and picks a silver operation: clicks give terraces, a whistle gives a sweeping crest, a wavering sound gives opening petals. FLUX.2 then redesigns a photograph of the piece. These are concept images, not fabrication models; the no-sound version shows what the image model does on its own.</p>
-        <div class="gallery four">
-          <figure><img data-src="/silver/files/media/livia-mitoring.jpg" alt="Livia's Mitoring ring with amber" loading="lazy"><figcaption><b>Original.</b> Mitoring: amber in folded silver.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/mitoring-whistle.png" alt="Generated redesign of Mitoring with a sweeping crest" loading="lazy"><figcaption><b>Whistle → crest.</b> Generated concept.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/mitoring-clicks.png" alt="Generated redesign of Mitoring with silver terraces" loading="lazy"><figcaption><b>Clicks → terraces.</b> Generated concept.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/livia-mycelium.jpg" alt="Livia's Mycelium ring with opal" loading="lazy"><figcaption><b>Original.</b> Mycelium: drainage around porous opal.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/mycelium-wavering.png" alt="Generated redesign of Mycelium with opening petals" loading="lazy"><figcaption><b>Wavering → petals.</b> Generated concept.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/mycelium-neutral.png" alt="Generated redesign of Mycelium without any sound" loading="lazy"><figcaption><b>No sound.</b> The model's own redesign, for comparison.</figcaption></figure>
-        </div>
-        <p class="small source">Details: <a href="https://github.com/antonkulaga/whales/blob/main/docs/artistic-experiments.md" target="_blank" rel="noopener">artistic experiments</a> and the <a href="https://github.com/antonkulaga/whales/blob/main/docs/sound-brush.md" target="_blank" rel="noopener">sound brush</a>, where a played whistle draws strokes that grow, branch, fold or open around a stone.</p>
-      </section>
-
-      <section class="idea" id="next" role="tabpanel" aria-labelledby="tab-next" tabindex="0" hidden>
-        <div class="idea-head">
-          <span class="section-number">05 / Ideas not built yet · proposals</span>
-          <h2 id="next-title">Jewelry still waiting for the workbench.</h2>
-        </div>
-        <ul class="proposals">
-          <li><span class="chip open">P6</span><h3>Echo of a jewel</h3><p>Auralised sonar portraits of Livia's meshes. What does an echo reveal of a lattice, a fold or an amber?</p></li>
-          <li><span class="chip open">P7</span><h3>A whistle alphabet</h3><p>A cast modular alphabet, if sparse encoder features turn out to match contour primitives rather than recording conditions.</p></li>
-          <li><span class="chip open">P8</span><h3>A day ring</h3><p>One ring for 24 hours of seven dolphins, shaped by how context and hour change their whistling.</p></li>
-          <li><span class="chip open">P4</span><h3>Moveout</h3><p>Fibre necklaces drawn by fin-whale calls as they cross a seafloor cable.</p></li>
-          <li><span class="chip open">P3</span><h3>Twin lattices</h3><p>Two lattices for killer-whale voices, one grouped by population and one by recorder, to show what classifiers really learn.</p></li>
-          <li><span class="chip open">P5</span><h3>Census hourglasses</h3><p>Twenty-one hourglasses comparing right-whale calls with aerial counts across a season.</p></li>
-        </ul>
-        <div class="next-steps">
-          <h3>Next steps for the studies above</h3>
-          <ul>
-            <li>Prototype the ferrofluid stones first: cheapest and fastest. Use display-grade ferrofluid; plain ferrofluid stains glass.</li>
-            <li>Ask Livia's caster for the real wall and opening limits. Each is one line in the config.</li>
-            <li>Print one safe and one 2× Roots in wax resin and cast both, to check the limits in metal.</li>
-          </ul>
-        </div>
-        <p class="small source">All eight proposals, ranked: <a href="https://github.com/antonkulaga/whales/blob/main/docs/novel-projects.md" target="_blank" rel="noopener">new science-and-art projects</a>.</p>
-      </section>
-
-      <section class="idea pieces" id="pieces" role="tabpanel" aria-labelledby="tab-pieces" tabindex="0" hidden>
-        <span class="section-number">Where it starts</span>
-        <h2 id="pieces-title">Livia's pieces</h2>
-        <div class="gallery four">
-          <figure><img data-src="/silver/files/media/livia-nanot.jpg" alt="Nanot of Power, an open cast-silver lattice" loading="lazy"><figcaption>Nanot of Power: an open cast-silver lattice.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/livia-mitoring.jpg" alt="Mitoring, amber in folded silver" loading="lazy"><figcaption>Mitoring: amber in folded silver.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/livia-mycelium.jpg" alt="Mycelium, a silver setting around porous opal" loading="lazy"><figcaption>Mycelium: drainage around porous opal.</figcaption></figure>
-          <figure><img data-src="/silver/files/media/livia-hardata.jpg" alt="Hardata, an engraved sound" loading="lazy"><figcaption>Hardata: an engraved sound that cannot be played.</figcaption></figure>
-        </div>
-      </section>
-
-      <footer class="silver-footer small">
-      <p>Regenerate the pages with <code>uv run --group art --group mesh main.py art silver</code> and <code>art silver-motion</code>; the app shows those when present and a committed copy otherwise (<code>bun scripts/silver.ts</code>). Measurements come from signal analysis and casting checks; FLUX images are generated concepts.</p>
-      <a class="text-link" href="?view=concert" data-show-view="concert">Back to the concert hall <span aria-hidden="true">↗</span></a>
-    </footer>
     </main>
-
     <main id="about-panel" class="view-panel technical about" role="tabpanel" aria-labelledby="about-tab" tabindex="0" hidden>
-      <section class="technical-hero"><span class="eyebrow">About</span><h1>An artist and<br>a <em>bioinformatician.</em></h1><p>Whale & Dolphin Orchestra is made by Livia Zaharia and Anton Kulaga. It began as a pre-project prototype for the HIFMB × HWK ArtWaves residency proposal, bringing marine recordings, signal analysis and generative music together with Livia's work in silver.</p></section>
+      <section class="technical-hero"><span class="eyebrow">About</span><h1>Architecture, nature<br>and <em>measured sound.</em></h1><p>Whale &amp; Dolphin Orchestra grows from Livia Zaharia's practice as a Romanian architect, established parametric jewellery designer and science-art artist. It brings her work with computational form into marine sound and silver, in a pre-project prototype for the HIFMB × HWK ArtWaves residency. Anton Kulaga contributes bioinformatics, longevity research and open-source software.</p></section>
 
-      <section class="people" aria-label="The makers">
-        <article class="person"><img class="person-photo" data-file="about/livia.jpg" alt="Portrait of Livia Zaharia" loading="lazy" decoding="async"><div class="person-text"><span class="section-number">Architect · parametric jewellery artist</span><h2>Livia Zaharia</h2><p>Livia is a Romanian architect and parametric jewellery artist who works under the label Paral Design. She writes the geometry of her pieces with Grasshopper, COMPAS and Python, 3D-prints them, casts them mostly in silver and combines them with natural materials such as amber, walnut husks and quartz. Her work has been shown at Romanian Jewelry Week every year since 2021.</p><p>In <a href="https://livistone.liviazaharia.com/" target="_blank" rel="noopener noreferrer">Livistone</a>, her jewellery grows into buildings in a 3D town you can walk through in the browser. <a href="https://enhancement.bio/" target="_blank" rel="noopener noreferrer">Materialized Enhancements</a>, started at the CODAME ART+TECH festival <i>The New Human</i> in Milan in 2026 with the GlucoseDAO and Longevity Genie team, lets visitors pick real genes from real organisms, such as tardigrade radiation shielding or naked-mole-rat cancer resistance. Her parametric geometry turns the protein properties of their picks into a 3D-printable Voronoi crystal. Sound to silver takes the same approach to whale and dolphin calls. She founded <a href="https://github.com/GlucoseDAO/" target="_blank" rel="noopener noreferrer">GlucoseDAO</a>, which builds open-source tools for glucose prediction, and contributes to the <a href="https://longevity-genie.github.io" target="_blank" rel="noopener noreferrer">Longevity Genie</a> ecosystem. Her rings are where the silver ideas for this project start.</p>
-          <ul class="person-links"><li><a href="https://liviazaharia.com" target="_blank" rel="noopener noreferrer">liviazaharia.com ↗</a></li><li><a href="https://www.instagram.com/paral_design/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></li><li><a href="https://www.linkedin.com/in/livia-zaharia-4b1425a0" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li><li><a class="gh" href="https://github.com/Livia-Zaharia" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>GitHub</a></li></ul></div></article>
-        <article class="person"><img class="person-photo" data-file="about/anton.jpg" alt="Portrait of Anton Kulaga" loading="lazy" decoding="async"><div class="person-text"><span class="section-number">Bioinformatician</span><h2>Anton Kulaga</h2><p>Anton is a bioinformatician at the <a href="http://aging-research.group" target="_blank" rel="noopener noreferrer">Systems Biology of Aging Group</a>, which develops computational tools to understand ageing. For this project he built the software: the map, the analysis of the recordings, the composition pipeline around ACE-Step 1.5 and this website.</p>
-          <ul class="person-links"><li><a class="gh" href="https://github.com/antonkulaga" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>GitHub</a></li><li><a href="http://aging-research.group" target="_blank" rel="noopener noreferrer">aging-research.group ↗</a></li></ul></div></article>
+      <section class="people" aria-label="The makers and selected biology work">
+        <article class="person"><img class="person-photo" data-file="about/livia.jpg" alt="Portrait of Livia Zaharia" loading="lazy" decoding="async"><div class="person-text"><span class="section-number">Architect · parametric jewellery designer · science-art artist</span><h2>Livia Zaharia</h2><p>A Romanian architect, Livia works across computational design, contemporary jewellery and science art. Under Paral Design, she uses Grasshopper, COMPAS and Python to generate forms, then 3D-prints and casts them mainly in silver, sometimes with amber, walnut husks or quartz. Her jewellery has been shown at Romanian Jewelry Week each year since 2021.</p>
+          <ul class="person-links"><li><a href="https://liviazaharia.com" target="_blank" rel="noopener noreferrer">liviazaharia.com</a></li><li><a href="https://www.instagram.com/paral_design/" target="_blank" rel="noopener noreferrer">Instagram</a></li><li><a href="https://www.linkedin.com/in/livia-zaharia-4b1425a0" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a class="gh" href="https://github.com/Livia-Zaharia" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>GitHub</a></li></ul></div></article>
+        <article class="person"><img class="person-photo" data-file="about/anton.jpg" alt="Portrait of Anton Kulaga" loading="lazy" decoding="async"><div class="person-text"><span class="section-number">Longevity researcher · entrepreneur · open-source developer</span><h2>Anton Kulaga</h2><p>Anton works in longevity research and bioinformatics at the <a href="http://aging-research.group" target="_blank" rel="noopener noreferrer">Systems Biology of Aging Group</a>. He builds open-source computational tools. For this project, he built the map, the recording-analysis pipeline, the ACE-Step 1.5 composition software and the website.</p>
+          <ul class="person-links"><li><a href="https://www.linkedin.com/in/antonkulaga/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a class="gh" href="https://github.com/antonkulaga" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>GitHub</a></li><li><a href="http://aging-research.group" target="_blank" rel="noopener noreferrer">aging-research.group</a></li></ul></div></article>
+      <section class="about-portfolio" aria-labelledby="about-portfolio-title">
+        <header class="about-portfolio-head"><span class="section-number">Selected work · jewellery and digital art</span><h2 id="about-portfolio-title">From cell-inspired jewellery to digital genetics.</h2></header>
+        <div class="about-portfolio-work">
+          <article class="about-project about-jewellery">
+            <div><span class="section-number">Livia Zaharia · Romanian Jewelry Week 2025</span><h3><a class="portfolio-title-link" href="https://liviazaharia.com/art-design/it-s-just-a-cell-life-rjw-2025" target="_blank" rel="noopener noreferrer">It's Just a Cell Life</a></h3><p>The Biology collection follows different stages and parts of a cell through jewellery. <i>The Nanot of Power</i> is one sterling-silver pendant among several works.</p></div>
+            <div class="biology-piece-images" role="group" aria-label="Four pieces from It's Just a Cell Life">
+              <figure><img data-file="about/nanot-open.jpg" alt="Open lattice of Livia Zaharia's The Nanot of Power pendant" loading="lazy" decoding="async"><figcaption><strong>The Nanot of Power</strong><span>sterling silver</span></figcaption></figure>
+              <figure><img data-file="about/mitoring.jpg" alt="Mitoring, a mitochondria ring with amber and sterling silver by Livia Zaharia" loading="lazy" decoding="async"><figcaption><strong>Mitoring</strong><span>Mitochondria ring · amber and sterling silver</span></figcaption></figure>
+              <figure><img data-file="about/nut-of-power.jpg" alt="The Nut of Power pendant in walnut, amethyst and brass by Livia Zaharia" loading="lazy" decoding="async"><figcaption><strong>The Nut of Power</strong><span>walnut, amethyst and brass</span></figcaption></figure>
+              <figure><img data-file="about/dark-nut-of-power.jpg" alt="The Dark Nut of Power pendant in walnut and copper by Livia Zaharia" loading="lazy" decoding="async"><figcaption><strong>The Dark Nut of Power</strong><span>walnut and copper</span></figcaption></figure>
+            </div>
+          </article>
+          <article class="about-project about-digital">
+            <span class="section-number">Shared digital project · Livia Zaharia &amp; Anton Kulaga</span><h3><a class="portfolio-title-link" href="https://enhancement.bio/" target="_blank" rel="noopener noreferrer">Materialized Enhancements</a></h3><p>An interactive science-art experience made with GlucoseDAO and Longevity Genie. Visitors explore biological traits; Livia shapes their selections into printable crystals, while Anton contributes biology and software.</p>
+            <figure class="about-project-shot"><img data-file="about/enhancement-preview.png" alt="Screenshot of enhancement.bio showing the gene library and human enhancement profile" loading="lazy" decoding="async"><figcaption>Website preview</figcaption></figure>
+          </article>
+          <article class="about-project about-livistone">
+            <span class="section-number">Shared digital environment · Livia Zaharia &amp; Anton Kulaga</span><h3><a class="portfolio-title-link" href="https://livistone.liviazaharia.com/" target="_blank" rel="noopener noreferrer">Livistone</a></h3><p>A walk-through 3D town where Livia's jewellery forms grow into architecture.</p>
+            <figure class="about-project-shot about-livistone-shot"><img data-file="about/livistone-centre.jpg" alt="Central buildings in the Livistone walk-through 3D town" loading="lazy" decoding="async"><figcaption>Walk-through 3D environment</figcaption></figure>
+          </article>
+        </div>
+      </section>
       </section>
 
-      <section class="research-context about-code" aria-labelledby="code-title"><div><span class="section-number">Open source</span><h2 id="code-title">The code and the method are public.</h2><a class="gh-button" href="https://github.com/antonkulaga/whales" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg><span>antonkulaga/whales</span></a></div><div><p>The repository holds this website, the Python engine that measures the recordings and composes the pieces, and the research behind both: datasets, models, art precedents and the silver studies.</p><p>Recordings come from the Alfred Wegener Institute's polar recordings on PANGAEA, the NOAA DCLDE workshop datasets, Orcasound, OpenWhistle and the Dominica Sperm Whale Project. Photographs of Livia's jewellery and her portrait: Livia Zaharia. To talk about the project, write to Livia on <a href="https://www.instagram.com/paral_design/" target="_blank" rel="noopener noreferrer">Instagram</a> or <a href="https://www.linkedin.com/in/livia-zaharia-4b1425a0" target="_blank" rel="noopener noreferrer">LinkedIn</a>, or open an issue on <a href="https://github.com/antonkulaga/whales/issues" target="_blank" rel="noopener noreferrer">GitHub</a>.</p><a class="text-link" href="#" data-show-view="installation">See the installation plan <span aria-hidden="true">↗</span></a></div></section>
-      <button class="text-link technical-return" type="button" data-show-concert>Back to the orchestra <span aria-hidden="true">↗</span></button>
+      <section class="research-context about-code" aria-labelledby="code-title"><div><span class="section-number">Open source</span><h2 id="code-title">The code and the method are public.</h2><a class="gh-button" href="https://github.com/antonkulaga/whales" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg><span>antonkulaga/whales</span></a></div><div><p>The repository holds this website, the Python engine that measures the recordings and composes the pieces, and the research behind both: datasets, models, art precedents and the silver studies.</p><p>Recordings come from the Alfred Wegener Institute's polar recordings on PANGAEA, the NOAA DCLDE workshop datasets, Orcasound, OpenWhistle and the Dominica Sperm Whale Project. Photographs of Livia's jewellery and her portrait: Livia Zaharia. To talk about the project, write to Livia on <a href="https://www.instagram.com/paral_design/" target="_blank" rel="noopener noreferrer">Instagram</a> or <a href="https://www.linkedin.com/in/livia-zaharia-4b1425a0" target="_blank" rel="noopener noreferrer">LinkedIn</a>, or open an issue on <a href="https://github.com/antonkulaga/whales/issues" target="_blank" rel="noopener noreferrer">GitHub</a>.</p></div></section>
+
     </main>
 
-    <footer id="proposal" class="proposal"><div><span class="section-number">Art × Marine science</span><h2>An invitation to listen differently.</h2></div><div><p>A pre-project prototype for the <a href="https://hifmb.de/transfer/art-science/air/" target="_blank" rel="noopener noreferrer">HIFMB × HWK ArtWaves residency proposal <span aria-hidden="true">↗</span></a> — Helmholtz-Institute for Functional Marine Biodiversity and Hanse-Wissenschaftskolleg, Institute for Advanced Study.</p><p class="small">Recording sources: Alfred Wegener Institute (PANGAEA) · NOAA DCLDE workshops · Orcasound · OpenWhistle · Dominica Sperm Whale Project. Published hydrophone positions are circles; approximate site anchors are diamonds. Background dataset dots are not playable. Hall artwork: AI-generated architectural study.</p><p class="small">Species silhouettes via <a href="https://www.phylopic.org/" target="_blank" rel="noopener noreferrer">PhyloPic</a>: Chris huh (humpback, dolphin, orca; <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>) and Margot Michaud (sperm whale; CC0). Images used unchanged.</p></div><div class="footer-line"><span>Whale & Dolphin Orchestra · <a href="#" data-show-view="about">Livia Zaharia & Anton Kulaga</a></span><a class="gh" href="https://github.com/antonkulaga/whales" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>Source on GitHub</a><span>Listen closely.</span></div></footer>
+    <footer id="proposal" class="proposal">
+      <div class="proposal-intro"><h2>An invitation to listen differently.</h2> <p class="proposal-residency">A pre-project prototype for the <a href="https://hifmb.de/transfer/art-science/air/" target="_blank" rel="noopener noreferrer">HIFMB × HWK ArtWaves residency proposal</a> — Helmholtz-Institute for Functional Marine Biodiversity and Hanse-Wissenschaftskolleg, Institute for Advanced Study.</p></div>
+      <div class="footer-details">
+        <p class="small">Recording sources: Alfred Wegener Institute (PANGAEA) · NOAA DCLDE workshops · Orcasound · OpenWhistle · Dominica Sperm Whale Project. <a href="?view=technical#sources" data-show-view="technical" data-view-section="sources">Full source details</a></p>
+        <p class="small">Species silhouettes via <a href="https://www.phylopic.org/" target="_blank" rel="noopener noreferrer">PhyloPic</a>: Chris huh (humpback, dolphin, orca; <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>) and Margot Michaud (sperm whale; CC0). Images used unchanged. Hall artwork: AI-generated architectural study.</p>
+        <p class="small">Music: <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5</a>, run locally. Coding assistance: Claude Code and OpenAI Codex. Artistic and methodological decisions: Livia Zaharia and Anton Kulaga.</p>
+      </div>
+      <div class="footer-line"><span>Whale & Dolphin Orchestra · <a href="#" data-show-view="about">Livia Zaharia & Anton Kulaga</a></span><a class="gh" href="https://github.com/antonkulaga/whales" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#gh-icon"/></svg>Source on GitHub</a><span>Listen closely.</span></div>
+    </footer>
   </div>
   <script type="module" src="./main.ts"></script>
 </body>

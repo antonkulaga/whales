@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sound to silver · research notebook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="../src/style.css">
+  <link rel="stylesheet" href="silver-ideas.css">
+</head>
+<body>
+  <div class="wrap">
+    <main class="view-panel technical silver-view" id="silver-research">
+      <section class="technical-hero silver-hero" aria-labelledby="silver-research-title">
+        <span class="eyebrow">Unlinked research notebook · for brainstorming</span>
+        <h1 id="silver-research-title">Sound to <em>silver.</em></h1>
+        <p>Early studies and alternate directions retained here for internal exploration. The public Sound to silver view centers on the circular ring animation and its digital and physical editions.</p>
+      </section>
+<div class="idea-tabs" role="tablist" aria-label="Sound to silver ideas">
+        <button type="button" role="tab" id="tab-bend" aria-controls="bend" aria-selected="true" tabindex="0" data-tab="bend"><span class="n">01</span><span class="label">Bending a real ring</span><span class="chip done">study run</span></button>
+        <button type="button" role="tab" id="tab-motion" aria-controls="motion" aria-selected="false" tabindex="-1" data-tab="motion"><span class="n">02</span><span class="label">Moving silver</span><span class="chip anim">animated</span></button>
+        <button type="button" role="tab" id="tab-hardata" aria-controls="hardata" aria-selected="false" tabindex="-1" data-tab="hardata"><span class="n">03</span><span class="label">Hardata II</span><span class="chip done">pilot run</span></button>
+        <button type="button" role="tab" id="tab-concepts" aria-controls="concepts" aria-selected="false" tabindex="-1" data-tab="concepts"><span class="n">04</span><span class="label">Sound-directed concepts</span><span class="chip gen">generated</span></button>
+        <button type="button" role="tab" id="tab-next" aria-controls="next" aria-selected="false" tabindex="-1" data-tab="next"><span class="n">05</span><span class="label">Ideas not built yet</span><span class="chip open">proposals</span></button>
+        <button type="button" role="tab" id="tab-pieces" aria-controls="pieces" aria-selected="false" tabindex="-1" data-tab="pieces"><span class="n">06</span><span class="label">Livia's pieces</span><span class="chip open">originals</span></button>
+      </div>
+
+      <section class="idea" id="bend" role="tabpanel" aria-labelledby="tab-bend" tabindex="0">
+        <div class="idea-head">
+          <span class="section-number">01 / Bending a real ring · study run</span>
+          <h2 id="bend-title">A whistle bends Inline and Roots by millimetres. The finger hole never moves.</h2>
+        </div>
+        <div class="idea-body">
+          <div class="prose">
+            <p>Two of Livia's stoneless rings, at full print resolution, are bent by recordings. Time runs along the metal from one end of the open ring to the other. <b>Pitch lifts</b> each cross-section along the finger, <b>level swells</b> the outer metal and <b>pitch slope leans</b> it.</p>
+            <p>This builds on a sound-responsive technique Livia had already explored in her <b>Inline Ring (2022)</b>. Its Grasshopper definition is in her “sound manipulation” folder: it takes microphone level with Sound Capture and uses it to move points along a curve. Here, that approach is applied to measured whale and dolphin calls, with casting checks to keep the resulting bends workable in silver.</p>
+            <p>Every point keeps its angle around the finger and only moves outward or along it, so the ring cannot tear or pass through itself. Casting checks on the full print file then find the largest push that still casts: walls of at least 0.6 mm and openings of at least 0.4 mm, assumed lost-wax limits for the caster to confirm.</p>
+          </div>
+          <dl class="facts">
+            <div><dt>Up to 4 mm</dt><dd>Roots moves at its safe limit.</dd></div>
+            <div><dt>About 2 mm</dt><dd>Inline with lift alone, at exactly the same silver weight.</dd></div>
+            <div><dt>0.000 mm</dt><dd>Change in the finger hole across all 20 runs.</dd></div>
+            <div><dt>2–28 %</dt><dd>Surface made too thin by the usual audio-reactive push at the same strength.</dd></div>
+          </dl>
+        </div>
+        <figure class="frame">
+          <iframe src="../demo/silver/index.html" title="Sound to Silver Bench: live 3D viewer of the bent rings" loading="lazy" allow="microphone; autoplay"></iframe>
+          <figcaption><span><b>The bench, live.</b> Choose a ring and a recording, then <i>Play and bend</i>: the ring bends as the sound plays. The push slider is marked at the verified limit, and <i>Whistle live</i> records from your microphone.</span></figcaption>
+        </figure>
+        <div class="gallery three">
+          <figure><img data-src="../demo/silver/media/silver-inline-lift.png" alt="Inline ring bent by lift only, the original shown as a grey ghost" loading="lazy"><figcaption>Inline, lift only, SW_Nana at its 2.22 mm limit. The band follows the whistle's slow rise along the finger.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/silver-roots-all.png" alt="Roots ring with all three gestures applied" loading="lazy"><figcaption>Roots, all three gestures at 3.70 mm. The cups lift and lean by up to 4 mm.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/silver-roots-naive.png" alt="Roots ring pushed along its surface normal, failing areas in red" loading="lazy"><figcaption>The usual push along the surface normal at the same strength: the shank erodes and the cups pass through themselves (red).</figcaption></figure>
+        </div>
+        <p class="small source">Whistles carry the change; a sperm-whale coda, all clicks, only swells the band by about 0.5 mm. Report: <a href="https://github.com/antonkulaga/whales/blob/main/docs/sound-to-silver-bending.md" target="_blank" rel="noopener">Sound to silver: bending a real ring</a>.</p>
+      </section>
+
+      <section class="idea" id="motion" role="tabpanel" aria-labelledby="tab-motion" tabindex="0" hidden>
+        <div class="idea-head">
+          <span class="section-number">02 / Moving silver · animated studies</span>
+          <h2 id="motion-title">A cast bend is frozen. These versions keep moving after casting.</h2>
+        </div>
+        <p class="lede">Each study combines Livia's print-and-cast pipeline with hobby electronics, under €200 in parts per prototype. The page animates them on her real models, driven by the measured pitch and level of the whistles. The animations are schematics with simple lags, not material simulations.</p>
+        <figure class="frame">
+          <iframe src="../demo/silver/motion.html" title="Moving Silver Studies: animated mechanisms on Livia's rings" loading="lazy" allow="autoplay"></iframe>
+          <figcaption><span><b>Moving Silver Studies.</b> Pick one of five: the frozen cast as a baseline, then ferrofluid stones, hinged nitinol, magnetic fins and memory cells, each on Livia's real model. Below them: pieces by other makers that already move.</span></figcaption>
+        </figure>
+        <div class="table-scroll">
+          <table class="studies">
+            <thead><tr><th>Study</th><th>Follows a whistle</th><th>Worn</th><th>Parts, roughly</th><th>Livia adds</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Ferrofluid stones in Roots' three cups <span class="chip done">start here</span></th><td>Live</td><td>Yes; moves on its stand</td><td>€80–150: display ferrofluid, glass or resin domes, a 12 V electromagnet, ESP32 board, microphone</td><td>Cups for sealed domes; a stand with the coil</td></tr>
+              <tr><th scope="row">Hinged Inline with nitinol wire</th><td>At ¼–⅛ speed</td><td>Yes, with a battery</td><td>€60–120: Flexinol wire, crimps, ESP32 board, MOSFETs, small LiPo</td><td>Twelve hinged segments</td></tr>
+              <tr><th scope="row">Magnetic fins</th><td>Live</td><td>Yes; moves on its stand</td><td>€80–150: silicone, 1 mm magnets, four small coils, H-bridge, ESP32 board</td><td>Fin moulds; slots in the rail</td></tr>
+              <tr><th scope="row">Memory cells</th><td>One write per sound, then holds</td><td>Yes, no electronics</td><td>€50–120: snap domes with tiny magnets, one coil, ESP32 board</td><td>Dome seats along the band</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="idea" id="hardata" role="tabpanel" aria-labelledby="tab-hardata" tabindex="0" hidden>
+        <div class="idea-head">
+          <span class="section-number">03 / Hardata II · pilot run</span>
+          <h2 id="hardata-title">A ring band that stores a dolphin whistle as a readable groove.</h2>
+        </div>
+        <div class="idea-body">
+          <div class="prose">
+            <p>Livia's 2021 <i>Hardata</i> engraved a sound that could not be played back. Hardata II engraves a dolphin whistle as a contour groove around a band, then reads the groove back into sound and asks a 2026 dolphin-trained encoder whether it is still the same kind of whistle.</p>
+            <p>A 272-bit groove kept <b>75 %</b> of the encoder's whistle-type score (macro-F1 0.62 against 0.82 on the original audio). Even 80 bits kept 60 %. The simulated casting blur is shown against the bits it costs.</p>
+            <p class="small source">Report: <a href="https://github.com/antonkulaga/whales/blob/main/docs/hardata-ii-pilot.md" target="_blank" rel="noopener">Hardata II pilot</a>. Run: <code>uv run --group art main.py inscription fetch|run|matched</code>.</p>
+          </div>
+          <div class="gallery two">
+            <figure><img data-src="../demo/silver/media/livia-hardata.jpg" alt="Livia's Hardata piece" loading="lazy"><figcaption>Hardata (2021), the piece it continues.</figcaption></figure>
+            <figure><img data-src="../demo/silver/media/pilot-band.jpg" alt="The pilot's unrolled groove on a ring band" loading="lazy"><figcaption>The pilot's band: a whistle's contour as a groove.</figcaption></figure>
+          </div>
+        </div>
+        <figure class="chart"><img data-src="../demo/silver/media/hardata-ii-rate-distortion.svg" alt="Chart of whistle-type score against inscribed bits for two listeners, with the decoded groove against casting blur" loading="lazy"></figure>
+      </section>
+
+      <section class="idea" id="concepts" role="tabpanel" aria-labelledby="tab-concepts" tabindex="0" hidden>
+        <div class="idea-head">
+          <span class="section-number">04 / Sound-directed concepts · generated images</span>
+          <h2 id="concepts-title">A recording chooses how Mitoring and Mycelium should change.</h2>
+        </div>
+        <p class="lede">CLAP, an audio–text model, scores each recording against three descriptions and picks a silver operation: clicks give terraces, a whistle gives a sweeping crest, a wavering sound gives opening petals. FLUX.2 then redesigns a photograph of the piece. These are concept images, not fabrication models; the no-sound version shows what the image model does on its own.</p>
+        <div class="gallery four">
+          <figure><img data-src="../demo/silver/media/livia-mitoring.jpg" alt="Livia's Mitoring ring with amber" loading="lazy"><figcaption><b>Original.</b> Mitoring: amber in folded silver.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/mitoring-whistle.png" alt="Generated redesign of Mitoring with a sweeping crest" loading="lazy"><figcaption><b>Whistle → crest.</b> Generated concept.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/mitoring-clicks.png" alt="Generated redesign of Mitoring with silver terraces" loading="lazy"><figcaption><b>Clicks → terraces.</b> Generated concept.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/livia-mycelium.jpg" alt="Livia's Mycelium ring with opal" loading="lazy"><figcaption><b>Original.</b> Mycelium: drainage around porous opal.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/mycelium-wavering.png" alt="Generated redesign of Mycelium with opening petals" loading="lazy"><figcaption><b>Wavering → petals.</b> Generated concept.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/mycelium-neutral.png" alt="Generated redesign of Mycelium without any sound" loading="lazy"><figcaption><b>No sound.</b> The model's own redesign, for comparison.</figcaption></figure>
+        </div>
+        <p class="small source">Details: <a href="https://github.com/antonkulaga/whales/blob/main/docs/artistic-experiments.md" target="_blank" rel="noopener">artistic experiments</a> and the <a href="https://github.com/antonkulaga/whales/blob/main/docs/sound-brush.md" target="_blank" rel="noopener">sound brush</a>, where a played whistle draws strokes that grow, branch, fold or open around a stone.</p>
+      </section>
+
+      <section class="idea" id="next" role="tabpanel" aria-labelledby="tab-next" tabindex="0" hidden>
+        <div class="idea-head">
+          <span class="section-number">05 / Ideas not built yet · proposals</span>
+          <h2 id="next-title">Jewelry still waiting for the workbench.</h2>
+        </div>
+        <ul class="proposals">
+          <li><span class="chip open">P6</span><h3>Echo of a jewel</h3><p>Auralised sonar portraits of Livia's meshes. What does an echo reveal of a lattice, a fold or an amber?</p></li>
+          <li><span class="chip open">P7</span><h3>A whistle alphabet</h3><p>A cast modular alphabet, if sparse encoder features turn out to match contour primitives rather than recording conditions.</p></li>
+          <li><span class="chip open">P8</span><h3>A day ring</h3><p>One ring for 24 hours of seven dolphins, shaped by how context and hour change their whistling.</p></li>
+          <li><span class="chip open">P4</span><h3>Moveout</h3><p>Fibre necklaces drawn by fin-whale calls as they cross a seafloor cable.</p></li>
+          <li><span class="chip open">P3</span><h3>Twin lattices</h3><p>Two lattices for killer-whale voices, one grouped by population and one by recorder, to show what classifiers really learn.</p></li>
+          <li><span class="chip open">P5</span><h3>Census hourglasses</h3><p>Twenty-one hourglasses comparing right-whale calls with aerial counts across a season.</p></li>
+        </ul>
+        <div class="next-steps">
+          <h3>Next steps for the studies above</h3>
+          <ul>
+            <li>Prototype the ferrofluid stones first: cheapest and fastest. Use display-grade ferrofluid; plain ferrofluid stains glass.</li>
+            <li>Ask Livia's caster for the real wall and opening limits. Each is one line in the config.</li>
+            <li>Print one safe and one 2× Roots in wax resin and cast both, to check the limits in metal.</li>
+          </ul>
+        </div>
+        <p class="small source">All eight proposals, ranked: <a href="https://github.com/antonkulaga/whales/blob/main/docs/novel-projects.md" target="_blank" rel="noopener">new science-and-art projects</a>.</p>
+      </section>
+
+      <section class="idea pieces" id="pieces" role="tabpanel" aria-labelledby="tab-pieces" tabindex="0" hidden>
+        <span class="section-number">Where it starts</span>
+        <h2 id="pieces-title">Livia's pieces</h2>
+        <div class="gallery four">
+          <figure><img data-src="../demo/silver/media/livia-nanot.jpg" alt="Nanot of Power, an open cast-silver lattice" loading="lazy"><figcaption>Nanot of Power: an open cast-silver lattice.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/livia-mitoring.jpg" alt="Mitoring, amber in folded silver" loading="lazy"><figcaption>Mitoring: amber in folded silver.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/livia-mycelium.jpg" alt="Mycelium, a silver setting around porous opal" loading="lazy"><figcaption>Mycelium: drainage around porous opal.</figcaption></figure>
+          <figure><img data-src="../demo/silver/media/livia-hardata.jpg" alt="Hardata, an engraved sound" loading="lazy"><figcaption>Hardata: an engraved sound that cannot be played.</figcaption></figure>
+        </div>
+      </section>
+      <footer class="silver-footer small"><span>Research archive · not linked from the public site menu</span></footer>
+    </main>
+  </div>
+  <script>
+    const bar = document.querySelector(".idea-tabs");
+    const tabs = [...(bar?.querySelectorAll('[role="tab"]') ?? [])];
+    for (const image of document.querySelectorAll("img[data-src]")) image.src = image.dataset.src;
+    function selectIdea(id, focus = false) {
+      const tab = tabs.find((item) => item.dataset.tab === id) ?? tabs[0];
+      if (!tab) return;
+      for (const item of tabs) {
+        const selected = item === tab;
+        item.setAttribute("aria-selected", String(selected));
+        item.tabIndex = selected ? 0 : -1;
+        document.getElementById(item.dataset.tab).hidden = !selected;
+      }
+      if (focus) tab.focus();
+    }
+    for (const tab of tabs) tab.addEventListener("click", () => selectIdea(tab.dataset.tab));
+    bar?.addEventListener("keydown", (event) => {
+      const current = tabs.findIndex((tab) => tab.getAttribute("aria-selected") === "true");
+      const next = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: tabs.length - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      selectIdea(tabs[(next + tabs.length) % tabs.length].dataset.tab, true);
+    });
+    selectIdea(new URL(location.href).searchParams.get("idea") ?? location.hash.slice(1));
+  </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ import { CATEGORY, THREATENED, TREND_ARROW, TREND_WORD, statusLine, statusOf, vo
 import type { Catalog, CombineMessage, ComboSummary, GenerationRuntime, Manifest, Source, Species, StemName } from "./lib/types.ts";
 import { AtlasMap, SPECIES_COLOR, sitesOf, type Countries, type MapPart, type Site } from "./map.ts";
 import { Player, type Track } from "./player.ts";
-import "./silver.ts"; // the Sound to silver tab: its idea tabs and images
+import { setSilverViewerActive } from "./silver-viewer.ts";
 
 const $ = <T extends Element>(selector: string) => document.querySelector(selector) as T;
 const esc = (value: unknown) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string);
@@ -53,21 +53,36 @@ const viewTabs = [...document.querySelectorAll<HTMLButtonElement>("[role=tab][da
   .filter((tab) => !(isStatic && tab.hasAttribute("data-server-only")));
 // About and Installation photos live with the demo media; lazy loading waits until their panel is shown.
 for (const img of document.querySelectorAll<HTMLImageElement>("img[data-file]")) img.src = fileUrl(img.dataset.file!);
+if (!isStatic) for (const img of document.querySelectorAll<HTMLImageElement>("img[data-silver-file]")) {
+  img.src = `/silver/files/${img.dataset.silverFile!}`;
+}
+const contextChoices = [...document.querySelectorAll<HTMLButtonElement>("[data-context-choice]")];
+const contextPanels = [...document.querySelectorAll<HTMLElement>("[data-context-panel]")];
+for (const choice of contextChoices) choice.addEventListener("click", () => {
+  const selected = choice.dataset.contextChoice;
+  for (const option of contextChoices) option.setAttribute("aria-pressed", String(option === choice));
+  for (const panel of contextPanels) panel.toggleAttribute("hidden", panel.dataset.contextPanel !== selected);
+});
 // Links to server routes (such as /silver) have no target in the static copy.
 if (isStatic) for (const link of document.querySelectorAll<HTMLElement>("[data-server-only]")) link.hidden = true;
-function showView(view: View, scroll = false) {
+function showView(view: View, scroll = false, sectionId?: string) {
   for (const tab of viewTabs) {
     const active = tab.dataset.view === view;
     tab.setAttribute("aria-selected", String(active));
     tab.tabIndex = active ? 0 : -1;
   }
   for (const name of VIEWS) $(`#${name}-panel`).toggleAttribute("hidden", view !== name);
+  if (!isStatic) setSilverViewerActive(view === "silver");
+  const panel = $<HTMLElement>(`#${view}-panel`);
+  const section = sectionId ? document.getElementById(sectionId) : null;
+  const destination = section && panel.contains(section) ? section : panel;
   const url = new URL(location.href);
   if (view === "concert") url.searchParams.delete("view");
   else url.searchParams.set("view", view);
+  if (destination === section) url.hash = section!.id;
   history.replaceState(null, "", url);
   if (scroll) {
-    $<HTMLElement>(`#${view}-panel`).scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
+    destination.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
     $<HTMLButtonElement>(`#${view}-tab`).focus({ preventScroll: true });
   }
 }
@@ -84,7 +99,7 @@ document.addEventListener("click", (event) => {
   const target = (event.target as Element).closest<HTMLElement>("[data-show-technical], [data-show-concert], [data-show-view]");
   if (!target) return;
   event.preventDefault();
-  showView((target.dataset.showView as View | undefined) ?? (target.hasAttribute("data-show-technical") ? "technical" : "concert"), true);
+  showView((target.dataset.showView as View | undefined) ?? (target.hasAttribute("data-show-technical") ? "technical" : "concert"), true, target.dataset.viewSection);
 });
 const requestedView = new URL(location.href).searchParams.get("view") as View | null;
 const reachable = (view: View | null): view is View => Boolean(view && viewTabs.some((tab) => tab.dataset.view === view));
@@ -199,42 +214,6 @@ $<HTMLElement>("#zooms").addEventListener("click", (event) => {
   document.querySelectorAll("#zooms [data-zoom]").forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
 });
 map.fit(sites);
-
-/* ---------- recordings list ---------- */
-// Spectrogram thumbnails carry the onsets our audio analysis measured, so the list shows data, not decoration.
-function onsetTicks(source: Source): string {
-  return source.onsets_s.map((t) => {
-    const x = ((t / source.duration_s) * 1000).toFixed(1);
-    return `<line x1="${x}" x2="${x}" y1="0" y2="22"/>`;
-  }).join("");
-}
-
-$<HTMLElement>("#roster-count").textContent = `${catalog.sources.length} recordings · ${sites.length} sites`;
-$<HTMLElement>("#roster").innerHTML = sites.map((site) => `<li class="roster-site" data-site="${esc(site.key)}">
-  <h3>${esc(site.location.label)}</h3>
-  <ul>${site.sources.map((source) => `<li class="rec" data-id="${esc(source.id)}" style="--c:${SPECIES_COLOR[source.species]}">
-    <button class="rec-main" type="button" data-toggle="${esc(source.id)}" aria-pressed="false">
-      <span class="seat" aria-hidden="true">+</span>
-      <span class="rec-text"><b>${esc(source.title)}</b><span>${esc(capital(source.species))} · ${instrumentIcon(source.instrument)} ${esc(source.instrument)} · ${source.duration_s.toFixed(0)} s · ${source.onsets_s.length} ${source.material === "clicks" ? "clicks" : "calls"}</span></span>
-    </button>
-    <button class="listen" type="button" data-listen="${esc(source.id)}" data-label="▶" aria-label="Listen to ${esc(source.title)}">▶</button>
-    ${statusRow(source)}
-    <span class="thumb" aria-hidden="true"><img src="${esc(fileUrl(source.files.animal.image))}" alt="" loading="lazy"><svg viewBox="0 0 1000 22" preserveAspectRatio="none">${onsetTicks(source)}</svg></span>
-  </li>`).join("")}</ul></li>`).join("");
-
-$<HTMLElement>("#roster").addEventListener("click", (event) => {
-  const target = (event.target as Element).closest<HTMLButtonElement>("button");
-  const source = target && sourceById.get(target.dataset.toggle ?? target.dataset.listen ?? target.dataset.info ?? "");
-  if (!target || !source) return;
-  if (target.dataset.info) openVoiceCard(source);
-  else if (target.dataset.toggle) toggle(source);
-  else listen(source, target);
-});
-$<HTMLElement>("#roster").addEventListener("pointerover", (event) => {
-  const item = (event.target as Element).closest<HTMLElement>(".roster-site");
-  map.highlight(item?.dataset.site ?? null);
-});
-$<HTMLElement>("#roster").addEventListener("pointerleave", () => map.highlight(null));
 
 /* ---------- seating ---------- */
 function toggle(source: Source) {
@@ -357,12 +336,6 @@ function orchestraChanged() {
   const ids = composer.ids();
   map.setSeated(new Set(ids.map((id) => siteOf.get(id)?.key ?? "")));
   map.setCombination(composer.mapParts());
-  document.querySelectorAll<HTMLElement>("#roster .rec").forEach((item) => {
-    const seat = ids.indexOf(item.dataset.id ?? "");
-    item.classList.toggle("seated", seat >= 0);
-    item.querySelector(".rec-main")!.setAttribute("aria-pressed", String(seat >= 0));
-    item.querySelector(".seat")!.textContent = seat >= 0 ? String(seat + 1) : "+";
-  });
   const open = sites.find((s) => s.key === openSiteKey);
   if (open) openSite(open);
   if (flash && ids.length) flash = "";
@@ -380,7 +353,7 @@ function renderDock() {
     return `<li class="player" data-id="${esc(id)}" style="--c:${SPECIES_COLOR[source.species]}" title="${esc(source.title)}">
       <span class="seat">${i + 1}</span><span class="who"><b>${esc(capital(source.species))} <i class="inst" title="Guide instrument: ${esc(source.instrument)}">${instrumentIcon(source.instrument)}</i></b><span>${esc(source.location.label)}</span></span>
       <button class="x" type="button" data-remove="${esc(id)}" aria-label="Remove ${esc(source.title)}">×</button></li>`;
-  }).join("") : `<li class="players-empty">Empty. Click a site on the map or a recording in the list to seat it.</li>`;
+  }).join("") : `<li class="players-empty">Choose a site on the map to seat a musician.</li>`;
 
   const issues = composer.problems();
   const key = JSON.stringify(composer.spec());
@@ -453,7 +426,7 @@ function openVoiceCard(source: Source) {
     ${population ? statusBlock(population, "This population") : ""}
     ${note ? `<p class="voice-note">${esc(note)}</p>` : ""}
     ${statusBlock(species, population || note ? "The species worldwide" : "The species")}
-    <section class="voice-refs"><span class="section-number">Sources</span><ul>${refs.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.label)} ↗</a></li>`).join("")}</ul></section>
+    <section class="voice-refs"><span class="section-number">Sources</span><ul>${refs.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.label)}</a></li>`).join("")}</ul></section>
     <p class="small">Counts name the year they describe. A population's own listing replaces its species' category on the map and the chair.</p>
     <div class="row-actions"><button class="btn" type="button" data-listen="${esc(source.id)}" data-label="Listen to the recording">Listen to the recording</button>${seated ? `<button class="btn" type="button" data-remove="${esc(source.id)}">Remove from the orchestra</button>` : ""}</div>`;
   voiceCard.showModal();
