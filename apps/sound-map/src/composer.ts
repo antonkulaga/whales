@@ -76,9 +76,7 @@ export class Composer {
   /** Seat a recording; returns false when it is already seated or every seat is taken. */
   add(source: Source): boolean {
     if (this.has(source.id) || this.full) return false;
-    // A new layered player enters a few seconds after the previous one, so layers do not all start together.
-    const offset = this.arrangement === "layer" && this.parts.length ? Math.min(30, this.parts.length * 4) : 0;
-    this.parts.push(draftFor(source, offset));
+    this.parts.push(draftFor(source));
     this.changed();
     return true;
   }

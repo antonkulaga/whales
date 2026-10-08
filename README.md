@@ -85,9 +85,16 @@ the port, host and ACE-Step choice in `.env` (`ORCHESTRA_PORT`, `ORCHESTRA_HOST`
 `ORCHESTRA_ACE`) or per run (`uv run start --port 3071 --ace no`); `bun run dev`
 reads the same `.env`.
 
+Recording analysis and deterministic composition use the small `audio` dependency
+group. They do not install PyTorch, CUDA or the image models from `art`; metadata
+downloads use only the base dependencies. Install FFmpeg for playback MP3s.
+
 ACE-Step automatically uses CUDA when available and falls back to CPU otherwise.
 For a CPU-only installation, run `uv run start --ace yes` (or set
-`ORCHESTRA_ACE=yes`). CPU generation needs sufficient RAM for the model and takes
+`ORCHESTRA_ACE=yes`). This installs CPU PyTorch and the inference dependencies in
+ACE-Step's own environment. Only the selected music model, VAE and text encoder
+are downloaded (about 6 GB); the unused LM and turbo model are skipped.
+CPU generation needs sufficient RAM for the model and takes
 longer; finished pieces play immediately on either kind of server. Compose shows
 an activity bar and the engine's current stage, with a CPU notice only when the
 server detects no CUDA.

@@ -52,19 +52,28 @@ export function problems(placed: PlacedPart[], limits: CombinationLimits): strin
 }
 
 export function buildSpec(title: string, arrangement: Arrangement, gap_s: number, parts: PartDraft[], ace: AceRequest | null): Spec {
+  const resolved = parts.map((p) => ({
+    source: p.source,
+    offset_s: round(p.offset_s),
+    trim_s: [round(p.trim_s[0]), round(p.trim_s[1])] as [number, number],
+    gain_db: round(p.gain_db),
+    shift_octaves: p.shift_octaves,
+  }));
+  // Layer order does not change the music. Normalize requests so click order shares a saved piece.
+  if (arrangement === "layer") resolved.sort(compareParts);
   return {
     title: title.trim() || undefined,
     arrangement,
     gap_s,
-    parts: parts.map((p) => ({
-      source: p.source,
-      offset_s: round(p.offset_s),
-      trim_s: [round(p.trim_s[0]), round(p.trim_s[1])],
-      gain_db: round(p.gain_db),
-      shift_octaves: p.shift_octaves,
-    })),
+    parts: resolved,
     ace,
   };
+}
+
+function compareParts(a: PartDraft, b: PartDraft): number {
+  return (a.source < b.source ? -1 : a.source > b.source ? 1 : 0)
+    || a.offset_s - b.offset_s || a.trim_s[0] - b.trim_s[0] || a.trim_s[1] - b.trim_s[1]
+    || a.gain_db - b.gain_db || (a.shift_octaves ?? -7) - (b.shift_octaves ?? -7);
 }
 
 function round(value: number): number {

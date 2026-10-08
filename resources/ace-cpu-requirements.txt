@@ -1,0 +1,20 @@
+# Inference dependencies for the pinned ACE-Step 1.5 checkout, installed in its
+# own environment with `uv pip install --torch-backend cpu -r ...`.
+# The phrase runner does not use the Gradio app, LM, CUDA or training stack.
+torch==2.10.0
+torchaudio==2.10.0
+torchvision==0.25.0
+transformers>=4.51,<4.58
+diffusers>=0.37,<0.38
+accelerate>=1.12
+soundfile>=0.13
+loguru>=0.7
+einops>=0.8
+scipy>=1.10
+numba>=0.63
+vector-quantize-pytorch>=1.27
+peft>=0.18,<0.19
+lycoris-lora
+pytorch-wavelets>=1.3
+pywavelets>=1.9
+setuptools<72

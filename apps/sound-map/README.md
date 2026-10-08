@@ -92,11 +92,11 @@ background; `uv run stop` stops it (see `orchestra.py`). The same steps by hand:
 
 ```bash
 # Once, from the repository root: inputs, stems and the catalog
-uv run --group art --group viz main.py dclde metadata    # annotations that cut the orca excerpts
-uv run --group art --group viz python -c "from experiments.data import Layout, fetch_long_samples; fetch_long_samples(Layout())"
-uv run --group art --group viz main.py follow fetch
-uv run --group art --group viz main.py follow prepare
-uv run --group art --group viz main.py follow catalog
+uv run main.py dclde metadata    # annotations that cut the orca excerpts
+uv run python -c "from experiments.data import Layout, fetch_long_samples; fetch_long_samples(Layout())"
+uv run --group audio main.py follow fetch
+uv run --group audio main.py follow prepare
+uv run --group audio main.py follow catalog
 # ACE-Step 1.5 (optional): clone into data/interim/tools/ACE-Step-1.5 and `uv sync` there
 
 cd apps/sound-map
@@ -108,11 +108,36 @@ bun run typecheck
 
 On a fresh clone you can skip the Python steps: `git lfs pull`, then `bun install` and
 `bun run dev`. The server falls back to `demo/follow/`, a committed bundle of the 20 source
-excerpts and 22 finished combinations (MP3 stems and WebP spectrograms in Git LFS). It also
+excerpts, 22 curated ensembles and 190 duos (MP3 stems and WebP spectrograms in Git LFS). It also
 carries `presets.json`, the names of its presets, which the server reads beneath any saved in
 `data/output/follow`. Anything in `data/output/follow` takes precedence. Making new combinations still
 needs the pipeline. Refresh the bundle with `bun scripts/demo.ts [id,id,...]`; its
 `README.md` lists the recordings.
+
+Default **Together** selections start every player at zero. The same duo plays the
+same saved piece in either click order. The bundle includes all 190 pairs of the
+20 recordings; these play without ACE-Step or the Python pipeline. Custom timing,
+trims, balance, registers, captions and **New take** request separate renders.
+The programme keeps the original curated pieces visible; save a duo as a preset
+to add it to that list.
+
+To regenerate the duo library, keeping ACE-Step loaded once across all music jobs:
+
+```bash
+# From the repository root; resumes completed pairs and interrupted music jobs.
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  uv run --group audio main.py follow precompute-duos --workers 4
+cd apps/sound-map
+bun scripts/demo.ts --append
+```
+
+Four CPU workers prepare guides and playback files; music generation stays
+sequential on the GPU. The thread limits avoid CPU oversubscription during this
+batch. `--source` can limit a test batch to selected recordings.
+The small `duos.json` index records the resolved specifications, configuration hash
+and renderer version. The app resolves automatic registers and the default seed
+before lookup, so default selections reuse their bundles while changed settings
+remain separate pieces. `--append` preserves the existing programme and artwork.
 
 Environment, read from the repository's `.env` by `uv run start` and both Bun scripts:
 `ORCHESTRA_PORT` (3070), `ORCHESTRA_HOST` (127.0.0.1); `PORT` and `HOST` still work.
@@ -122,7 +147,9 @@ The server binds to localhost and runs one combination at a time, because the GP
 ACE-Step selects CUDA through `torch.cuda.is_available()`, otherwise CPU. CPU
 inference uses float32 without GPU quantization or offloading; allow enough RAM
 and a longer wait. `uv run start --ace yes` installs ACE-Step even without an
-NVIDIA GPU. `/api/runtime` probes the same isolated Python environment as the
+NVIDIA GPU, using CPU PyTorch and a smaller inference environment. Setup downloads
+only the selected DiT, VAE and text encoder (about 6 GB); the runner does not use
+the LM or the default turbo checkpoint. `/api/runtime` probes the same isolated Python environment as the
 runner; an unavailable environment is reported as unknown, not as CPU-only.
 Static hosting plays the exported pieces and does not run composition.
 

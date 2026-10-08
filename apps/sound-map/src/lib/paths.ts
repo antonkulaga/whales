@@ -36,5 +36,8 @@ export function contentType(path: string): string {
 export function readableLog(line: string): boolean {
   const text = line.trim();
   if (!text || /\|\s+(DEBUG|INFO)\s+\|/.test(text) || /\d+%\||it\/s\]/.test(text)) return false;
+  // Upstream labels its hardware banner as warnings, including CUDA install advice
+  // on a working CPU setup. The runner already reports the actual device clearly.
+  if (text.includes("acestep.gpu_config:_log_gpu_diagnostic_info:")) return false;
   return /→|ACE-Step:|WARNING|Error|Traceback|Downloaded|events|manifest\.json$/.test(text);
 }

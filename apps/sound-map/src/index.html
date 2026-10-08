@@ -63,22 +63,18 @@
             </section>
           </aside>
           </div>
-          <div class="hall-seating"><span class="section-number">On the stage</span><ol id="hall-seats" aria-label="Six orchestra chairs"></ol></div>
           <div class="legend" id="legend" aria-label="Map legend"></div>
         </section>
       <section class="dock" id="dock" aria-labelledby="dock-title">
         <div class="dock-head"><div><span class="section-number">02 / Your ensemble</span><h2 id="dock-title">The orchestra</h2></div><span class="seats" id="seats"></span>
           <fieldset class="segmented compact" id="arrangement"><legend class="sr-only">Arrangement</legend><label><input type="radio" name="arrangement" value="layer" checked> Together</label><label><input type="radio" name="arrangement" value="sequence"> In sequence</label></fieldset>
+          <div class="ensemble-tools"><button class="btn quiet" id="clear" type="button">Clear chairs</button><button class="btn" id="take" type="button" title="Same players, a new ACE-Step seed">New take</button></div>
         </div>
-        <ol class="players" id="players" aria-label="Players in the orchestra"></ol>
-        <div class="dock-actions"><p class="status" id="status" role="status"></p><button class="btn quiet" id="clear" type="button">Clear</button><button class="btn" id="take" type="button" title="Same players, a new ACE-Step seed">New take</button><button class="btn" id="dock-play" type="button" aria-pressed="false" hidden>▶ Play</button><button class="primary" id="combine" type="button">Compose piece</button></div>
+        <div class="hall-seating"><ol id="hall-seats" aria-label="Orchestra chairs"></ol></div>
+        <div class="dock-actions"><p class="status" id="status" role="status"></p><button class="primary" id="combine" type="button">Compose piece</button></div>
         <p class="compose-runtime" id="compose-runtime" hidden>This server has no CUDA GPU. Composing runs on the CPU and may take a while. Finished pieces are ready to play immediately.</p>
         <div class="compose-progress" id="compose-progress" hidden><progress aria-label="Composition in progress"></progress><span class="small">Preparing your piece. You can keep listening while it is being made.</span></div>
       </section>
-      </section>
-
-
-
       <section class="result" id="result" hidden aria-labelledby="result-title">
         <div class="result-head"><div><span class="eyebrow" id="result-eyebrow"></span><h2 id="result-title"></h2><p class="small">Listen to the recorded voices and the music they helped shape.</p></div></div>
         <div class="transport concert-transport"><button class="play" id="play" type="button" aria-pressed="false">▶ Play</button><span class="clock" id="clock">0.0 s</span></div>
@@ -88,6 +84,7 @@
         <p class="merge-label"><span aria-hidden="true">↓</span> Their musical guides, combined on the same timeline</p>
         <div class="lanes" id="lanes"></div>
         <div class="result-foot"><form class="preset" id="preset-form"><label class="sr-only" for="preset-name">Preset name</label><input id="preset-name" type="text" maxlength="120" placeholder="Give this piece a name"><button class="btn" id="preset-save" type="submit">Save preset</button><span class="small" id="preset-status" role="status"></span></form></div>
+      </section>
       </section>
 
       <aside class="prototype-context" aria-label="Project direction">

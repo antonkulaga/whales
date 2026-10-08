@@ -30,7 +30,7 @@ ARRANGEMENTS = ("layer", "sequence")
 TASKS = ("cover", "lego")
 # Bump when rendering, response or scoring code changes: saved renders with another version are rebuilt
 # on their next request. Ids hash the spec and config, not the code. Manifests without the field are version 1.
-RENDER_VERSION = 3
+RENDER_VERSION = 4
 
 
 def prepared_sources(layout: Layout):
@@ -65,7 +65,8 @@ def catalog(layout: Layout, config: dict):
     points = [{key: point.get(key) for key in ("id", "label", "dataset", "lon", "lat", "kind", "species", "source", "note")}
               for point in world["points"]]
     shutil.copyfile(COUNTRIES, output / "world-countries.geojson")
-    data = {"created_at_utc": now(), "sources": sources, "points": points, "countries": "world-countries.geojson",
+    data = {"created_at_utc": now(), "config_sha256": config["config_sha256"], "render_version": RENDER_VERSION,
+            "sources": sources, "points": points, "countries": "world-countries.geojson",
             "combination": config["combination"], "seed": config["seed"],
             "species": {name: {"caption": s["caption"], "instrument": s["instrument"]["name"], "material": s["material"],
                                "lego_track": s["lego_track"]} for name, s in config["species"].items()}}
@@ -116,6 +117,11 @@ def plan(spec: dict, config: dict, prepared: dict):
         resolved.append({"index": index, "source": source, "species": item["species"], "trim_s": [round(start, 3), round(end, 3)],
                          "offset_s": round(offset, 3), "gain_db": round(gain, 2), "shift_octaves": shift})
         clock = offset + end - start + gap
+    if arrangement == "layer":
+        # Simultaneous layers are unordered. Keep explicit timing and balance attached to each source.
+        resolved.sort(key=lambda p: (p["source"], p["offset_s"], *p["trim_s"], p["gain_db"], p["shift_octaves"]))
+        for index, part in enumerate(resolved):
+            part["index"] = index
     duration = round(max(p["offset_s"] + p["trim_s"][1] - p["trim_s"][0] for p in resolved) + .5, 3)
     if duration > limits["max_duration_s"]:
         raise ValueError(f"The combination lasts {duration:.0f} s; the limit is {limits['max_duration_s']} s")
@@ -209,6 +215,15 @@ def saved_render(folder: Path, output: Path, needs_ace: bool) -> Path | None:
     return path if all((output / f).exists() for f in files) else None
 
 
+def ace_job(combo: dict, config: dict, folder: Path):
+    a = combo["ace"]
+    return {"id": f"combo-{combo['id']}", "source_id": combo["id"], "condition": a["task"], "task": a["task"],
+            "src_audio": str((folder / "guide.wav").resolve()), "track": a["track"] if a["task"] == "lego" else None,
+            "caption": a["caption"], "duration": combo["duration_s"], "seed": a["seed"], "audio_cover_strength": a["audio_cover_strength"],
+            "inference_steps": config["ace_step"]["inference_steps"], "guidance_scale": config["ace_step"]["guidance_scale"],
+            "output": str((folder / "ace.wav").resolve())}
+
+
 def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = None, run_model: bool = True, offload: bool = False,
             reuse: bool = True):
     """Write stems, listening files and manifest.json for one combination; returns the manifest path."""
@@ -262,12 +277,7 @@ def combine(layout: Layout, config: dict, spec: dict, ace_root: Path | None = No
     if combo["ace"] and run_model:
         ace_wav = folder / "ace.wav"
         if not ace_wav.exists():
-            a = combo["ace"]
-            job = {"id": f"combo-{combo['id']}", "source_id": combo["id"], "condition": a["task"], "task": a["task"],
-                   "src_audio": str((folder / "guide.wav").resolve()), "track": a["track"] if a["task"] == "lego" else None,
-                   "caption": a["caption"], "duration": combo["duration_s"], "seed": a["seed"], "audio_cover_strength": a["audio_cover_strength"],
-                   "inference_steps": config["ace_step"]["inference_steps"], "guidance_scale": config["ace_step"]["guidance_scale"],
-                   "output": str(ace_wav.resolve())}
+            job = ace_job(combo, config, folder)
             run_ace(layout, config, [job], folder / "ace-jobs.json", folder / "ace-results.json", ace_root, offload)
         ace_result = read_json(folder / "ace-results.json")["jobs"][f"combo-{combo['id']}"]
         audio, image = listening(ace_wav, MUSIC_BAND, rate)

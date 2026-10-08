@@ -64,6 +64,53 @@ class CombineTests(unittest.TestCase):
         moved = plan({**spec, "gap_s": 3}, self.config, self.prepared())
         self.assertNotEqual(moved["id"], combo["id"])
 
+    def test_plan_accepts_eight_players_and_rejects_a_ninth(self):
+        from experiments.follow_combine import plan
+
+        self.assertEqual(self.config["combination"]["max_parts"], 8)
+        parts = [{"source": "hb", "offset_s": i * 4} for i in range(8)]
+        combo = plan({"parts": parts}, self.config, self.prepared())
+        self.assertEqual(len(combo["parts"]), 8)
+        with self.assertRaisesRegex(ValueError, "between 1 and 8 parts"):
+            plan({"parts": parts + [{"source": "sp"}]}, self.config, self.prepared())
+
+    def test_simultaneous_pairs_have_the_same_id_in_either_selection_order(self):
+        from experiments.follow_combine import plan
+
+        spec = {"parts": [{"source": "sp"}, {"source": "hb"}], "ace": {"task": "cover"}}
+        combo = plan(spec, self.config, self.prepared())
+        reversed_combo = plan({**spec, "parts": list(reversed(spec["parts"]))}, self.config, self.prepared())
+        self.assertEqual(combo, reversed_combo)
+        self.assertEqual([p["offset_s"] for p in combo["parts"]], [0.0, 0.0])
+        self.assertEqual(combo["duration_s"], 20.5)
+        self.assertEqual([p["index"] for p in combo["parts"]], [0, 1])
+
+    def test_layer_order_is_ignored_but_timing_balance_and_takes_are_preserved(self):
+        from experiments.follow_combine import plan
+
+        parts = [{"source": "sp", "offset_s": 7, "gain_db": -3, "shift_octaves": -1},
+                 {"source": "hb"}, {"source": "sp", "offset_s": 2, "trim_s": [3, 10]}]
+        spec = {"parts": parts, "ace": {"task": "cover"}}
+        combo = plan(spec, self.config, self.prepared())
+        self.assertEqual(combo, plan({**spec, "parts": list(reversed(parts))}, self.config, self.prepared()))
+        sp = [p for p in combo["parts"] if p["source"] == "sp"]
+        self.assertEqual([(p["offset_s"], p["trim_s"], p["gain_db"], p["shift_octaves"]) for p in sp],
+                         [(2.0, [3.0, 10.0], 0.0, 0), (7.0, [0.0, 12.0], -3.0, -1)])
+        for change in ({"offset_s": 8}, {"gain_db": -6}, {"trim_s": [0, 10]}, {"shift_octaves": -2}):
+            with self.subTest(change=change):
+                changed = [{**parts[0], **change}, *parts[1:]]
+                self.assertNotEqual(combo["id"], plan({**spec, "parts": changed}, self.config, self.prepared())["id"])
+        self.assertNotEqual(combo["id"], plan({**spec, "ace": {"task": "cover", "seed": 7}}, self.config, self.prepared())["id"])
+
+    def test_sequence_order_changes_the_piece(self):
+        from experiments.follow_combine import plan
+
+        spec = {"arrangement": "sequence", "parts": [{"source": "sp"}, {"source": "hb"}]}
+        combo = plan(spec, self.config, self.prepared())
+        self.assertEqual([p["source"] for p in combo["parts"]], ["sp", "hb"])
+        self.assertEqual([p["offset_s"] for p in combo["parts"]], [0.0, 13.0])
+        self.assertNotEqual(combo["id"], plan({**spec, "parts": list(reversed(spec["parts"]))}, self.config, self.prepared())["id"])
+
     def test_plan_rejects_what_cannot_be_rendered(self):
         from experiments.follow_combine import plan
 
@@ -128,6 +175,7 @@ class CombineTests(unittest.TestCase):
         guide = first.parent / "guide.wav"
         stamp = guide.stat().st_mtime_ns
         self.assertEqual(combine(self.layout, self.config, spec, run_model=False), first)
+        self.assertEqual(combine(self.layout, self.config, {**spec, "parts": list(reversed(spec["parts"]))}, run_model=False), first)
         self.assertEqual(guide.stat().st_mtime_ns, stamp)  # nothing was rendered again
         self.assertEqual(read_json(first)["created_at_utc"], manifest["created_at_utc"])
         missing = self.layout.output / "follow" / manifest["stems"]["response"]["audio"]
@@ -153,6 +201,56 @@ class CombineTests(unittest.TestCase):
         self.assertGreater(len(data["points"]), 100)
         self.assertTrue((self.layout.output / "follow" / data["countries"]).exists())
         self.assertTrue((self.layout.output / "follow" / data["sources"][0]["files"]["animal"]["audio"]).exists())
+
+    def test_duo_batch_loads_the_model_once_and_reuses_finished_pairs(self):
+        from unittest.mock import patch
+
+        from experiments.data import read_json, write_json
+        from experiments.follow_precompute import precompute_duos
+
+        prepared_path = self.layout.interim / "follow" / "prepared.json"
+        prepared = read_json(prepared_path)
+        prepared["sources"].append({**prepared["sources"][0], "id": "hb2"})
+        write_json(prepared_path, prepared)
+        self.config["sources"].append({**self.config["sources"][0], "id": "hb2"})
+
+        def fake_ace(layout, config, jobs, jobs_path, results_path, ace_root, offload):
+            results = {"jobs": {}, "model_load_s": 0}
+            for job in jobs:
+                shutil.copyfile(job["src_audio"], job["output"])
+                results["jobs"][job["id"]] = {**job, "seconds": 0}
+            write_json(results_path, results)
+            return results
+
+        with patch("experiments.follow_precompute.run_ace", side_effect=fake_ace) as model:
+            index = read_json(precompute_duos(self.layout, self.config))
+            self.assertEqual(len(index["pieces"]), 3)
+            model.assert_called_once()
+            self.assertEqual(len(model.call_args.args[2]), 3)
+            for piece in index["pieces"]:
+                manifest = read_json(self.layout.output / "follow" / "combos" / piece["id"] / "manifest.json")
+                self.assertIn("ace", manifest["stems"])
+                self.assertEqual([p["offset_s"] for p in manifest["parts"]], [0.0, 0.0])
+            self.assertEqual(read_json(precompute_duos(self.layout, self.config))["pieces"], index["pieces"])
+            model.assert_called_once()  # a rerun does not load ACE-Step
+
+    def test_duo_batch_restores_a_job_completed_before_an_interruption(self):
+        from unittest.mock import patch
+
+        from experiments.data import write_json
+        from experiments.follow_combine import ace_job, combine, plan
+        from experiments.follow_precompute import duo_specs, precompute_duos
+
+        spec = duo_specs(self.config, self.prepared())[0]
+        combo = plan(spec, self.config, self.prepared())
+        path = combine(self.layout, self.config, spec, run_model=False)
+        job = ace_job(combo, self.config, path.parent)
+        shutil.copyfile(job["src_audio"], job["output"])
+        write_json(self.layout.interim / "follow" / "duos-ace-results.json", {"jobs": {job["id"]: {**job, "seconds": 0}}})
+        with patch("experiments.follow_precompute.run_ace") as model:
+            precompute_duos(self.layout, self.config)
+            model.assert_not_called()
+        self.assertTrue((path.parent / "ace-results.json").exists())
 
 
 if __name__ == "__main__":

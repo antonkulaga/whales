@@ -1828,6 +1828,15 @@ art = [
     { name = "torchvision" },
     { name = "transformers" },
 ]
+audio = [
+    { name = "matplotlib" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pillow" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "soundfile" },
+]
 mesh = [
     { name = "embreex" },
     { name = "fast-simplification" },
@@ -1860,6 +1869,13 @@ art = [
     { name = "torch", specifier = ">=2.14.1" },
     { name = "torchvision", specifier = ">=0.29.1" },
     { name = "transformers", specifier = ">=5.18.0" },
+]
+audio = [
+    { name = "matplotlib", specifier = ">=3.10" },
+    { name = "numpy", specifier = ">=2.4.6" },
+    { name = "pillow", specifier = ">=12.3.0" },
+    { name = "scipy", specifier = ">=1.17.1" },
+    { name = "soundfile", specifier = ">=0.14.0" },
 ]
 mesh = [
     { name = "embreex", specifier = ">=4.4.0" },

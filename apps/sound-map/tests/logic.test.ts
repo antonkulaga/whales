@@ -35,6 +35,30 @@ describe("arrangement mirrors the Python plan", () => {
     expect(totalDuration(placed)).toBe(30.5);
   });
 
+  test("default layers start together and share a spec in either selection order", () => {
+    const parts = [draftFor(sources.get("b")!), draftFor(sources.get("a")!)];
+    expect(place(parts, "layer", 1, sources).map((p) => p.start_s)).toEqual([0, 0]);
+    expect(buildSpec("", "layer", 1, parts, null)).toEqual(buildSpec("", "layer", 1, [...parts].reverse(), null));
+    expect(parts.map((p) => p.source)).toEqual(["b", "a"]); // the visible chairs keep their order
+  });
+
+  test("layer normalization keeps each player's custom settings, including repeated sources", () => {
+    const parts = [
+      { ...draftFor(sources.get("b")!, 7), gain_db: -3, shift_octaves: -1 },
+      draftFor(sources.get("a")!),
+      { ...draftFor(sources.get("b")!, 2), trim_s: [3, 15] as [number, number] },
+    ];
+    const spec = buildSpec("", "layer", 1, parts, null);
+    expect(spec).toEqual(buildSpec("", "layer", 1, [...parts].reverse(), null));
+    expect(spec.parts.filter((p) => p.source === "b")).toEqual([parts[2]!, parts[0]!]);
+  });
+
+  test("sequence specs preserve the chosen order", () => {
+    const parts = [draftFor(sources.get("b")!), draftFor(sources.get("a")!)];
+    expect(buildSpec("", "sequence", 1, parts, null).parts.map((p) => p.source)).toEqual(["b", "a"]);
+    expect(buildSpec("", "sequence", 1, parts, null)).not.toEqual(buildSpec("", "sequence", 1, [...parts].reverse(), null));
+  });
+
   test("problems name what the server would reject", () => {
     expect(problems([], limits)).toEqual(["Add at least one recording from the map."]);
     const tooLong = place([draftFor(sources.get("a")!), draftFor(sources.get("b")!)], "sequence", 20, sources);
@@ -87,5 +111,8 @@ describe("server helpers", () => {
     expect(readableLog("combo-e3c5fb408486: 8 s → ace.wav")).toBe(true);
     expect(readableLog("# Instruction")).toBe(false);
     expect(readableLog("- bpm: N/A")).toBe(false);
+    expect(readableLog("2026-10-08 | WARNING | acestep.gpu_config:_log_gpu_diagnostic_info:727 - You have installed a CPU-only version of PyTorch!")).toBe(false);
+    expect(readableLog("ACE-Step: loading the music model on CPU; CPU generation is slower")).toBe(true);
+    expect(readableLog("WARNING: Could not load the model")).toBe(true);
   });
 });

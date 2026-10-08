@@ -65,7 +65,7 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .text-link { border: 0; border-bottom: 1px solid var(--ink); background: none; padding: 8px 0; font-size: .8rem; display: inline-flex; gap: 22px; align-items: center; width: fit-content; text-align: left }
 .text-link:hover { color: var(--accent); border-color: var(--accent) }
 .text-link span { font-size: 1.1rem }
-.stage { display: grid; grid-template-columns: minmax(0, 1fr); border: 1px solid var(--rule); min-width: 0 }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr); border: 1px solid var(--rule); background: var(--surface); min-width: 0 }
 .map-panel { min-width: 0 }
 .map-panel { display: flex; flex-direction: column }
 .panel-head { min-height: 68px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 12px 22px }
@@ -130,11 +130,13 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .arc.active { stroke: var(--accent); stroke-opacity: .95; stroke-dasharray: none; stroke-width: 2.4 }
 .pulse { fill: none; stroke: var(--c); vector-effect: non-scaling-stroke }
 .part-pin { font-family: var(--mono); font-weight: 700; fill: #544326; paint-order: stroke; stroke: var(--ocean); text-anchor: end; pointer-events: none }
-.hall-seating { display: flex; align-items: center; justify-content: center; gap: 28px; padding: 16px 20px 10px }
-.hall-seating > .section-number { margin: 0; font-size: .62rem; white-space: nowrap }
-#hall-seats { display: flex; min-width: 0; max-width: 100%; gap: 18px; list-style: none; padding: 0; margin: 0; align-items: start }
-#hall-seats li { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; width: 108px; min-width: 0; color: #8d8473; font: .68rem var(--mono) }
-#hall-seats button { width: 100%; border: 0; padding: 0; background: none; color: var(--c); display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center }
+.hall-seating { grid-area: seating; display: flex; justify-content: center; padding: 12px 0 }
+#hall-seats { display: grid; grid-template-columns: repeat(var(--chair-count, 4), minmax(0, 112px)); width: 100%; min-width: 0; gap: 18px; list-style: none; padding: 0; margin: 0; align-items: start; justify-content: center }
+#hall-seats li { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; width: min(108px, 100%); min-width: 0; color: #8d8473; font: .68rem var(--mono) }
+#hall-seats button[data-chair] { width: 100%; border: 0; padding: 0; background: none; color: var(--c); display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center }
+#hall-seats .seat-remove { position: absolute; top: -8px; right: -6px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--surface); color: var(--muted); font: 1.15rem var(--body); display: grid; place-items: center }
+#hall-seats .seat-remove:hover { color: var(--bad) }
+.seat-location { margin-top: 5px; color: var(--muted); font: .6rem/1.4 var(--body); text-align: center; overflow-wrap: anywhere }
 /* The figure sets the chair's size; the chair and the animal scale inside it. */
 .seat-figure { display: block; position: relative; width: 96px; max-width: 100%; aspect-ratio: 16 / 15 }
 #hall-seats svg { position: absolute; inset: auto 0 0; width: 100%; height: 88%; fill: none; stroke: currentColor; stroke-width: 1.4 }
@@ -158,8 +160,10 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 #hall-seats .vacant svg { opacity: .6 }
 #hall-seats .threatened .seat-figure { box-shadow: inset 0 0 0 2px var(--s) }
 .seat-status { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 4px; color: var(--ink); font-size: .7rem }
-.legend { display: flex; flex-wrap: wrap; gap: 7px 14px; font: .58rem/1.4 var(--mono); color: var(--muted); padding: 14px 22px; min-height: 67px; align-content: center }
+.legend { display: grid; gap: 10px; font: .58rem/1.4 var(--mono); color: var(--muted); padding: 14px 22px }
+.legend-row { display: flex; flex-wrap: wrap; gap: 7px 14px; align-items: center }
 .legend span { display: inline-flex; align-items: center; gap: 5px }
+.legend .legend-label { color: var(--ink); font-weight: 500; margin-right: 4px }
 .swatch { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c) }
 .swatch.diamond { border-radius: 1px; transform: rotate(45deg) scale(.85) }
 .swatch.halo { background: transparent; border: 2px solid var(--ink); width: 10px; height: 10px }
@@ -209,10 +213,11 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .primary { font-weight: 500; padding-inline: 20px }
 .primary:hover { background: #923a27 }
 .primary.pending { outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent); outline-offset: 2px }
-.dock { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "head players" "actions actions" "runtime runtime" "progress progress"; gap: 16px 28px; align-items: center; background: var(--surface); border-top: 1px solid var(--rule); padding: 18px 22px; min-width: 0 }
+.dock { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--rule); padding: 18px 26px 0; min-width: 0 }
 .dock-head { grid-area: head; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center }
 .dock-head .section-number { font-size: .56rem; margin-bottom: 3px }
 .dock-head h2 { font-size: 1.1rem }
+.ensemble-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto }
 .seats { font: .61rem var(--mono); color: var(--muted) }
 .segmented { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center }
 .segmented legend { font-size: .72rem; color: var(--muted); margin-bottom: 4px; width: 100% }
@@ -220,31 +225,17 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .segmented label:has(input:checked) { background: var(--ink); color: var(--surface); border-color: var(--ink) }
 .segmented input { position: absolute; opacity: 0; pointer-events: none }
 .segmented label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px }
-.players { grid-area: players; list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: thin }
-.players-empty { font-size: .77rem; color: var(--muted); padding: 10px 0 }
-.player { flex: none; display: flex; align-items: center; gap: 8px; border: 1px solid var(--rule); border-left: 3px solid var(--c); padding: 6px; max-width: 13rem }
-.player .seat { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--c); color: #142626; display: grid; place-items: center; font: .66rem var(--mono) }
-.player .who { display: grid; min-width: 0; line-height: 1.35 }
-.player .who b { font-size: .67rem; font-weight: 500 }
-.player .who span { font-size: .59rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.player .x { flex: none; width: 28px; height: 28px; border: 0; background: none; font-size: 1.05rem; color: var(--muted) }
-.player .x:hover { color: var(--bad) }
-.dock-actions { grid-area: actions; display: grid; grid-template-columns: minmax(0, 1fr) repeat(3, auto); gap: 8px; align-items: center; min-width: 0; border-top: 1px solid var(--rule); padding-top: 12px }
-.dock-actions #combine { grid-column: 1 / -1; grid-row: 2 }
-.dock.empty-ensemble { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "actions" "runtime" "progress"; gap: 12px }
-.dock.empty-ensemble .players, .dock.empty-ensemble #clear, .dock.empty-ensemble #take { display: none }
-.dock.empty-ensemble .dock-actions { border-top: 0; padding-top: 0; justify-content: flex-end }
+.dock-actions { grid-area: actions; display: grid; justify-items: center; gap: 8px; min-width: 0 }
+.dock-actions:has(#combine[hidden]):has(.status[hidden]) { display: none }
 .status { font-size: .72rem; color: var(--muted); margin-right: auto; min-width: 0 }
 .status.bad { color: var(--bad) }
-#dock-play, #combine { grid-column: 1 / -1; justify-self: center; width: min(240px, 100%); min-width: 0; min-height: 72px; padding: 18px 36px; margin: 8px 0 0; font-size: 1.1rem; font-weight: 600 }
-#dock-play { grid-row: 3 }
-.dock-actions:has(#combine[hidden]) #dock-play { grid-row: 2 }
+#combine { justify-self: center; width: min(240px, 100%); min-width: 0; min-height: 64px; padding: 18px 36px; margin: 8px 0 18px; font-size: 1.1rem; font-weight: 600 }
 .compose-progress { grid-area: progress; display: grid; gap: 8px; justify-items: center; text-align: center }
 .compose-progress progress { width: min(420px, 100%); height: 12px; accent-color: var(--accent) }
 .compose-progress .small { font-size: .72rem }
-.compose-runtime { grid-area: runtime; justify-self: center; max-width: 580px; text-align: center; font-size: .72rem; line-height: 1.6; color: var(--muted) }
-.result { border: 1px solid var(--rule); background: var(--surface); scroll-margin-top: 20px }
-.result-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding: 26px }
+.compose-runtime { align-self: center; max-width: 580px; text-align: center; font-size: .72rem; line-height: 1.6; color: var(--muted) }
+.result { scroll-margin-top: 20px }
+.result-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding: 14px 26px 22px }
 .result-head > div:first-child { display: grid; gap: 9px; min-width: 0 }
 .result-head .eyebrow { margin: 0; font-size: .6rem }
 .result-head h2 { font-family: var(--serif); font-size: 2.3rem; letter-spacing: -.025em }
@@ -416,9 +407,8 @@ input[type="range"] { width: 100% }
 .proposal .small { max-width: none; font-size: .65rem; line-height: 1.6; color: var(--muted) }
 .footer-line { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 15px; margin-top: 14px; border-top: 1px solid var(--rule); padding: 14px 0; font: .57rem var(--mono); color: var(--muted) }
 .load-error { margin-top: 25px; padding: 16px; border: 1px solid var(--bad); color: var(--bad) }
-.static .dock, .static .settings, .static .preset { display: none }
+.static .dock-head, .static .dock-actions, .static .compose-runtime, .static .compose-progress, .static .settings, .static .preset { display: none }
 @media (max-width: 1100px) {
-  .dock { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "players" "actions" "runtime" "progress"; gap: 12px }
   .process-card { padding: 18px }
   .process-card h2 { font-size: 1.4rem }
   .process-card .section-number { letter-spacing: .03em }
@@ -429,7 +419,7 @@ input[type="range"] { width: 100% }
   .view-tabs { --tab-gap: 28px; width: 100%; min-height: 54px; overflow-x: auto; scrollbar-width: none }
 }
 @media (max-width: 850px) {
-  .hall-seating { flex-direction: column; gap: 10px }
+  #hall-seats { grid-template-columns: repeat(4, minmax(0, 112px)); gap: 20px 24px }
   .hero { gap: 12px 20px }
   .hero h1 { font-size: 1.8rem }
   .hero > p { font-size: .82rem }
@@ -483,29 +473,20 @@ input[type="range"] { width: 100% }
   .map-hint { left: 18px; font-size: .53rem; bottom: 14px }
   .zooms { gap: 4px }
   .zoom { font-size: .52rem; padding: 6px 7px }
-  .legend { padding: 14px 18px; gap: 7px 11px; font-size: .52rem }
-  .hall-seating { gap: 8px; padding-inline: 8px }
-  .hall-seating > .section-number { font-size: .54rem }
-  /* Two rows of three keep desktop-sized chairs on a phone. */
-  #hall-seats { display: grid; grid-template-columns: repeat(3, minmax(0, 96px)); gap: 12px 16px; width: 100%; justify-content: center }
-  #hall-seats li { width: auto; font-size: .62rem }
-  .dock { padding: 13px; gap: 10px }
+  .legend { padding: 14px 18px; font-size: .52rem }
+  .legend-row { gap: 7px 11px }
+  /* Chairs wrap into rows of four on a phone. */
+  #hall-seats { grid-template-columns: repeat(4, minmax(0, 96px)); gap: 16px 8px }
+  #hall-seats li { font-size: .6rem }
+  .seat-location { font-size: .58rem }
+  .dock { padding: 16px 20px 0; gap: 10px }
   .dock-head { gap: 7px 12px }
   .dock-head > div { margin-right: auto }
   .dock-head .section-number { font-size: .49rem }
   .dock-head .segmented { width: 100% }
   .segmented.compact label { padding: 6px 10px }
-  .players-empty { font-size: .68rem; padding: 3px 0 }
-  .player .who span { display: none }
-  .player { padding: 4px; gap: 6px }
-  .dock-actions { grid-template-columns: repeat(3, auto); gap: 6px; padding-top: 9px }
-  .dock-actions .status { grid-column: 1 / -1; font-size: .65rem }
-  .dock-actions .primary { margin-left: auto }
-  .dock.empty-ensemble { grid-template-columns: minmax(0, 1fr); gap: 12px }
-  .dock.empty-ensemble .section-number, .dock.empty-ensemble .segmented, .dock.empty-ensemble .status { display: none }
-  .dock.empty-ensemble .dock-head { gap: 4px }
-  .dock.empty-ensemble .dock-head h2 { font-size: .92rem }
-  .dock .btn, .dock .primary { padding: 8px 11px; min-height: 36px; font-size: .68rem }
+  .dock-actions .status { font-size: .7rem; text-align: center; margin-right: 0 }
+  .dock .btn { padding: 8px 11px; min-height: 36px; font-size: .68rem }
   .result-head { padding: 20px; gap: 15px }
   .result-head h2 { font-size: 2rem }
   .result-head .eyebrow { font-size: .52rem }

@@ -2,7 +2,7 @@
 // All measurement, generation and scoring happens in Python (`main.py follow ...`); this file only
 // writes a spec, runs the CLI and streams its readable log lines back as NDJSON.
 
-import { mkdir, readdir, stat } from "node:fs/promises";
+import { mkdir, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import index from "./src/index.html";
 import { contentType, readableLog, safeJoin } from "./src/lib/paths.ts";
@@ -28,7 +28,7 @@ const readPresets = async (): Promise<Presets> => ({
 // The repository's .env sets ORCHESTRA_PORT and ORCHESTRA_HOST (`uv run start`, `bun run dev`); PORT and HOST still work.
 const PORT = Number(process.env.ORCHESTRA_PORT ?? process.env.PORT ?? 3070);
 const HOSTNAME = process.env.ORCHESTRA_HOST ?? process.env.HOST ?? "127.0.0.1";
-const PYTHON = ["uv", "run", "--group", "art", "--group", "viz", "main.py", "follow"];
+const PYTHON = ["uv", "run", "--group", "audio", "main.py", "follow"];
 const MAX_SPEC_BYTES = 64 * 1024;
 
 let running: Promise<unknown> | null = null; // one combination at a time: the GPU is shared
@@ -88,7 +88,7 @@ async function python(args: string[], onLine?: (line: string) => void): Promise<
 async function catalog(): Promise<Response> {
   const file = Bun.file(join(OUTPUT, "catalog.json"));
   const demo = Bun.file(join(DEMO, "catalog.json"));
-  const prepared = await stat(OUTPUT).then(() => true, () => false);
+  const prepared = await Bun.file(join(ROOT, "data", "interim", "follow", "prepared.json")).exists();
   if (!(await file.exists()) && !prepared && (await demo.exists())) {
     return new Response(demo, { headers: { "content-type": "application/json" } });
   }

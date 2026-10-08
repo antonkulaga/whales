@@ -620,3 +620,21 @@ def run_command(
         generate(layout, config, ace_root)
     evaluate(layout, config, PREDICTIONS)
     print(write_page(layout, config))
+
+
+@app.command("precompute-duos")
+def precompute_duos_command(
+    data_dir: DataOption = DEFAULT_DATA,
+    source: SourcesOption = None,
+    ace_root: Annotated[Path | None, typer.Option(help="ACE-Step 1.5 checkout with its own .venv.")] = None,
+    offload: Annotated[bool, typer.Option(help="CPU offload between stages when GPU memory is limited.")] = False,
+    workers: Annotated[int, typer.Option(min=1, max=8, help="CPU workers preparing guides and playback files; GPU jobs stay sequential.")] = 4,
+):
+    """Precompute every unordered map pair with simultaneous starts; resume completed jobs on rerun."""
+    from .follow_precompute import precompute_duos
+
+    try:
+        print(precompute_duos(Layout(data_dir), load_config(), source, ace_root, offload, workers))
+    except ValueError as error:
+        typer.echo(f"ERROR: {error}", err=True)
+        raise typer.Exit(2) from error

@@ -1141,7 +1141,7 @@
   },
   "combination": {
     "interpretation": "Parts keep their own measured events, instrument and register. Layered parts share one timeline at their offsets; sequenced parts follow one another with a gap. One gain scales the whole combination so relative levels stay as declared.",
-    "max_parts": 6,
+    "max_parts": 8,
     "max_duration_s": 240,
     "min_part_s": 1.0,
     "gain_db": [

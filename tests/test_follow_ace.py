@@ -42,11 +42,13 @@ class AceRuntimeTests(unittest.TestCase):
                 "acestep.handler": SimpleNamespace(AceStepHandler=lambda: handler),
                 "acestep.inference": SimpleNamespace(GenerationConfig=SimpleNamespace, GenerationParams=SimpleNamespace, generate_music=generate),
                 "acestep.llm_inference": SimpleNamespace(LLMHandler=Mock()),
+                "acestep.model_downloader": SimpleNamespace(MAIN_MODEL_COMPONENTS=["vae", "unused-lm"]),
             }
             follow_ace.report_progress.last_description = None
             with patch.dict(sys.modules, modules), patch.object(follow_ace.subprocess, "run", return_value=SimpleNamespace(stdout="revision")), \
                     patch.object(sys, "path", sys.path.copy()), contextlib.redirect_stdout(io.StringIO()) as log:
                 follow_ace.main(str(jobs))
+            self.assertEqual(modules["acestep.model_downloader"].MAIN_MODEL_COMPONENTS, ["vae", "Qwen3-Embedding-0.6B"])
             self.assertEqual(output.read_bytes(), b"generated audio")
             self.assertIn("Decoding audio", log.getvalue())
             self.assertEqual(json.loads(results.read_text())["jobs"]["test"]["seed_used"], 42)

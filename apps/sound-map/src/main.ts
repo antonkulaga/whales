@@ -7,8 +7,9 @@ import { SPECIES } from "./lib/species.ts";
 import { renderIndividualTracks, renderLanes, renderScores, partColor } from "./lanes.ts";
 import { catalogUrl, comboUrl, combosUrl, fileUrl, isStatic } from "./lib/api.ts";
 import { activePulses, soundingParts } from "./lib/pulses.ts";
+import { precomputedPieces, specKey } from "./lib/precomputed.ts";
 import { CATEGORY, THREATENED, TREND_ARROW, TREND_WORD, statusLine, statusOf, voiceInfo, type Status } from "./lib/status.ts";
-import type { Catalog, CombineMessage, ComboSummary, GenerationRuntime, Manifest, Source, Species, StemName } from "./lib/types.ts";
+import type { Catalog, CombineMessage, ComboSummary, GenerationRuntime, Manifest, PrecomputedIndex, Source, Species, StemName } from "./lib/types.ts";
 import { AtlasMap, SPECIES_COLOR, sitesOf, type Countries, type MapPart, type Site } from "./map.ts";
 import { Player, type Track } from "./player.ts";
 import { setSilverViewerActive } from "./silver-viewer.ts";
@@ -126,7 +127,9 @@ const siteOf = new Map(sites.flatMap((site) => site.sources.map((s) => [s.id, si
 const player = new Player();
 const preview = new Audio();
 let pieceKey: string | null = null; // the orchestra spec the piece on screen was made from
-const rendered = new Map<string, string>(); // orchestra spec → piece id, for every piece composed or opened this session
+const duoIndex = await json<PrecomputedIndex>(fileUrl("duos.json")).catch(() => null);
+const rendered = precomputedPieces(duoIndex, catalog); // default duos, plus pieces composed or opened this session
+const precomputedIds = new Set(rendered.values());
 let busy = false;
 let generationRuntime: GenerationRuntime | null = null;
 if (!isStatic) void json<GenerationRuntime>("/api/runtime").then(runtime => {
@@ -189,14 +192,14 @@ composer = new Composer(catalog, () => orchestraChanged());
 /* ---------- legend and zoom presets ---------- */
 // Species in the table's order (baleen, toothed whales, dolphins), only those with a recording.
 const present = new Set(catalog.sources.map((s) => s.species));
-$<HTMLElement>("#legend").innerHTML = (Object.keys(SPECIES) as Species[]).filter((species) => present.has(species))
+const speciesLegend = (Object.keys(SPECIES) as Species[]).filter((species) => present.has(species))
   .map((species) => {
     const instrument = catalog.species[species]?.instrument ?? "";
     return `<span title="${esc(capital(species))}: guide played as ${esc(instrument)}"><i class="swatch" style="--c:${SPECIES_COLOR[species]}"></i>${species}${instrument ? ` ${instrumentIcon(instrument)}` : ""}</span>`;
-  }).join("") +
-  `<span><i class="swatch" style="--c:var(--muted)"></i>published position</span><span><i class="swatch diamond" style="--c:var(--muted)"></i>approximate</span>` +
-  `<span><i class="swatch halo"></i>in the orchestra</span><span><i class="swatch" style="--c:var(--pt-archive);width:6px;height:6px"></i>other datasets, not playable</span>` +
-  `<span title="IUCN Red List category of the species, or the listing of the recorded population where it has its own">${(["CR", "EN", "VU"] as const).map((c) => `<i class="status-chip ${c.toLowerCase()}">${c}</i>`).join("")}critically endangered · endangered · vulnerable</span>`;
+  }).join("");
+$<HTMLElement>("#legend").innerHTML =
+  `<div class="legend-row" role="group" aria-label="Species"><span class="legend-label">Species</span>${speciesLegend}</div>` +
+  `<div class="legend-row" role="group" aria-label="Conservation status" title="IUCN Red List category of the species, or the listing of the recorded population where it has its own"><span class="legend-label">Conservation status</span>${(["CR", "EN", "VU"] as const).map((c) => `<span><i class="status-chip ${c.toLowerCase()}">${c}</i>${esc(CATEGORY[c])}</span>`).join("")}</div>`;
 
 const near = (lon0: number, lon1: number, lat0: number, lat1: number) =>
   sites.filter((s) => s.location.lon >= lon0 && s.location.lon <= lon1 && s.location.lat >= lat0 && s.location.lat <= lat1);
@@ -345,48 +348,42 @@ function orchestraChanged() {
 function renderDock() {
   if (!composer) return;
   const ids = composer.ids();
-  $("#dock").classList.toggle("empty-ensemble", ids.length === 0 && !result);
   renderHallSeats(isStatic && result ? result.parts.map((part) => part.source) : ids);
-  $<HTMLElement>("#seats").textContent = `${ids.length} of ${composer.max} seats`;
-  $<HTMLElement>("#players").innerHTML = ids.length ? ids.map((id, i) => {
-    const source = sourceById.get(id)!;
-    return `<li class="player" data-id="${esc(id)}" style="--c:${SPECIES_COLOR[source.species]}" title="${esc(source.title)}">
-      <span class="seat">${i + 1}</span><span class="who"><b>${esc(capital(source.species))} <i class="inst" title="Guide instrument: ${esc(source.instrument)}">${instrumentIcon(source.instrument)}</i></b><span>${esc(source.location.label)}</span></span>
-      <button class="x" type="button" data-remove="${esc(id)}" aria-label="Remove ${esc(source.title)}">×</button></li>`;
-  }).join("") : `<li class="players-empty">Choose a site on the map to seat a musician.</li>`;
+  $<HTMLElement>("#seats").textContent = `${ids.length} seated · up to ${composer.max}`;
 
   const issues = composer.problems();
-  const key = JSON.stringify(composer.spec());
+  const key = specKey(composer.spec(), catalog);
   const combine = $<HTMLButtonElement>("#combine");
   const take = $<HTMLButtonElement>("#take");
   const ready = !busy && ids.length > 0 && issues.length === 0;
   const fresh = result !== null && key === pieceKey;
+  const available = rendered.has(key);
   $<HTMLElement>("#compose-progress").hidden = !busy;
-  $<HTMLElement>("#compose-runtime").hidden = generationRuntime?.cuda_available !== false || !composer.aceOn || (fresh && !busy) || ids.length === 0;
+  $<HTMLElement>("#compose-runtime").hidden = generationRuntime?.cuda_available !== false || !composer.aceOn || ((fresh || available) && !busy) || ids.length === 0;
   $("#dock").setAttribute("aria-busy", String(busy));
   combine.disabled = !ready || fresh;
-  combine.textContent = busy ? "Composing…" : result ? "Update piece" : "Compose piece";
+  combine.textContent = busy ? "Composing…" : available ? "Play saved piece" : result ? "Update piece" : "Compose piece";
   combine.hidden = fresh && !busy;
   combine.classList.toggle("pending", ready && !fresh && result !== null);
-  const dockPlay = $<HTMLButtonElement>("#dock-play");
-  dockPlay.hidden = !result;
-  dockPlay.classList.toggle("primary", fresh);
-  dockPlay.classList.toggle("btn", !fresh);
-  dockPlay.title = result ? `Play “${pieceTitle(result.title, result.parts.map((p) => p.source))}”` : "";
   take.disabled = !ready || !composer.aceOn;
+  take.hidden = ids.length === 0;
   $<HTMLButtonElement>("#clear").disabled = busy || ids.length === 0;
   if (busy) return;
   const status = $<HTMLElement>("#status");
   status.classList.toggle("bad", issues.length > 0 && ids.length > 0);
-  status.textContent = flash || (ids.length === 0 ? "Seat at least one player."
+  status.hidden = fresh && !flash;
+  status.textContent = flash || (ids.length === 0 ? "Choose a site on the map to fill a chair."
     : issues.length ? issues[0]!
     : fresh ? `“${pieceTitle(result!.title, result!.parts.map((p) => p.source))}” is ready to play.`
+    : available ? "This piece is ready to play."
     : result ? `Changed since “${pieceTitle(result.title, result.parts.map((p) => p.source))}”.`
     : `${ids.length} player${ids.length === 1 ? "" : "s"} ready.`);
 }
 
 function renderHallSeats(ids: string[]) {
-  const chairs = Math.max(catalog.combination.max_parts, ids.length);
+  const chairs = Math.min(catalog.combination.max_parts, Math.max(4, ids.length + 1));
+  $<HTMLElement>("#hall-seats").style.setProperty("--chair-count", String(chairs));
+  $("#hall-seats").setAttribute("aria-label", `${chairs} orchestra chairs`);
   $("#hall-seats").innerHTML = Array.from({ length: chairs }, (_, i) => {
     const source = sourceById.get(ids[i] ?? "");
     const status = source && statusOf(source);
@@ -395,15 +392,22 @@ function renderHallSeats(ids: string[]) {
     const marked = status && THREATENED.has(status.category) ? status : undefined;
     const statusCaption = marked ? `<span class="seat-status">${statusChip(marked)}${TREND_ARROW[marked.trend] ? ` <span title="${esc(marked.trend)}">${TREND_ARROW[marked.trend]}</span>` : ""}</span>` : "";
     const chair = `<span class="seat-figure"><svg viewBox="0 0 36 42" aria-hidden="true"><path d="M8 19V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v12M6 17v13h24V17M9 30v8M27 30v8"/><rect x="9" y="20" width="18" height="8" rx="2"/></svg>${animal}</span><span class="seat-caption">${i + 1}${source ? ` · ${SPECIES[source.species].seat}` : " · Empty"}</span>${statusCaption}`;
-    return source ? `<li class="occupied${marked ? ` threatened ${marked.category.toLowerCase()}` : ""}" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="About ${esc(source.title)}, guide played as ${esc(source.instrument)}${status ? `. ${esc(statusLine(status))}` : ""}" title="${esc(capital(source.species))} · ${esc(source.location.label)} · guide: ${esc(source.instrument)}${status ? `\n${esc(statusLine(status))}` : ""}">${chair}</button></li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
+    return source ? `<li class="occupied${marked ? ` threatened ${marked.category.toLowerCase()}` : ""}" style="--c:${SPECIES_COLOR[source.species]}"><button type="button" data-chair="${esc(source.id)}" aria-label="About ${esc(source.title)}, guide played as ${esc(source.instrument)}${status ? `. ${esc(statusLine(status))}` : ""}" title="${esc(capital(source.species))} · ${esc(source.location.label)} · guide: ${esc(source.instrument)}${status ? `\n${esc(statusLine(status))}` : ""}">${chair}<span class="seat-location">${esc(source.location.label)}</span></button>${isStatic ? "" : `<button class="seat-remove" type="button" data-remove="${esc(source.id)}" aria-label="Remove ${esc(source.title)} from chair ${i + 1}">×</button>`}</li>` : `<li class="vacant" aria-label="Seat ${i + 1} available">${chair}</li>`;
   }).join("");
 }
 
 $("#hall-seats").addEventListener("click", (event) => {
+  const remove = (event.target as Element).closest<HTMLButtonElement>("[data-remove]");
+  if (remove) { composer?.remove(remove.dataset.remove!); return; }
   const button = (event.target as Element).closest<HTMLButtonElement>("[data-chair]");
   const source = button && sourceById.get(button.dataset.chair ?? "");
   if (button && source) openVoiceCard(source);
 });
+$("#hall-seats").addEventListener("pointerover", (event) => {
+  const id = (event.target as Element).closest<HTMLElement>("[data-chair]")?.dataset.chair;
+  map.highlight(id ? siteOf.get(id)?.key ?? null : null);
+});
+$("#hall-seats").addEventListener("pointerleave", () => map.highlight(null));
 
 /* ---------- voice card: who is singing, and how their population is doing ---------- */
 const voiceCard = $<HTMLDialogElement>("#voice-card");
@@ -448,16 +452,24 @@ function say(text: string) {
   renderDock();
 }
 
-$<HTMLElement>("#players").addEventListener("click", (event) => {
-  const id = (event.target as Element).closest<HTMLButtonElement>("[data-remove]")?.dataset.remove;
-  if (id) composer?.remove(id);
+$<HTMLButtonElement>("#clear").addEventListener("click", () => {
+  stop();
+  preview.pause();
+  resetPreview();
+  player.rewind();
+  result = null;
+  pieceKey = null;
+  partOn = [];
+  flash = "";
+  $("#result").setAttribute("hidden", "");
+  $("#technical-result").setAttribute("hidden", "");
+  $("#programme-status").textContent = "Chairs cleared. Choose recordings on the map or a finished piece.";
+  document.querySelectorAll<HTMLButtonElement>("#saved [data-combo]").forEach(button => button.setAttribute("aria-pressed", "false"));
+  const url = new URL(location.href);
+  url.hash = "";
+  history.replaceState(null, "", url);
+  composer?.clear();
 });
-$<HTMLElement>("#players").addEventListener("pointerover", (event) => {
-  const id = (event.target as Element).closest<HTMLElement>(".player")?.dataset.id;
-  map.highlight(id ? siteOf.get(id)?.key ?? null : null);
-});
-$<HTMLElement>("#players").addEventListener("pointerleave", () => map.highlight(null));
-$<HTMLButtonElement>("#clear").addEventListener("click", () => composer?.clear());
 $<HTMLButtonElement>("#combine").addEventListener("click", () => void compose());
 $<HTMLButtonElement>("#take").addEventListener("click", () => void compose(true));
 
@@ -466,7 +478,7 @@ async function compose(newTake = false) {
   if (busy || !composer || composer.count === 0 || composer.problems().length) return;
   if (newTake) composer.newSeed();
   const spec = composer.spec();
-  const key = JSON.stringify(spec);
+  const key = specKey(spec, catalog);
   if (!newTake && result && key === pieceKey) return;
   const known = newTake ? undefined : rendered.get(key);
   if (known) {
@@ -538,7 +550,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   $<HTMLButtonElement>("#programme-listen").disabled = false;
   if (options.seat && composer && !isStatic) {
     composer.load(manifest);
-    pieceKey = JSON.stringify(composer.spec());
+    pieceKey = specKey(composer.spec(), catalog);
     rendered.set(pieceKey, manifest.id);
   }
   partOn = manifest.parts.map(() => true);
@@ -547,7 +559,7 @@ function showResult(manifest: Manifest | null, options: { seat: boolean; autopla
   if (isStatic || !composer) map.setCombination(resultParts());
   const section = $<HTMLElement>("#result");
   section.hidden = false;
-  $<HTMLElement>("#result-eyebrow").textContent = `Now on stage / ${manifest.spec.arrangement === "layer" ? "Together" : "In sequence"} · ${manifest.parts.length} player${manifest.parts.length === 1 ? "" : "s"} · ${manifest.duration_s.toFixed(1)} s`;
+  $<HTMLElement>("#result-eyebrow").textContent = `Current piece / ${manifest.spec.arrangement === "layer" ? "Together" : "In sequence"} · ${manifest.parts.length} player${manifest.parts.length === 1 ? "" : "s"} · ${manifest.duration_s.toFixed(1)} s`;
   $<HTMLElement>("#result-title").textContent = pieceTitle(manifest.title, manifest.parts.map((p) => p.source));
   const resultNote = document.querySelector<HTMLElement>("#result-note");
   if (resultNote) resultNote.textContent = manifest.interpretation;
@@ -612,9 +624,9 @@ function tracks(): Track[] {
   return out;
 }
 
-/** The result's Play and the dock's Play always show the same state. */
+/** Concert and technical views share the same playback state. */
 function playButtons(state: "play" | "pause" | "loading") {
-  for (const button of document.querySelectorAll<HTMLButtonElement>("#play, #dock-play, #technical-play")) {
+  for (const button of document.querySelectorAll<HTMLButtonElement>("#play, #technical-play")) {
     button.setAttribute("aria-pressed", String(state === "pause"));
     button.textContent = state === "loading" ? "Loading…" : state === "pause" ? "❚❚ Pause" : "▶ Play";
   }
@@ -622,15 +634,18 @@ function playButtons(state: "play" | "pause" | "loading") {
 
 async function play(offset?: number) {
   if (!result) return;
+  const manifest = result;
   preview.pause();
   resetPreview();
   playButtons("loading");
   try {
-    await player.play(tracks(), offset ?? player.time, result.duration_s);
+    await player.play(tracks(), offset ?? player.time, manifest.duration_s);
+    if (result !== manifest || !player.playing) return;
     playButtons("pause");
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(tick);
   } catch (error) {
+    if (result !== manifest) return;
     playButtons("play");
     playbackError(`Audio could not load: ${(error as Error).message}`);
   }
@@ -665,7 +680,7 @@ function tick() {
   frame = requestAnimationFrame(tick);
 }
 
-for (const id of ["#play", "#dock-play", "#technical-play"]) $<HTMLButtonElement>(id).addEventListener("click", () => (player.playing ? stop() : void play()));
+for (const id of ["#play", "#technical-play"]) $<HTMLButtonElement>(id).addEventListener("click", () => (player.playing ? stop() : void play()));
 $<HTMLElement>("#stems").addEventListener("click", (event) => {
   const button = (event.target as Element).closest<HTMLButtonElement>("[data-stem]");
   if (!button) return;
@@ -724,11 +739,12 @@ async function piece(id: string): Promise<Manifest> {
 async function loadSaved() {
   const saved = await json<ComboSummary[]>(combosUrl()).catch(() => [] as ComboSummary[]);
   summaries = new Map(saved.map((c) => [c.id, c]));
-  $<HTMLButtonElement>("#programme-listen").disabled = saved.length === 0 && !result;
-  const presets = saved.filter((c) => c.preset).sort((a, b) => b.created_at_utc.localeCompare(a.created_at_utc));
-  const recent = saved.filter((c) => !c.preset);
+  const programme = saved.filter((c) => !precomputedIds.has(c.id) || c.preset || c.id === result?.id);
+  $<HTMLButtonElement>("#programme-listen").disabled = programme.length === 0 && !result;
+  const presets = programme.filter((c) => c.preset).sort((a, b) => b.created_at_utc.localeCompare(a.created_at_utc));
+  const recent = programme.filter((c) => !c.preset);
   const group = (title: string, items: ComboSummary[]) => items.length ? `<li class="group-title">${title}</li>${items.map(savedItem).join("")}` : "";
-  $<HTMLElement>("#saved").innerHTML = saved.length
+  $<HTMLElement>("#saved").innerHTML = programme.length
     ? (presets.length ? group("Presets", presets) + group("Recent pieces", recent) : recent.map(savedItem).join(""))
     : `<li class="small">None yet. Seat some players and compose; each piece appears here.</li>`;
 }

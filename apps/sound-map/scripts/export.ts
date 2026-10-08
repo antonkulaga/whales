@@ -47,6 +47,7 @@ const summaries: ComboSummary[] = manifests.map((m) => ({
 await Bun.write(join(OUTPUT, "combos.json"), JSON.stringify(summaries));
 
 const files = new Set<string>(["atlas-app.js", "atlas.css", "catalog.json", "combos.json", ...artwork, catalog.countries]);
+if (await Bun.file(join(OUTPUT, "duos.json")).exists()) files.add("duos.json");
 for (const source of catalog.sources) {
   for (const listening of Object.values(source.files)) {
     files.add(listening.audio);

@@ -31,6 +31,12 @@ def main(jobs_path: str):
     from acestep.handler import AceStepHandler
     from acestep.inference import GenerationConfig, GenerationParams, generate_music
     from acestep.llm_inference import LLMHandler
+    from acestep.model_downloader import MAIN_MODEL_COMPONENTS
+
+    # This runner never initializes the LM and loads the selected DiT separately.
+    # Limit upstream's download preflight to the main components we actually use;
+    # otherwise it downloads the unused turbo and LM checkpoints on CPU servers.
+    MAIN_MODEL_COMPONENTS[:] = ["vae", "Qwen3-Embedding-0.6B"]
 
     revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True).stdout.strip()
     handler = AceStepHandler()

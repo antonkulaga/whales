@@ -64,6 +64,8 @@ export interface CombinationLimits {
 
 export interface Catalog {
   created_at_utc: string;
+  config_sha256?: string;
+  render_version?: number;
   sources: Source[];
   points: DatasetPoint[];
   countries: string;
@@ -95,6 +97,12 @@ export interface Spec {
   gap_s: number;
   parts: PartDraft[];
   ace?: AceRequest | null;
+}
+
+export interface PrecomputedIndex {
+  config_sha256: string;
+  render_version: number;
+  pieces: { id: string; spec: Spec }[];
 }
 
 export interface Timing {

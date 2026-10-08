@@ -39,7 +39,8 @@ ENV, TEMPLATE = ROOT / ".env", ROOT / ".env.template"
 ACE_COMMIT = "ca1e85fe9430179831e6bc6be790c332190a3866"
 MIN_BUN = (1, 2, 3)  # Bun.serve routes with HTML imports
 UV = shutil.which("uv") or os.environ.get("UV", "uv")  # `uv run` exports UV even when uv is not on PATH
-PYTHON = [UV, "run", "--group", "art", "--group", "viz"]  # the environment server.ts runs `main.py follow` in
+BASE_PYTHON = [UV, "run"]  # metadata and downloads do not need audio or model dependencies
+PYTHON = BASE_PYTHON + ["--group", "audio"]  # the environment server.ts runs `main.py follow` in
 WILDCARD = {"0.0.0.0", "::", ""}
 
 # Runs in ACE-Step's own environment: fetch the pinned weights that initialize_service would otherwise
@@ -48,13 +49,15 @@ WEIGHTS = """
 import sys
 from pathlib import Path
 from huggingface_hub import snapshot_download
-from acestep.model_downloader import check_main_model_exists, check_model_exists
+from acestep.model_downloader import check_model_exists
 
 root, model, model_repo, model_revision, main_repo, main_revision = sys.argv[1:]
 checkpoints = Path(root) / "checkpoints"
-if not check_main_model_exists(checkpoints):
-    print("  Downloading the ACE-Step main weights (about 9.5 GB, once)", flush=True)
-    snapshot_download(main_repo, revision=main_revision, local_dir=checkpoints)
+components = ["vae", "Qwen3-Embedding-0.6B"]
+if not all(check_model_exists(name, checkpoints) for name in components):
+    print("  Downloading the ACE-Step VAE and text encoder (about 1.5 GB, once)", flush=True)
+    snapshot_download(main_repo, revision=main_revision, local_dir=checkpoints,
+                      allow_patterns=[name + "/*" for name in components])
 if not check_model_exists(model, checkpoints):
     print(f"  Downloading {model} (about 4.5 GB, once)", flush=True)
     snapshot_download(model_repo, revision=model_revision, local_dir=checkpoints / model)
@@ -226,21 +229,22 @@ def recordings(report: Report, layout: Layout):
         report.ok(f"{len(ids)} recordings measured, catalog up to date")
         return
     if not measured:
-        report.note("Downloading and measuring the recordings. The first run also installs the analysis "
-                    "environment (PyTorch and friends, several GB).")
+        report.note("Downloading and measuring the recordings. The first run also installs the audio "
+                    "analysis dependencies; ACE-Step uses its own environment.")
     # `follow fetch` expects two inputs from other commands: the DCLDE annotations that cut the orca
     # excerpts, and the long OpenWhistle sequences behind the dolphin sources.
     steps = []
     if not measured:
         if not (layout.input / "dclde" / "Annotations.csv").exists():
-            steps.append(("`main.py dclde metadata`", ["main.py", "dclde", "metadata"]))
+            steps.append(("`main.py dclde metadata`", BASE_PYTHON + ["main.py", "dclde", "metadata"]))
         if any(not (layout.input / s["file"]).exists() for s in config["sources"] if s.get("file", "").startswith("long-audio/")):
-            steps.append(("Downloading the long OpenWhistle sequences", ["python", "-c", "from experiments.data import Layout, "
-                                                                         "fetch_long_samples; print(fetch_long_samples(Layout()))"]))
-        steps += [("`main.py follow fetch`", ["main.py", "follow", "fetch"]), ("`main.py follow prepare`", ["main.py", "follow", "prepare"])]
-    steps.append(("`main.py follow catalog`", ["main.py", "follow", "catalog"]))
+            steps.append(("Downloading the long OpenWhistle sequences", BASE_PYTHON + ["python", "-c", "from experiments.data import Layout, "
+                                                                                       "fetch_long_samples; print(fetch_long_samples(Layout()))"]))
+        steps += [("`main.py follow fetch`", PYTHON + ["main.py", "follow", "fetch"]),
+                  ("`main.py follow prepare`", PYTHON + ["main.py", "follow", "prepare"])]
+    steps.append(("`main.py follow catalog`", PYTHON + ["main.py", "follow", "catalog"]))
     for label, command in steps:
-        if not run(PYTHON + command):
+        if not run(command):
             if catalog.exists():
                 fallback = "The app keeps the catalog it has."
             elif not (layout.output / "follow").exists():
@@ -289,17 +293,25 @@ def ace_step(report: Report, mode: Ace, layout: Layout):
         if not shutil.which("git"):
             report.warn("Git is missing, so ACE-Step cannot be cloned. Install git and run `uv run start` again.")
             return
-        report.note("First install: clones ACE-Step, builds its own environment (about 8 GB) and downloads its weights (about 14 GB).")
+        report.note("First install: clones ACE-Step, builds its own environment and downloads the phrase runner's weights (about 6 GB).")
         root.parent.mkdir(parents=True, exist_ok=True)
         if not (run(["git", "clone", settings["repository"], str(root)])
                 and run(["git", "-C", str(root), "checkout", "--quiet", ACE_COMMIT])):
             shutil.rmtree(root, ignore_errors=True)  # only ever a clone this call started
             report.warn("Cloning ACE-Step failed (output above). Check the network and run `uv run start` again.")
             return
-    if not python.exists():
+    if card is None or not python.exists():
         env = {key: value for key, value in os.environ.items() if key != "VIRTUAL_ENV"}  # it keeps its own .venv
-        if not run([UV, "sync"], cwd=root, env=env) or not python.exists():
-            report.warn(f"`uv sync` failed in {root.relative_to(ROOT)} (output above). Pieces still get their guide and "
+        if card is None:
+            # Upstream's Linux uv project pins CUDA wheels even on CPU-only servers.
+            # Keep its checkout intact and install only the inference stack in its own .venv.
+            commands = [] if python.exists() else [[UV, "venv", "--python", "3.12", str(root / ".venv")]]
+            commands.append([UV, "pip", "install", "--no-cache", "--python", str(python), "--torch-backend", "cpu",
+                             "-r", str(ROOT / "resources" / "ace-cpu-requirements.txt")])
+        else:
+            commands = [[UV, "sync"]]
+        if not all(run(command, cwd=root, env=env) for command in commands) or not python.exists():
+            report.warn(f"Installing ACE-Step dependencies failed in {root.relative_to(ROOT)} (output above). Pieces still get their guide and "
                         "deterministic response; run `uv run start` again to retry.")
             return
     if not run([str(python), "-c", WEIGHTS, str(root), settings["model"], settings["model_repo"], settings["model_revision"],

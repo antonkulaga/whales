@@ -2,7 +2,7 @@
 // app without the Python pipeline. Only what the player reads is copied: MP3 stems, WebP
 // spectrograms, catalog.json, the country outlines and each combination's manifest.json.
 // Audio and images are stored with Git LFS (see the root .gitattributes).
-// Run: bun scripts/demo.ts [combo-id,combo-id,...]   (default: every combination)
+// Run: bun scripts/demo.ts [combo-id,combo-id,...] [--append]   (default: every combination)
 
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -26,13 +26,22 @@ for (const path of artwork) {
 }
 
 const catalog = (await Bun.file(join(OUTPUT, "catalog.json")).json()) as Catalog;
-const wanted = process.argv[2]?.split(",").filter(Boolean);
+const args = process.argv.slice(2);
+const append = args.includes("--append");
+const wanted = args.find((arg) => !arg.startsWith("--"))?.split(",").filter(Boolean);
 const ids = wanted ?? (await readdir(join(OUTPUT, "combos")));
 const manifests: Manifest[] = [];
 for (const id of ids) {
   const file = Bun.file(join(OUTPUT, "combos", id, "manifest.json"));
   if (await file.exists()) manifests.push((await file.json()) as Manifest);
   else if (wanted) throw new Error(`No combination ${id} in ${OUTPUT}/combos`);
+}
+if (append) {
+  const included = new Set(manifests.map((m) => m.id));
+  for (const id of await readdir(join(DEMO, "combos")).catch(() => [] as string[])) {
+    const file = Bun.file(join(DEMO, "combos", id, "manifest.json"));
+    if (!included.has(id) && await file.exists()) manifests.push((await file.json()) as Manifest);
+  }
 }
 
 // Provenance fields hold absolute paths on the machine that rendered them; keep them repository-relative.
@@ -46,6 +55,7 @@ function relativize<T>(value: T): T {
 }
 
 const media = new Set<string>([catalog.countries, ...artwork]);
+if (await Bun.file(join(OUTPUT, "duos.json")).exists()) media.add("duos.json");
 for (const source of catalog.sources) {
   for (const listening of Object.values(source.files)) media.add(listening.audio).add(listening.image);
 }
@@ -54,14 +64,15 @@ for (const m of manifests) {
   for (const part of m.parts) media.add(part.files.animal).add(part.files.guide);
 }
 
-await rm(DEMO, { recursive: true, force: true });
+if (!append) await rm(DEMO, { recursive: true, force: true });
 let bytes = 0;
 const write = async (path: string, data: Blob | string) => {
   await mkdir(dirname(join(DEMO, path)), { recursive: true });
   bytes += await Bun.write(join(DEMO, path), data);
 };
 for (const path of [...media].sort()) {
-  const file = Bun.file(join(OUTPUT, path));
+  let file = Bun.file(join(OUTPUT, path));
+  if (append && !(await file.exists())) file = Bun.file(join(DEMO, path));
   if (!(await file.exists())) throw new Error(`Missing ${path}; rerun 'main.py follow catalog' or the combination`);
   await write(path, file);
 }
@@ -69,7 +80,10 @@ await write("catalog.json", JSON.stringify(relativize(catalog)));
 for (const m of manifests) await write(`combos/${m.id}/manifest.json`, JSON.stringify(relativize(m), null, 1));
 // Preset names for the bundled pieces travel with them; the server reads them when data/output has none.
 const presetFile = Bun.file(join(OUTPUT, "presets.json"));
-const presets = (await presetFile.exists() ? await presetFile.json() : {}) as Record<string, { name: string; saved_at_utc: string }>;
+const presets = {
+  ...(append ? await Bun.file(join(DEMO, "presets.json")).json().catch(() => ({})) : {}),
+  ...(await presetFile.exists() ? await presetFile.json() : {}),
+} as Record<string, { name: string; saved_at_utc: string }>;
 const shipped = Object.fromEntries(manifests.filter((m) => presets[m.id]).map((m) => [m.id, presets[m.id]]));
 if (Object.keys(shipped).length) await write("presets.json", JSON.stringify(shipped, null, 1));
 
