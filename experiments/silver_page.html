@@ -293,6 +293,14 @@ function prepare(points, frame) {
 // The map: θ kept; r' = r + g·swell·max(S,0)·w(r); h' = h + g·lift·L + g·lean·Λ·(r − bore)/ref.
 // Output in stage coordinates: x = r'cosθ, y = h' (finger axis up), z = −r'sinθ.
 function bend(P, prof, gain, ges, out) {
+  if (P.spine) { bendSpine(P, prof, gain, out); return; }
+  if (P.roots) {
+    for(let i=0;i<P.n;i++){
+      if(!P.valid[i]){out[3*i]=out[3*i+1]=out[3*i+2]=NaN;continue;}
+      const t=P.th[i],r=P.r[i];out[3*i]=r*Math.cos(t);out[3*i+1]=P.h[i];out[3*i+2]=-r*Math.sin(t);
+    }
+    return;
+  }
   for (let i = 0; i < P.n; i++) {
     if (!P.valid[i]) { out[3 * i] = out[3 * i + 1] = out[3 * i + 2] = NaN; continue; }
     const r = P.r[i], t = P.th[i], b = P.bore[i];
@@ -305,6 +313,245 @@ function bend(P, prof, gain, ges, out) {
     out[3 * i] = rn * Math.cos(t); out[3 * i + 1] = hn; out[3 * i + 2] = -rn * Math.sin(t);
   }
 }
+// Sample rib attachments from the supplied base; the thin reference curve is
+// measured separately from ++baseinline.stl and is never added as thin metal.
+function inlineSpine(P, frame) {
+  const N=256, rows=Array.from({length:N+1},()=>[[],[]]);
+  for(let i=0;i<P.n;i++){
+    const u=((P.th[i]-frame.theta_start+TAU)%TAU)/frame.span;
+    if(u<=1)rows[Math.round(u*N)][P.h[i]<0?0:1].push(i);
+  }
+  const median=values=>{values.sort((a,b)=>a-b);return values[values.length>>1];};
+  let rails=[0,1].map(side=>{
+    const raw=rows.map((row,j)=>{
+      let ids=row[side];
+      if(!ids.length)for(let d=1;d<=N;d++){
+        ids=(rows[Math.max(0,j-d)][side].length?rows[Math.max(0,j-d)]:rows[Math.min(N,j+d)])[side];if(ids.length)break;
+      }
+      return [median(ids.map(i=>P.r[i])),median(ids.map(i=>P.h[i]))];
+    });
+    return raw.map((_,j)=>[0,1].map(c=>{
+      let sum=0,w=0;for(let d=-5;d<=5;d++){const q=6-Math.abs(d);sum+=raw[Math.max(0,Math.min(N,j+d))][c]*q;w+=q;}return sum/w;
+    }));
+  });
+  if(frame.inline_guide){
+    const guide=frame.inline_guide, start=guide.u_start, span=guide.u_end-start;
+    // The guide is sampled from the actual wire cross-sections. Keep every
+    // sampled radius and height unchanged, including its approach to both ends.
+    rails=rails.map(rail=>{
+      const r=rail.map(point=>point[0]),h=rail.map(point=>point[1]);
+      return Array.from({length:N+1},(_,j)=>{
+        const u=start+span*j/N;
+        return [sampleSpine(r,u),sampleSpine(h,u)];
+      });
+    });
+    return {rails,centerR:guide.radius.slice(),centerH:guide.height.slice(),
+      radius:median(guide.radius.slice()),start:frame.theta_start+frame.span*start,
+      span:frame.span*span,tubeRadius:.5};
+  }
+  const centerR=rails[0].map((p,j)=>(p[0]+rails[1][j][0])/2);
+  const centerH=rails[0].map((p,j)=>(p[1]+rails[1][j][1])/2);
+  const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+  if(frame.inline_ends)for(let j=0;j<=N;j++){
+    const u=j/N,edge=Math.min(u,1-u),side=u<.5?0:1,blend=ease(1-edge/.12);
+    centerR[j]=centerR[j]*(1-blend)+frame.inline_ends[side].radius*blend;
+    centerH[j]=centerH[j]*(1-blend)+frame.inline_ends[side].height*blend;
+  }
+  return {rails,centerR,centerH,radius:median(centerR.slice()),start:frame.theta_start,span:frame.span,tubeRadius:.5};
+}
+function neutralInline(positions, indices, P, frame, S) {
+  // Retain the separately capped base; the new tube follows the wire guide.
+  const vertices=Array.from(positions),faces=Array.from(indices);
+  const weights=Array(P.n).fill(0),parameters=Array(P.n).fill(0);
+  S.sourceCount=P.n;S.retainedCount=P.n;S.sourceIndexCount=indices.length;
+  const tube=(points,radius,weight=0)=>{
+    const first=vertices.length/3,sides=12;
+    for(let k=0;k<points.length;k++) {
+      const p=points[k],a=points[Math.max(0,k-1)],b=points[Math.min(points.length-1,k+1)];
+      let tx=b[0]-a[0],ty=b[1]-a[1],tz=b[2]-a[2];const length=Math.hypot(tx,ty,tz)||1;tx/=length;ty/=length;tz/=length;
+      let nx=-tz,ny=0,nz=tx;const nl=Math.hypot(nx,nz);if(nl<1e-8){nx=1;nz=0;}else{nx/=nl;nz/=nl;}
+      const bx=ty*nz-tz*ny,by=tz*nx-tx*nz,bz=tx*ny-ty*nx;
+      for(let j=0;j<sides;j++) {
+        const angle=TAU*j/sides,ca=Math.cos(angle)*radius,sa=Math.sin(angle)*radius;
+        const x=p[0]+nx*ca+bx*sa,y=p[1]+ny*ca+by*sa,z=p[2]+nz*ca+bz*sa;
+        for(let c=0;c<3;c++) vertices.push(frame.center[c]+x*frame.e1[c]+y*frame.axis[c]-z*frame.e2[c]);
+        weights.push(weight);parameters.push(p[3]);
+      }
+      if(k)for(let j=0;j<sides;j++){const a=first+(k-1)*sides+j,b=first+(k-1)*sides+(j+1)%sides;faces.push(a,b,a+sides,b,b+sides,a+sides);}
+    }
+    for(const k of [0,points.length-1])for(let j=1;j<sides-1;j++){const a=first+k*sides; if(k)faces.push(a,a+j,a+j+1);else faces.push(a,a+j+1,a+j);}
+    return first;
+  };
+  const point=(u,r,h)=>{const t=S.start+S.span*u;return [r*Math.cos(t),h,-r*Math.sin(t),u];};
+  const arc=Array.from({length:1025},(_,j)=>{const u=j/1024;return point(u,sampleSpine(S.centerR,u),sampleSpine(S.centerH,u));});
+  S.tubeFirst=tube(arc,S.tubeRadius,1);S.tubeSides=12;S.tubeEnd=vertices.length/3;
+  if(frame.inline_anchor_stage){
+    const a=frame.inline_anchor_stage,b=arc[0];
+    const unit=v=>{const length=Math.hypot(...v)||1;return v.map(x=>x/length);};
+    const tangent=unit(arc[1].slice(0,3).map((x,c)=>x-b[c]));
+    const end=b.slice(0,3).map((x,c)=>x+.16*tangent[c]);
+    // The connector is a circular sweep, tangent to the measured wire where
+    // they overlap. Its root stays buried in the original band.
+    const planar=Math.hypot(tangent[0],tangent[2]),nx=-tangent[2]/planar,nz=tangent[0]/planar;
+    const dx=a[0]-end[0],dz=a[2]-end[2];
+    const signedRadius=(dx*dx+dz*dz)/(2*(dx*nx+dz*nz));
+    const cx=end[0]+signedRadius*nx,cz=end[2]+signedRadius*nz,radius=Math.abs(signedRadius);
+    let angle0=Math.atan2(a[2]-cz,a[0]-cx),angle1=Math.atan2(end[2]-cz,end[0]-cx);
+    let sweep=angle1-angle0;
+    if(signedRadius>0&&sweep<0)sweep+=TAU;
+    if(signedRadius<0&&sweep>0)sweep-=TAU;
+    const bridge=Array.from({length:33},(_,j)=>{
+      const u=j/32,angle=angle0+sweep*u,ease=u*u*(3-2*u);
+      return [cx+radius*Math.cos(angle),a[1]+(end[1]-a[1])*ease,cz+radius*Math.sin(angle),0];
+    });
+    S.anchorFirst=tube(bridge,S.tubeRadius,0);
+    S.anchorEnd=vertices.length/3;
+  }
+  S.ribs=[];
+  S.maxSupportGap=4;S.jointRadius=.5;S.supportSlots=128;
+  const ball=()=>{
+    const first=vertices.length/3,rings=8,sides=12;
+    for(let k=0;k<=rings;k++)for(let j=0;j<sides;j++){
+      // Fixed topology; bendSpine places each ball on its connection endpoint.
+      vertices.push(...frame.center);weights.push(0);parameters.push(.5);
+      if(k){const a=first+(k-1)*sides+j,b=first+(k-1)*sides+(j+1)%sides;faces.push(a,b,a+sides,b,b+sides,a+sides);}
+    }
+    return {first,rings,sides};
+  };
+  for(let slot=0;slot<S.supportSlots;slot++)for(const sign of [-1,1]){
+    const first=vertices.length/3;tube(Array.from({length:9},(_,j)=>point(.5,S.radius,sign*j/8)),.5);
+    S.ribs.push({first,slot,sign,steps:8,sides:12,joints:[ball(),ball()]});
+  }
+  S.weights=new Float32Array(weights);S.parameters=new Float32Array(parameters);
+  return {positions:new Float32Array(vertices),indices:new Uint32Array(faces)};
+}
+function inlineNodes(wave) {
+  const nodes=[];
+  for(let i=2;i<wave.length-2;i++)if(wave[i]>.06&&wave[i]>wave[i-1]&&wave[i]>=wave[i+1]){
+    const u=i/(wave.length-1);if(u>.065&&u<.935)nodes.push(u);
+  }
+  // Bound geometric density while preserving the temporal order of the peaks.
+  return nodes.length<=48?nodes:nodes.filter((_,i)=>i%Math.ceil(nodes.length/48)===0);
+}
+
+function sampleSpine(values, u) {
+  if (!values || !values.length) return 0;
+  const x = Math.max(0, Math.min(1, u)) * (values.length - 1), j = Math.floor(x), f = x - j;
+  return values[j] * (1 - f) + values[Math.min(j + 1, values.length - 1)] * f;
+}
+function inlineSupportNodes(S,wave,gain,peaks=[]) {
+  if(gain<=0 || !wave.some(v=>v>0))return [];
+  // Measure the bent line in millimetres, rather than using time or angle gaps.
+  const lengths=[0];let previous=null;
+  for(let k=0;k<=1024;k++){
+    const u=k/1024,t=S.start+S.span*u,r=sampleSpine(S.centerR,u)+gain*sampleSpine(wave,u);
+    const p=[r*Math.cos(t),sampleSpine(S.centerH,u),-r*Math.sin(t)];
+    if(previous)lengths.push(lengths[k-1]+Math.hypot(...p.map((v,c)=>v-previous[c])));
+    previous=p;
+  }
+  const nodes=[...new Set(peaks)].filter(u=>u>0&&u<1).sort((a,b)=>a-b),anchors=[0,...nodes,1];
+  for(let i=1;i<anchors.length;i++){
+    const a=sampleSpine(lengths,anchors[i-1]),b=sampleSpine(lengths,anchors[i]);
+    const count=Math.ceil((b-a)/S.maxSupportGap);
+    for(let j=1;j<count;j++){
+      const target=a+(b-a)*j/count;let k=1;while(k<lengths.length-1&&lengths[k]<target)k++;
+      nodes.push((k-1+(target-lengths[k-1])/Math.max(1e-9,lengths[k]-lengths[k-1]))/1024);
+    }
+  }
+  // Include added supports in the same progressive reveal as the sound peaks.
+  return nodes.sort((a,b)=>a-b);
+}
+function inlineWave(sound, until = Infinity) {
+  const N = 1024, wave = new Float64Array(N + 1), T = sound.time_s, D = sound.duration_s;
+  const hz = sound.hz || [], peak = Math.max(1e-9, ...sound.level);
+  let k = 0, phase = 0, lastHz = 0;
+  // The same frequency divisor for every recording makes kHz contours legible
+  // on a ring, without erasing the frequency ratios between recordings.
+  const frequencyDivisor = 512;
+  for (let j = 0; j <= N; j++) {
+    const time = D * j / N;
+    while (k < T.length - 2 && T[k + 1] < time) k++;
+    const next = Math.min(k + 1, T.length - 1), f = Math.max(0, Math.min(1, (time - T[k]) / Math.max(1e-9, T[next] - T[k])));
+    const amplitude = Math.max(0, sound.level[k] * (1 - f) + sound.level[next] * f) / peak;
+    const a = Number.isFinite(hz[k]) && hz[k] > 0 ? hz[k] : 0;
+    const b = Number.isFinite(hz[next]) && hz[next] > 0 ? hz[next] : 0;
+    const frequency = a && b ? a * (1 - f) + b * f : a || b;
+    if (j) phase += TAU * (lastHz + frequency) * 0.5 * D / N / frequencyDivisor;
+    lastHz = frequency;
+    // Voiced parts use frequency-driven oscillations; unvoiced clicks retain
+    // their measured amplitude envelope, without inventing a tonal frequency.
+    const oscillation = frequency > 0 ? (1 - Math.cos(phase)) * 0.5 : 1;
+    const edge = Math.min(1, j / 56, (N - j) / 56), end = edge * edge * (3 - 2 * edge);
+    const reveal = Number.isFinite(until) ? Math.max(0, Math.min(1, (until - time) / 0.025)) : 1;
+    wave[j] = amplitude * oscillation * end * reveal;
+  }
+  // Smooth the mapped displacement before constructing metal, not its thickness.
+  const smooth=wave.map((_,j)=>{let sum=0,w=0;for(let d=-8;d<=8;d++){const q=9-Math.abs(d);sum+=wave[Math.max(0,Math.min(N,j+d))]*q;w+=q;}return sum/w;});
+  smooth[0]=smooth[N]=0;return smooth;
+}
+function bendSpine(P, prof, gain, out) {
+  const S = P.spine;
+  // The retained cast base does not bend. Cache its stage coordinates once.
+  if (!P.spineBase) {
+    P.spineBase = new Float64Array(S.retainedCount * 3);
+    for (let i = 0; i < S.retainedCount; i++) {
+      const t = P.th[i];
+      P.spineBase[3*i] = P.valid[i] ? P.r[i]*Math.cos(t) : NaN;
+      P.spineBase[3*i+1] = P.valid[i] ? P.h[i] : NaN;
+      P.spineBase[3*i+2] = P.valid[i] ? -P.r[i]*Math.sin(t) : NaN;
+    }
+  }
+  out.set(P.spineBase);
+  for (let i = S.retainedCount; i < P.n; i++) {
+    if (!P.valid[i]) { out[3 * i] = out[3 * i + 1] = out[3 * i + 2] = NaN; continue; }
+    const t = P.th[i], offset = gain * sampleSpine(prof.wave, S.parameters[i]) * S.weights[i];
+    const r = P.r[i] + offset;
+    out[3 * i] = r * Math.cos(t); out[3 * i + 1] = P.h[i]; out[3 * i + 2] = -r * Math.sin(t);
+  }
+  // Rebuild perpendicular cross-sections after bending, preserving the full
+  // 1 mm diameter even where the sound curve changes direction.
+  if (P.valid[S.tubeFirst]) {
+    const center=u=>{const t=S.start+S.span*u,r=sampleSpine(S.centerR,u)+gain*sampleSpine(prof.wave,u);return [r*Math.cos(t),sampleSpine(S.centerH,u),-r*Math.sin(t)];};
+    for(let k=0;k<=1024;k++){
+      const u=k/1024,p=center(u),a=center(Math.max(0,u-1/1024)),b=center(Math.min(1,u+1/1024));
+      let t=b.map((v,i)=>v-a[i]),length=Math.hypot(...t)||1;t=t.map(v=>v/length);
+      let n=[-t[2],0,t[0]],nl=Math.hypot(...n)||1;n=n.map(v=>v/nl);
+      const q=[t[1]*n[2]-t[2]*n[1],t[2]*n[0]-t[0]*n[2],t[0]*n[1]-t[1]*n[0]];
+      for(let j=0;j<S.tubeSides;j++)for(let c=0;c<3;c++)out[(S.tubeFirst+k*S.tubeSides+j)*3+c]=p[c]+S.tubeRadius*(Math.cos(TAU*j/S.tubeSides)*n[c]+Math.sin(TAU*j/S.tubeSides)*q[c]);
+    }
+  }
+  if (!S.ribs || !P.valid[S.tubeFirst]) return;
+  const nodes=inlineSupportNodes(S,prof.supportWave || prof.wave,gain,prof.nodes || []);
+  const hasSound=prof.wave.some(v=>v>0);
+  for (const rib of S.ribs) {
+    const u = nodes[rib.slot], height = u === undefined ? 0 : gain * sampleSpine(prof.wave, u);
+    const active=u!==undefined && gain>0 && hasSound && u<=(prof.reveal === undefined ? 1 : prof.reveal);
+    const t = S.start + S.span * (u === undefined ? .5 : u), rail = S.rails[rib.sign < 0 ? 0 : 1];
+    const rr = sampleSpine(rail.map(p=>p[0]), u || 0), hh = sampleSpine(rail.map(p=>p[1]), u || 0);
+    const cr = sampleSpine(S.centerR,u || 0) + height, ch = sampleSpine(S.centerH,u || 0), dr = rr - cr, dh = hh-ch, length = Math.hypot(dr, dh) || 1;
+    const radius = active ? .5 : 0;
+    for (let k=0;k<=rib.steps;k++) for(let j=0;j<rib.sides;j++) {
+      const v=k/rib.steps, angle=TAU*j/rib.sides, i=rib.first+k*rib.sides+j;
+      const r=active?cr+dr*v+radius*Math.cos(angle)*dh/length:S.radius;
+      const h=active?ch+dh*v-radius*Math.cos(angle)*dr/length:0;
+      const tangent=active?radius*Math.sin(angle):0;
+      out[3*i]=r*Math.cos(t)-tangent*Math.sin(t);out[3*i+1]=h;out[3*i+2]=-r*Math.sin(t)-tangent*Math.cos(t);
+    }
+    for(let end=0;end<2;end++){
+      const joint=rib.joints[end],r=end?rr:cr,h=end?hh:ch;
+      const center=active?[r*Math.cos(t),h,-r*Math.sin(t)]:[S.radius*Math.cos(t),0,-S.radius*Math.sin(t)];
+      const radius=active?S.jointRadius:0;
+      for(let k=0;k<=joint.rings;k++)for(let j=0;j<joint.sides;j++){
+        const latitude=Math.PI*k/joint.rings,longitude=TAU*j/joint.sides,index=(joint.first+k*joint.sides+j)*3;
+        out[index]=center[0]+radius*Math.sin(latitude)*Math.cos(longitude);
+        out[index+1]=center[1]+radius*Math.cos(latitude);
+        out[index+2]=center[2]+radius*Math.sin(latitude)*Math.sin(longitude);
+      }
+    }
+  }
+
+}
+
 // The usual audio-reactive move, for contrast: along the surface normal.
 function pushAlongNormals(P, normals, prof, gain, ges, out, sign = 1) {
   for (let i = 0; i < P.n; i++) {
@@ -319,9 +566,21 @@ function pushAlongNormals(P, normals, prof, gain, ges, out, sign = 1) {
 }
 
 // ------------------------------------------------------------ sound → profiles along the ring
+const inlineFullWaves = new WeakMap();
 function profiles(sound, frame, until = Infinity) {
   const B = M.profile_bins, lift = new Float64Array(B), swell = new Float64Array(B), lean = new Float64Array(B);
-  const sigma = frame.sigma, norm = 1 / (sigma * Math.sqrt(TAU)), reach = Math.ceil((5 * sigma / TAU) * B);
+  if (INTEGRATED_VIEWER && frame.spine) {
+    let full = inlineFullWaves.get(sound);
+    if (!full || sound.stop) {
+      const wave = inlineWave(sound);
+      full = { wave, nodes: inlineNodes(wave) };
+      if (!sound.stop) inlineFullWaves.set(sound, full);
+    }
+    return { lift, swell, lean, wave: Number.isFinite(until) ? inlineWave(sound, until) : full.wave.slice(), nodes: full.nodes, supportWave: full.wave, reveal: until/sound.duration_s };
+  }
+  // Roots adds heads to a fixed band; the Gaussian bend profiles are unused.
+  if (INTEGRATED_VIEWER && frame.roots) return { lift, swell, lean };
+  const sigma = frame.spine ? 0.7 / frame.r_ref : frame.sigma, norm = 1 / (sigma * Math.sqrt(TAU)), reach = Math.ceil((5 * sigma / TAU) * B);
   const T = sound.time_s, D = sound.duration_s;
   for (let f = 0; f < T.length; f++) {
     if (T[f] > until) break;
@@ -339,7 +598,9 @@ function profiles(sound, frame, until = Infinity) {
       lift[j] += p * g; swell[j] += l * g; lean[j] += s * g;
     }
   }
-  return { lift, swell, lean };
+  const result = { lift, swell, lean };
+  if (frame.spine) { result.wave = inlineWave(sound, until); result.supportWave = inlineWave(sound); result.nodes = inlineNodes(result.supportWave); result.reveal = until/sound.duration_s; }
+  return result;
 }
 
 // ------------------------------------------------------------ features for loaded or live audio
@@ -401,17 +662,16 @@ function normalise(frames, times) {
     }
   }
   const smooth = (arr, w) => arr.map((_, i) => { let s = 0, c = 0; for (let k = i - w; k <= i + w; k++) if (k >= 0 && k < n) { s += arr[k]; c++; } return s / c; });
-  return { pitch: smooth(pitch, 1), level: smooth(level, 2), slope: smooth(slope, 2) };
+  return { pitch: smooth(pitch, 1), level: smooth(level, 2), slope: smooth(slope, 2), hz: frames.map((f, i) => voiced[i] ? f.hz : null) };
 }
-function analyse(samples, rate) {
-  const size = rate > 50000 ? 2048 : 1024, hop = Math.round(rate * 0.005), binHz = rate / size;
+function analyse(samples, rate, maxFrames = Infinity) {
+  const size = rate > 50000 ? 2048 : 1024, hop = Math.max(Math.round(rate * 0.005), Math.ceil(Math.max(0, samples.length-size) / Math.max(1,maxFrames-1))), binHz = rate / size;
   const win = new Float64Array(size).map((_, i) => 0.5 - 0.5 * Math.cos((TAU * i) / size));
-  const frames = [], times = [];
+  const frames = [], times = [], re = new Float64Array(size), im = new Float64Array(size), power = new Float64Array(size / 2);
   for (let start = 0; start + size <= samples.length; start += hop) {
-    const re = new Float64Array(size), im = new Float64Array(size);
+    im.fill(0);
     for (let i = 0; i < size; i++) re[i] = samples[start + i] * win[i];
     fft(re, im);
-    const power = new Float64Array(size / 2);
     for (let k = 0; k < size / 2; k++) power[k] = re[k] * re[k] + im[k] * im[k];
     frames.push(spectralFrame(power, binHz)); times.push((start + size / 2) / rate);
   }
@@ -419,20 +679,175 @@ function analyse(samples, rate) {
   return { time_s: times, duration_s: samples.length / rate, hop_s: hop / rate, ...normalise(frames, times) };
 }
 
+// Roots keeps its three original cups and grows related cupped heads around them.
+const rootsPlans = new WeakMap();
+function rootsPlan(sound) {
+  if (rootsPlans.has(sound)) return rootsPlans.get(sound);
+  const input=sound.level, peak=Math.max(0,...input), times=sound.time_s;
+  if(!peak){const empty=[];rootsPlans.set(sound,empty);return empty;}
+  // Envelope peaks, with a small prominence threshold to reject analysis jitter.
+  const levels=input.map(v=>Math.max(0,v)/peak), peaks=[], window=Math.max(.07,2*(times[1]-times[0] || .01));
+  for(let i=1;i<levels.length-1;i++)if(levels[i]>=levels[i-1]&&levels[i]>levels[i+1]&&levels[i]>=.12){
+    let left=levels[i],right=levels[i];
+    for(let k=i-1;k>=0&&times[i]-times[k]<=window;k--)left=Math.min(left,levels[k]);
+    for(let k=i+1;k<levels.length&&times[k]-times[i]<=window;k++)right=Math.min(right,levels[k]);
+    if(levels[i]-Math.max(left,right)<.055)continue;
+    const previous=peaks[peaks.length-1];
+    if(previous!==undefined&&times[i]-times[previous]<.055){if(levels[i]>levels[previous])peaks[peaks.length-1]=i;}
+    else peaks.push(i);
+  }
+  // A single broad phrase can have a plateau. Treat it as one peak, not a grid.
+  if(!peaks.length&&Math.max(...levels)-Math.min(...levels)>.12)peaks.push(levels.indexOf(1));
+  // Long music can contain hundreds of peaks: retain its strongest peaks for a
+  // readable ring, in their original temporal order. Short recordings are unchanged.
+  if (sound.max_heads && peaks.length > sound.max_heads) {
+    const strongest = peaks.slice().sort((a,b)=>levels[b]-levels[a] || a-b).slice(0,sound.max_heads).sort((a,b)=>a-b);
+    peaks.splice(0,peaks.length,...strongest);
+  }
+  // Stable softmax over the waveform. Quantiles spread heads across its angular
+  // density instead of repeatedly growing from a pair of hard-coded locations.
+  const weights=levels.map(v=>Math.exp(2.5*(v-1))),total=weights.reduce((a,b)=>a+b,0),cdf=[];
+  let cumulative=0;for(const w of weights){cumulative+=w/total;cdf.push(cumulative);}
+  const plan=peaks.map((k,j)=>{
+    const q=(j+.5)/peaks.length;let n=0;while(n<cdf.length-1&&cdf[n]<q)n++;
+    const low=n?cdf[n-1]:0,f=(q-low)/Math.max(1e-9,cdf[n]-low),u=(Math.max(0,n-1)+f)/(levels.length-1);
+    const intensity=levels[k],size=1.35+1.35*intensity;
+    const slope=levels[Math.min(levels.length-1,k+1)]-levels[Math.max(0,k-1)];
+    return {time:times[k],size,width:Math.max(.72,.38+.18*size),tilt:.15+.24*intensity,
+      angle:(u-.5)*3.35,height:4.0*Math.sin(u*Math.PI*2.7+.35)+1.3*slope,
+      twist:.16*Math.sin(u*TAU*1.4)+.10*slope,slot:j,count:peaks.length,intensity};
+  });
+  // Separate neighbors without changing their sound-derived count or size.
+  for(let i=1;i<plan.length;i++){
+    const a=plan[i-1],b=plan[i],distance=Math.hypot(13*(b.angle-a.angle),b.height-a.height);
+    const required=.9*(a.size+b.size)+.6;
+    if(distance<required)b.height+=(i%2?1:-1)*Math.sqrt(required*required-distance*distance);
+  }
+  rootsPlans.set(sound,plan);return plan;
+}
+function rootsAnchor(frame, target) {
+  if (!frame.rootsSurface) return target;
+  const key=target.map(x=>x.toFixed(5)).join(":");
+  frame.rootsAnchorCache ||= new Map();
+  if(frame.rootsAnchorCache.has(key))return frame.rootsAnchorCache.get(key);
+  const points=frame.rootsSurface;let best=Infinity,anchor=target;
+  for(let i=0;i<points.length;i+=3){
+    const distance=(points[i]-target[0])**2+(points[i+1]-target[1])**2+(points[i+2]-target[2])**2;
+    if(distance<best){best=distance;anchor=[points[i],points[i+1],points[i+2]];}
+  }
+  frame.rootsAnchorCache.set(key,anchor);return anchor;
+}
+function rootsGrowth(plan, until, frame) {
+  const positions=[],indices=[];
+  const vertex=p=>{positions.push(...p);return positions.length/3-1;};
+  const addSphere=(center,radius)=>{
+    const first=positions.length/3,rings=10,sides=16;
+    for(let k=0;k<=rings;k++){
+      const latitude=Math.PI*k/rings,vertical=Math.cos(latitude)*radius,spread=Math.sin(latitude)*radius;
+      for(let j=0;j<sides;j++){
+        const longitude=TAU*j/sides;
+        vertex([center[0]+spread*Math.cos(longitude),center[1]+vertical,center[2]+spread*Math.sin(longitude)]);
+      }
+      if(k)for(let j=0;j<sides;j++){
+        const a=first+(k-1)*sides+j,b=first+(k-1)*sides+(j+1)%sides;
+        indices.push(a,b,a+sides,b,b+sides,a+sides);
+      }
+    }
+  };
+  const addTube=(path,radius)=>{
+    const first=positions.length/3,sides=12;
+    for(let k=0;k<path.length;k++){
+      const p=path[k],a=path[Math.max(0,k-1)],b=path[Math.min(path.length-1,k+1)];
+      let t=b.map((v,i)=>v-a[i]),len=Math.hypot(...t)||1;t=t.map(v=>v/len);
+      let n=[-t[2],0,t[0]],nl=Math.hypot(...n);n=nl<1e-8?[1,0,0]:n.map(v=>v/nl);
+      const q=[t[1]*n[2]-t[2]*n[1],t[2]*n[0]-t[0]*n[2],t[0]*n[1]-t[1]*n[0]];
+      const width=Math.max(.60,radius*(1-.25*k/(path.length-1)));
+      for(let j=0;j<sides;j++)vertex(p.map((v,i)=>v+width*(Math.cos(TAU*j/sides)*n[i]+Math.sin(TAU*j/sides)*q[i])));
+      if(k)for(let j=0;j<sides;j++){const a=first+(k-1)*sides+j,b=first+(k-1)*sides+(j+1)%sides;indices.push(a,b,a+sides,b,b+sides,a+sides);}
+    }
+  };
+  const opening=Math.max(0,TAU-(frame.span||5.986));
+  const front=(frame.theta_start-opening/2+TAU)%TAU;
+  for(const head of plan){
+    const progress=Number.isFinite(until)?Math.max(0,Math.min(1,(until-head.time)/.16)):1;
+    if(!progress)continue;
+    const growth=progress*progress*(3-2*progress), j=head.slot;
+    // Keep every attachment on metal around the open front. Waveform quantiles
+    // still spread the heads, but the empty opening is excluded from the map.
+    const side=head.height<0?-1:1, signed=head.angle || (j%2?.001:-.001);
+    const limit=1.675, shoulder=opening/2+.32;
+    const angle=front+Math.sign(signed)*(shoulder+(limit-shoulder)*Math.min(1,Math.abs(signed)/limit));
+    const height=head.height, radius=13.3+.45*head.intensity, size=Math.max(1.25,head.size*growth);
+    const radial=[Math.cos(angle),0,-Math.sin(angle)], tangent=[-Math.sin(angle),0,-Math.cos(angle)];
+    const tilt=side*head.tilt, normal=[radial[0]*Math.cos(tilt),Math.sin(tilt),radial[2]*Math.cos(tilt)], up=[-radial[0]*Math.sin(tilt),Math.cos(tilt),-radial[2]*Math.sin(tilt)];
+    const center=[radius*radial[0],height,radius*radial[2]], depth=size*.70;
+    const path=[],startAngle=angle-head.twist;
+    const nominal=[9.4*Math.cos(startAngle),0,-9.4*Math.sin(startAngle)];
+    const anchor=rootsAnchor(frame,nominal);
+    // Bury the stem's first rings in the actual band surface. A second anchor
+    // along the band can bridge empty space and read as a floating junction.
+    const buried=anchor.map((x,c)=>x+.65*radial[c]);
+    // The last ring sits 0.35 mm inside the cup wall.
+    const endDepth=depth-.35;
+    for(let k=0;k<=24;k++){
+      if(k<5){const v=k/4;path.push(buried.map((x,c)=>x*(1-v)+anchor[c]*v));continue;}
+      const v=(k-5)/19,e=v*v*(3-2*v),theta=angle-head.twist*(1-e);
+      const r=9.4+(radius-endDepth*Math.cos(tilt)-9.4)*e,h=(height-endDepth*Math.sin(tilt))*e;
+      const point=[r*Math.cos(theta),h,-r*Math.sin(theta)];
+      path.push(point.map((x,c)=>x+(anchor[c]-nominal[c])*(1-e)));
+    }
+    addTube(path,Math.max(.60,head.width*growth));
+    // Thick, shallow cup with a rolled lip, matching the original three heads.
+    const profile=[];
+    for(let k=0;k<=14;k++){const a=Math.PI/2*k/14;profile.push([Math.sin(a)*size,-Math.cos(a)*depth]);}
+    for(let k=1;k<=6;k++){const a=Math.PI*k/6;profile.push([size-.35+.35*Math.cos(a),.35*Math.sin(a)]);}
+    for(let k=1;k<=14;k++){const a=Math.PI/2*(1-k/14);const nx=Math.sin(a)/size,nz=-Math.cos(a)/depth,nl=Math.hypot(nx,nz);profile.push([Math.max(0,Math.sin(a)*size-.70*nx/nl),-Math.cos(a)*depth-.70*nz/nl]);}
+    const first=positions.length/3,sides=40;
+    for(let k=0;k<profile.length;k++){
+      const [r,z]=profile[k];
+      for(let n=0;n<sides;n++){
+        const a=TAU*n/sides,organic=1+.035*Math.sin(3*a+j),x=r*Math.cos(a)*organic,y=r*Math.sin(a)*.88*organic;
+        vertex(center.map((v,i)=>v+tangent[i]*x+up[i]*y+normal[i]*z));
+      }
+      if(k)for(let n=0;n<sides;n++){const a=first+(k-1)*sides+n,b=first+(k-1)*sides+(n+1)%sides;indices.push(a,a+sides,b,b,a+sides,b+sides);}
+    }
+    // A small bead rounds the stalk's entry into the ring and overlaps both.
+    addSphere(anchor,Math.max(.75,Math.min(1,head.width*growth*1.1)));
+  }
+  return {positions:new Float32Array(positions),indices:new Uint32Array(indices)};
+}
+
 // ------------------------------------------------------------ state
 const pieces = DATA.pieces.map((p) => {
-  const positions = dequantize(p.positions, p.box), inner = dequantize(p.inner, p.box), outer = dequantize(p.outer, p.box);
-  const indices = p.index_bits === 16 ? new Uint16Array(bytes(p.indices)) : new Uint32Array(bytes(p.indices));
-  return { ...p, positions, inner, outer, indices, V: prepare(positions, p.frame), I: prepare(inner, p.frame), O: prepare(outer, p.frame) };
+  let positions = p.positions_f32 ? new Float32Array(bytes(p.positions_f32)) : dequantize(p.positions, p.box), inner = dequantize(p.inner, p.box), outer = dequantize(p.outer, p.box);
+  let indices = p.index_bits === 16 ? new Uint16Array(bytes(p.indices)) : new Uint32Array(bytes(p.indices));
+  let V = prepare(positions, p.frame), I = prepare(inner, p.frame), O = prepare(outer, p.frame);
+  if (p.id === "inline") {
+    const spine = inlineSpine(V, p.frame);
+    ({ positions, indices } = neutralInline(positions, indices, V, p.frame, spine));
+    inner = new Float32Array(positions.length).fill(NaN); outer = inner.slice();
+    V = prepare(positions, p.frame); I = prepare(inner, p.frame); O = prepare(outer, p.frame);
+    V.spine = I.spine = O.spine = spine; p.frame.spine = spine;
+  }
+  if (p.id === "roots") {
+    V.roots = I.roots = O.roots = true; p.frame.roots = true;
+    const band=[];
+    for(let i=0;i<V.n;i++)if(V.valid[i]&&Math.abs(V.h[i])<1.4&&V.r[i]<12.2){
+      band.push(i);
+    }
+    p.frame.rootsSurfaceIndices = new Uint32Array(band);
+  }
+  return { ...p, positions, inner, outer, indices, V, I, O };
 });
+const INTEGRATED_VIEWER = false;
 const sounds = DATA.sounds.map((s) => ({ ...s, verified: true }));
 const state = { piece: pieces[0], sound: sounds[0], gain: 1, ges: { lift: true, swell: true, lean: true }, mode: "silver", ghost: true, naive: false,
-  t: Infinity, playing: false, audio: null, live: null, userSet: false };
+  t: Infinity, playing: false, held: false, audio: null, live: null, userSet: false, spineNeutral: true };
 
 // ------------------------------------------------------------ stage
 const stage = $("stage");
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.prepend(renderer.domElement);
@@ -441,11 +856,16 @@ scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnviron
 const camera = new THREE.PerspectiveCamera(32, 4 / 3, 0.5, 600);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; controls.minDistance = 25; controls.maxDistance = 160;
+let rotating=false,needsRender=true,lastGeometryTick=0;
+controls.addEventListener("start",()=>{rotating=true;renderer.setPixelRatio(1);needsRender=true;});
+controls.addEventListener("end",()=>{rotating=false;renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));needsRender=true;});
 const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(30, 60, 40); scene.add(key);
 
 const geometry = new THREE.BufferGeometry();
 const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.26, vertexColors: true, envMapIntensity: 1.1 });
 const mesh = new THREE.Mesh(geometry, material); scene.add(mesh);
+const rootsMaterial=material.clone(); rootsMaterial.vertexColors=false; rootsMaterial.side=THREE.DoubleSide;
+const rootsHeads=new THREE.Mesh(new THREE.BufferGeometry(),rootsMaterial);scene.add(rootsHeads);
 const ghostGeometry = new THREE.BufferGeometry();
 const ghost = new THREE.Mesh(ghostGeometry, new THREE.MeshBasicMaterial({ color: 0x888888, transparent: true, opacity: 0.16, depthWrite: false }));
 ghost.visible = true; scene.add(ghost);
@@ -457,6 +877,7 @@ const head = new THREE.Mesh(new THREE.SphereGeometry(0.7, 20, 12), headMat); sce
 function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  needsRender=true;
   drawStrip();
 }
 new ResizeObserver(resize).observe(stage);
@@ -471,15 +892,17 @@ new MutationObserver(themeColors).observe(document.documentElement, { attributes
 
 let buffers = null;
 function loadPiece(piece) {
+  piece.baseNormalsReady = false;
   const n = piece.V.n;
   buffers = { pos: new Float32Array(3 * n), base: new Float32Array(3 * n), inner: new Float32Array(3 * n), outer: new Float32Array(3 * n),
               color: new Float32Array(3 * n).fill(1), move: new Float32Array(n), wall: new Float32Array(n), gap: new Float32Array(n), flag: new Uint8Array(n) };
   const none = { lift: new Float64Array(M.profile_bins), swell: new Float64Array(M.profile_bins), lean: new Float64Array(M.profile_bins) };
-  bend(piece.V, none, 0, state.ges, buffers.base);
+  bend({ ...piece.V, spine: null }, none, 0, state.ges, buffers.base);
   const baseInner = new Float32Array(3 * n), baseOuter = new Float32Array(3 * n);
-  bend(piece.I, none, 0, state.ges, baseInner); bend(piece.O, none, 0, state.ges, baseOuter);
+  bend({ ...piece.I, spine: null }, none, 0, state.ges, baseInner); bend({ ...piece.O, spine: null }, none, 0, state.ges, baseOuter);
   geometry.setAttribute("position", new THREE.BufferAttribute(buffers.pos, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(buffers.color, 3));
+  geometry.deleteAttribute("normal");
   geometry.setIndex(new THREE.BufferAttribute(piece.indices, 1));
   ghostGeometry.setAttribute("position", new THREE.BufferAttribute(buffers.base, 3));
   ghostGeometry.setIndex(new THREE.BufferAttribute(piece.indices, 1));
@@ -504,7 +927,9 @@ function loadPiece(piece) {
   for (let k = 0; k <= 160; k++) { const t = fr.theta_start + fr.span * k / 160; pts.push(new THREE.Vector3(R * Math.cos(t), 0, -R * Math.sin(t))); }
   arcLine.geometry.dispose(); arcLine.geometry = new THREE.BufferGeometry().setFromPoints(pts); arcLine.computeLineDistances();
   const ext = Math.max(...piece.summary ? [piece.summary.r_ref_mm * 2 + 8] : [30]);
-  camera.position.set(ext * 0.78, ext * 0.85, ext * 1.15); controls.target.set(0, -0.5, 0); controls.update();
+  if (piece.id === "roots") camera.position.set(-ext * 1.55, ext * 1.10, ext * 1.20);
+  else camera.position.set(ext * 0.78, ext * 0.85, ext * 1.15);
+  controls.target.set(piece.id === "roots" ? -3 : 0, -0.5, 0); controls.update();
 }
 function dist(A, i, B, j) { return Math.hypot(A[3 * i] - B[3 * j], A[3 * i + 1] - B[3 * j + 1], A[3 * i + 2] - B[3 * j + 2]); }
 function area(P, a, b, c) {
@@ -526,17 +951,44 @@ let current = null;
 function update() {
   const piece = state.piece, sound = state.live || state.sound, b = buffers;
   const prof = profiles(sound, piece.frame, state.t);
+  if (piece.id === "inline" && state.spineNeutral) prof.wave.fill(0);
   current = prof;
+  rootsHeads.visible = piece.id === "roots";
   const n = piece.V.n;
   if (state.naive) {
     pushAlongNormals(piece.V, piece.normals, prof, state.gain, state.ges, b.pos, 1);
     // The opposite wall faces the other way: its points move along −n.
     pushAlongNormals(piece.I, piece.normals, prof, state.gain, state.ges, b.inner, -1);
     pushAlongNormals(piece.O, piece.normals, prof, state.gain, state.ges, b.outer, -1);
+  } else if (INTEGRATED_VIEWER && piece.id === "roots") {
+    // Only the added cups grow; the band's full mesh stays unchanged.
+    b.pos.set(b.base);
   } else {
     bend(piece.V, prof, state.gain, state.ges, b.pos);
-    bend(piece.I, prof, state.gain, state.ges, b.inner);
-    bend(piece.O, prof, state.gain, state.ges, b.outer);
+    if (!INTEGRATED_VIEWER) {
+      bend(piece.I, prof, state.gain, state.ges, b.inner);
+      bend(piece.O, prof, state.gain, state.ges, b.outer);
+    }
+  }
+  if (rootsHeads.visible) {
+    // Root attachments must track the *deformed* ring, not its neutral mesh.
+    if (!INTEGRATED_VIEWER || !piece.frame.rootsSurface) {
+      const ids=piece.frame.rootsSurfaceIndices, surface=new Float32Array(ids.length*3);
+      for(let j=0;j<ids.length;j++)for(let c=0;c<3;c++)surface[3*j+c]=b.pos[3*ids[j]+c];
+      piece.frame.rootsSurface=surface;
+      piece.frame.rootsAnchorCache=new Map();
+    }
+    const grown=rootsGrowth(rootsPlan(sound),state.t,piece.frame),g=new THREE.BufferGeometry();
+    g.setAttribute("position",new THREE.BufferAttribute(grown.positions,3));g.setIndex(new THREE.BufferAttribute(grown.indices,1));g.computeVertexNormals();
+    rootsHeads.geometry.dispose();rootsHeads.geometry=g;
+  }
+  if (INTEGRATED_VIEWER) {
+    if (piece.id !== "roots" || !piece.baseNormalsReady) {
+      geometry.attributes.position.needsUpdate = true;
+      geometry.computeVertexNormals(); geometry.computeBoundingSphere();
+      piece.baseNormalsReady = true;
+    }
+    needsRender=true; placeHead(); return;
   }
   let thinArea = 0, closeArea = 0, crossArea = 0, minWall = Infinity, minGap = Infinity, maxMove = 0;
   const nx = piece.normals;
@@ -573,6 +1025,7 @@ function update() {
   const assay = { thin: thinArea / piece.totalArea, close: closeArea / piece.totalArea, cross: crossArea / piece.totalArea,
                   minWall, minGap, maxMove, mass: (vol / 1000) * C.density_g_cm3, massChange: 100 * (vol / piece.volume0 - 1) };
   state.assay = assay;
+  needsRender=true;
   paint(); readings(assay); drawStrip(); placeHead();
 }
 
@@ -614,6 +1067,8 @@ function placeHead() {
 
 function verifiedRecord() {
   const s = state.live || state.sound;
+  // Stored casting results belong to the earlier whole-band map, not this spine edit.
+  if (state.piece.id === "inline" || state.piece.id === "roots") return null;
   if (!s.verified || state.naive) return null;
   const g = state.ges, entry = state.piece.results[s.id];
   if (!entry) return null;
@@ -622,6 +1077,18 @@ function verifiedRecord() {
 }
 function readings(a) {
   const piece = state.piece, s = state.live || state.sound;
+  if (piece.id === "inline") {
+    $("verdict").className = "verdict"; $("verdict").textContent = "Shape preview";
+    $("readings").innerHTML = `<dt>Outward wave height</dt><dd>${fmt(state.gain, 1)} mm</dd><dt>Largest movement</dt><dd>${fmt(a.maxMove)} mm</dd>`;
+    $("verified").innerHTML = '<span class="label">Reconstructed geometry</span><p class="note">The two existing open tips were capped separately without changing their surfaces or joining the ends. The added spine and sound connections have a 1 mm diameter. Casting measurements belong to the original print model.</p>';
+    return;
+  }
+  if (piece.id === "roots") {
+    $("verdict").className="verdict";$("verdict").textContent="Shape preview";
+    $("readings").innerHTML=`<dt>Additional heads</dt><dd>${rootsPlan(s).length}</dd>`;
+    $("verified").innerHTML='<span class="label">Sound-grown heads</span><p class="note">The original cups remain. Recording level and frequency variation determine the added cluster and its supporting widths. Fabrication measurements have not been recomputed.</p>';
+    return;
+  }
   const total = a.thin + a.close + a.cross, limit = C.max_violating_area_fraction;
   const v = $("verdict"), rec = verifiedRecord();
   const past = rec && !rec.limited_by_search_range && state.gain > rec.safe_gain_mm * 1.02;
@@ -715,6 +1182,8 @@ function setSafeTick() {
     if (!state.userSet) { state.gain = rec.safe_gain_mm; range.value = String(state.gain); }
   } else {
     tick.hidden = true; $("safe-label").textContent = "safe limit not verified";
+    if (state.piece.id === "inline") { range.max = "6"; $("gain-max").textContent = "6 mm"; }
+    if (state.piece.id === "inline" && !state.userSet) { state.gain = 2; range.value = "2"; }
   }
   $("gain-out").textContent = fmt(state.gain);
 }
@@ -727,13 +1196,15 @@ function renderSounds() {
       <span class="dot"></span><b>${s.title}</b><em>${fmt(s.duration_s)} s</em><small>${s.kind}</small></button>`).join("");
 }
 function selectPiece(piece) {
-  stop(); state.piece = piece; state.userSet = false;
+  stop(); state.held = INTEGRATED_VIEWER && state.sound.id === "orchestra"; state.piece = piece; state.userSet = false;
   $("piece-name").textContent = piece.title; $("piece-meta").textContent = `${piece.materials} · ${piece.year} · ${piece.triangle_count.toLocaleString()} triangles shown`;
   loadPiece(piece); renderPieces(); setSafeTick(); state.t = Infinity; update();
   $("spread-note").textContent = `Each moment is spread over ${M.sigma_mm} mm of metal (about ${fmt(piece.summary.sigma_degrees, 0)}° of this ring), so the silver bends instead of creasing. On ${piece.title} the sound runs over ${fmt(piece.summary.metal_arc_mm, 0)} mm of metal; the opening is ${fmt(piece.summary.opening_degrees, 0)}°.`;
+  if (piece.id === "inline") $("spread-note").textContent = "The supplied Inline tips are capped separately and stay apart. The neutral spine follows the rails, then sweeps inside their curve to join the cup. Sound amplitude moves that line outward; frequency sets peak spacing; perpendicular connections return each peak to the rails. The added members retain a 1 mm diameter as they bend.";
 }
 function selectSound(sound) {
-  stop(); state.live = null; state.sound = sound; state.userSet = false; state.t = Infinity;
+  stop(); state.held = false; state.live = null; state.sound = sound; state.userSet = false; state.t = 0;
+  if (state.piece.id === "inline") state.spineNeutral = false;
   $("strip-title").textContent = `${sound.title} · ${sound.kind}`;
   $("sound-note").textContent = sound.summary ? `${sound.summary.tonal_segments} whistle segment${sound.summary.tonal_segments === 1 ? "" : "s"}, ${sound.summary.clicks} clicks measured${sound.summary.median_hz ? `, median pitch ${(sound.summary.median_hz / 1000).toFixed(1)} kHz` : ""}.` : "";
   renderSounds(); setSafeTick(); update();
@@ -744,18 +1215,24 @@ function stop() {
   state.playing = false; $("play").textContent = "Play and bend";
 }
 function play() {
+  if (state.piece.id === "inline") state.spineNeutral = false;
   if (state.playing) { stop(); state.t = Infinity; update(); return; }
   const s = state.live ? null : state.sound;
   if (!s || !s.audio) return;
   if (!state.audio) state.audio = new Audio();
   const a = state.audio;
   a.src = s.audio; a.preservesPitch = false; a.playbackRate = Number($("speed").value); a.currentTime = 0;
-  state.playing = true; $("play").textContent = "Stop";
-  a.play().catch(() => { state.playing = false; $("play").textContent = "Play and bend"; $("status").textContent = "The browser blocked playback; press Play again."; });
+  state.t = 0; state.held = true; state.playing = true; $("play").textContent = "Stop"; update();
+  a.play().catch(() => { state.held = false; state.playing = false; $("play").textContent = "Play and bend"; $("status").textContent = "The browser blocked playback; press Play again."; });
   a.onended = () => { state.playing = false; $("play").textContent = "Play and bend"; state.t = Infinity; update(); };
   const tick = () => {
     if (!state.playing) return;
-    state.t = a.currentTime; update(); requestAnimationFrame(tick);
+    state.t = a.currentTime;
+    const now=performance.now();
+    if(now-lastGeometryTick>=(rotating ? 150 : 50)){update();lastGeometryTick=now;}
+    // Keep the marker on the audio clock between mesh updates.
+    placeHead(); needsRender=true;
+    requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }
@@ -796,7 +1273,7 @@ async function whistleLive() {
   const live = { id: "live", title: "Live whistle", kind: "Microphone · measured in the browser", verified: false, duration_s: seconds, hop_s: 1 / 60,
                  time_s: [], pitch: [], level: [], slope: [], dt: [] };
   live.stop = () => { stream.getTracks().forEach((t) => t.stop()); ctx.close(); live.stop = null; state.playing = false; $("mic").textContent = "Whistle live"; };
-  state.live = live; state.playing = true; state.userSet = true; $("mic").textContent = "Listening…";
+  state.live = live; state.held = true; state.playing = true; state.userSet = true; $("mic").textContent = "Listening…";
   $("strip-title").textContent = `Live whistle · ${seconds} s along the metal`;
   if (state.gain < 0.5) { state.gain = 1.5; $("gain").value = "1.5"; $("gain-out").textContent = fmt(state.gain); }
   setSafeTick(); renderSounds();
@@ -809,7 +1286,9 @@ async function whistleLive() {
     const norm = normalise(frames, times);
     live.time_s = times; live.pitch = norm.pitch; live.level = norm.level; live.slope = norm.slope;
     live.dt = times.map((v, i) => (i ? v - times[i - 1] : 1 / 60));
-    state.t = t; update();
+    state.t = t;
+    if(performance.now()-lastGeometryTick>=(rotating ? 150 : 50)){update();lastGeometryTick=performance.now();}
+    placeHead(); needsRender=true;
     if (t >= seconds) { live.stop(); state.t = Infinity; update(); return; }
     requestAnimationFrame(tick);
   };
@@ -851,7 +1330,10 @@ $("notes").innerHTML = [
 // ------------------------------------------------------------ start
 renderSounds(); selectPiece(pieces[0]); selectSound(sounds[0]); themeColors(); resize();
 $("status").textContent = "Drag to turn the ring. Play bends it as the sound plays.";
-renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+renderer.setAnimationLoop(() => {
+  const moved=controls.update();
+  if(moved||needsRender){renderer.render(scene,camera);needsRender=false;}
+});
 
 // Test hook: deform a piece with a preset sound in the ring's own (STL) coordinates.
 window.__silver = {

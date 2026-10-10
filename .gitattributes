@@ -32,3 +32,4 @@ pytorch_model*.bin filter=lfs diff=lfs merge=lfs -text
 *.zip filter=lfs diff=lfs merge=lfs -text
 # Sound to silver page: committed bench and motion pages (self-contained, several MB each)
 apps/sound-map/demo/silver/*.html filter=lfs diff=lfs merge=lfs -text
+apps/sound-map/demo/silver/media/*baseinline*.stl filter=lfs diff=lfs merge=lfs -text

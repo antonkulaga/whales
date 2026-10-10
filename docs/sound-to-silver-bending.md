@@ -5,6 +5,13 @@ stays wearable and castable? This study takes two of her stoneless pieces at
 print resolution, bends them with dolphin and whale recordings, and measures
 how far each sound may push before the casting would fail.
 
+The Inline viewer uses Livia's cleaned `+baseinline.stl`, copied into the demo as `baseinline-cleaned.stl`. Its two end boundaries are closed independently with shallow caps; no source surface is cut or moved. The resulting 115,902-triangle base is watertight and consistently wound, and the ends remain separate. Their closest separation is 0.12 mm in the supplied model, so that gap still needs a print-process check. The closed base is saved as `data/output/silver/baseinline-separated.stl` and bundled in `apps/sound-map/demo/silver/media/`. The separate thin strip in Livia's `++baseinline.stl` supplies the neutral spine's measured curve; its approximately 0.2 mm metal is used only as a guide. The generated 1.0 mm spine follows every measured wire section from its first end to its last, without a radial clearance shift or a replacement cup curve. This exact path approaches the finger opening. A separate 1.0 mm curved bridge closes the roughly 2.7 mm gap between its free start and the retained base; it overlaps both ends without moving any wire samples. The cup-side end remains unchanged. Smoothed recording amplitude moves the spine outward; measured frequency sets the spacing of wave peaks. Perpendicular 1.0 mm diameter connections extend from those moved points back into the original rails, and the spine cross-sections are rebuilt after bending so they do not thin. Neutral and Sound retain silent progressive playback. The preview pauses geometry rebuilds while the visitor turns the ring, then resumes the sound progression. This is an additive preview: the new members have not been boolean-unioned with the base or validated as a fabrication STL. Python STL exports retain the earlier whole-ring map.
+
+To rebuild the Inline viewer, run `uv run --group mesh python apps/sound-map/scripts/seal-inline.py`, `uv run --group mesh python apps/sound-map/scripts/extract-inline-guide.py`, and `uv run --group mesh python apps/sound-map/scripts/pack-inline.py` from the repository root. The guide extractor reads the supplied `apps/sound-map/demo/silver/media/++baseinline.stl` and writes its measured path to `resources/inline-spine-guide.json`.
+
+Roots keeps the original band and three cups. Distinct amplitude-envelope peaks determine the added head count, normalized intensity determines radius, and stable softmax weights supply angular placement quantiles. The angular map excludes the open front and places each new head on a metal shoulder. Neighbor spacing adjusts height without changing peak count. Curved stems retain at least 1.2 mm diameter, including during early growth; cup profiles use a 0.7 mm inward normal offset and rounded lips. Each stem begins inside the displayed band, passes through an attachment point on that metal, and extends 0.35 mm into its cup wall. A 0.75–1.0 mm radius sphere rounds the joint at the band. The attachment points are recalculated from the displayed band after any sound deformation. Boolean union, interference checks against the original cups, and print validation remain separate from this visualization.
+
+
 Code: [`experiments/silver.py`](../experiments/silver.py), viewer template
 [`experiments/silver_page.html`](../experiments/silver_page.html), settings
 [`resources/sound-silver.json`](../resources/sound-silver.json), tests
@@ -22,8 +29,9 @@ uv run --group art --group mesh main.py art silver   # ~3 min; STLs from ~/Downl
 | **Inline Ring**, silver, 2022 | `06_PARAM 2022/sound manipulation/INLINE/+2inline.stl`, 200,252 triangles, one watertight shell | Silver only. It comes from Livia's own 2022 "sound manipulation" Grasshopper folder, whose definition records microphone level with *Sound Capture* and moves points along a curve. A lattice band between two rails; thinnest rungs 0.62 mm, a quarter of its openings under 0.5 mm. |
 | **Roots Ring**, silver, 2019 | `03_PARAM 2019/roots/ciopercute.stl`, 212,626 triangles after removing 57 two-triangle specks | Silver only, slender and adjustable, with three cups at the open end. Livia wrote that she would "geometrically reinforce it" for future castings, so it tests fragility. |
 
-Both are open rings. The originals stay in the Drive export; nothing derived
-from them is committed except the three renders below.
+Both are open rings. The originals remain in the Drive export. The Inline source,
+cleaned mesh, capped mesh and guide used by the live viewer are committed in
+`apps/sound-map/demo/silver/media/` and `resources/` through Git LFS where needed.
 
 ## Input → schema → output
 
