@@ -1,5 +1,8 @@
 // Mount the existing ring engine in this page without a second scrolling document.
-type Viewer = { setActive(active: boolean): void };
+import { silverSTL } from "./lib/silver-stl.ts";
+import type { SilverSnapshot } from "./lib/silver-stl.ts";
+import { addOrchestraChoices, type OrchestraAudioViewer } from "./silver-orchestra.ts";
+type Viewer = OrchestraAudioViewer & { setActive(active: boolean): void; setSpineNeutral(neutral: boolean): void; snapshot(): SilverSnapshot };
 type Piece = { id: string; title: string; photo: string | null; year: number };
 type ViewerModule = { mountViewer(root: ShadowRoot, data: unknown): Viewer };
 
@@ -24,12 +27,21 @@ const INTEGRATED_STYLE = `
 .viewer-controls .label { font: 500 1.12rem/1.35 var(--font-body); letter-spacing: 0; text-transform: none; color: var(--ink) }
 .viewer-controls .seg button { min-height: 48px; padding: 12px; font-size: 1rem }
 .sounds { gap: 8px }
+.sound-source { margin-bottom: 12px }
+.orchestra-select { width: 100%; min-height: 48px; padding: 10px; font: inherit; background: var(--sheet); color: var(--ink); border: 1px solid var(--rule) }
+.orchestra-note { margin: 8px 0; color: var(--ink-soft); font-size: .85rem }
 .sound { min-height: 76px; padding: 12px; border-radius: 2px; gap: 5px 10px }
 .sound b { font-size: 1.02rem }
 .sound small { font-size: .85rem; line-height: 1.4 }
 .sound em { font-size: .8rem }
 .sound .dot { width: 12px; height: 12px }
 .stagecol { gap: 8px }
+.spine-view { display: flex; gap: 6px; justify-content: center }
+.spine-view button { min-height: 40px; padding: 8px 16px; border: 1px solid var(--rule); background: var(--sheet); color: var(--ink); font: inherit; cursor: pointer }
+.spine-view button[aria-pressed="true"] { background: var(--ink); color: var(--sheet) }
+.stl-export { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px 14px }
+.stl-export .btn { min-height: 44px; padding: 10px 18px }
+.stl-export span { color: var(--ink-soft); font-size: .8rem }
 .stage { height: min(62vh, 720px); min-height: 360px; aspect-ratio: auto; background: none; border: 0; border-radius: 0 }
 .stage .tag { left: 0; top: 0 }
 .stage .tag b { font-size: 1.5rem }
@@ -37,6 +49,7 @@ const INTEGRATED_STYLE = `
 .stage .legend { bottom: 25px; right: 0 }
 .viewer-play-prompt { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); z-index: 2; display: grid; justify-items: center; gap: 8px }
 .viewer-play-prompt .btn.primary { min-height: 64px; padding: 18px 30px; font-size: 1.2rem; white-space: nowrap; background: #af462e; border-color: #af462e; color: #fffaf0; box-shadow: 0 4px 18px #242d2c24 }
+:host([data-roots]) .viewer-play-prompt { top: auto; bottom: 5px; transform: translateX(-50%); }
 .viewer-play-prompt .btn.primary:hover { background: #913a26 }
 .preview-note { font-size: .8rem; color: var(--ink-soft); background: #faf8f2e8; padding: 3px 8px; text-align: center; white-space: nowrap }
 .seg, .btn { border-radius: 2px }
@@ -81,11 +94,11 @@ async function mount(host: HTMLElement): Promise<void> {
   const groups = [...bench.querySelector<HTMLElement>(".ticket")!.children];
   const primary = document.createElement("aside");
   primary.className = "viewer-controls";
-  primary.setAttribute("aria-label", "Choose a ring and recording");
+  primary.setAttribute("aria-label", "Choose a ring and sound");
   primary.append(...groups.slice(0, 2));
   groups[0]!.querySelector(".label")!.textContent = "Ring";
   const soundGroup = groups[1]!;
-  soundGroup.querySelector(".label")!.textContent = "Choose a recording";
+  soundGroup.querySelector(".label")!.textContent = "Choose a sound";
   const playPrompt = document.createElement("div");
   playPrompt.className = "viewer-play-prompt";
   playPrompt.append(soundGroup.querySelector("#play")!);
@@ -122,6 +135,61 @@ async function mount(host: HTMLElement): Promise<void> {
   };
   new MutationObserver(syncPhoto).observe(root.getElementById("piece-name")!, { childList: true });
   viewer = module.mountViewer(root, data);
+  addOrchestraChoices(soundGroup, viewer);
+  const spineView = document.createElement("div");
+  spineView.className = "spine-view";
+  spineView.setAttribute("aria-label", "Inline spine view");
+  for (const [label, neutral] of [["Neutral", true], ["Sound", false]] as const) {
+    const button = document.createElement("button");
+    button.type = "button"; button.textContent = label;
+    button.dataset.neutral = String(neutral);
+    button.setAttribute("aria-pressed", String(neutral));
+    button.addEventListener("click", () => {
+      viewer!.setSpineNeutral(neutral);
+      for (const sibling of spineView.querySelectorAll("button")) sibling.setAttribute("aria-pressed", String(sibling === button));
+    });
+    spineView.append(button);
+  }
+  stage.querySelector("#stage")!.after(spineView);
+  const exportRow = document.createElement("div");
+  exportRow.className = "stl-export";
+  const exportButton = document.createElement("button");
+  exportButton.type = "button"; exportButton.className = "btn";
+  exportButton.textContent = "Export STL";
+  const exportNote = document.createElement("span");
+  exportNote.textContent = "Current shape · mm · lightly smoothed";
+  exportNote.setAttribute("role", "status");
+  exportButton.addEventListener("click", () => {
+    exportButton.disabled = true;
+    exportNote.textContent = "Smoothing the current shape…";
+    const snapshot = viewer!.snapshot();
+    // Allow the busy state to paint before processing the captured mesh.
+    setTimeout(() => {
+      try {
+        const url = URL.createObjectURL(new Blob([silverSTL(snapshot.meshes)], { type: "model/stl" }));
+        const link = document.createElement("a");
+        link.href = url; link.download = `${snapshot.name.replace(/[^a-z0-9._-]/gi, "-")}.stl`;
+        document.body.append(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        exportNote.textContent = "STL saved · mm · lightly smoothed";
+      } catch (error) {
+        console.error("Could not export ring", error);
+        exportNote.textContent = "Export failed. Please try again.";
+      } finally { exportButton.disabled = false; }
+    }, 0);
+  });
+  exportRow.append(exportButton, exportNote);
+  spineView.after(exportRow);
+  const description = document.getElementById("silver-shape-description");
+  const inlineDescription = description?.innerHTML || "";
+  const syncSpineView = () => {
+    const isRoots = root.getElementById("piece-name")!.textContent === "Roots Ring";
+    spineView.hidden = isRoots;
+    root.host.toggleAttribute("data-roots", isRoots);
+    if (description) description.innerHTML = isRoots ? "Roots keeps its three original cupped heads. The recording grows more around the front and sides: peaks set the number, intensity sets the size, and the waveform distributes their angles. Rounded cups and curved stems retain a minimum thickness. Select a recording for a silent preview, or press <b>Play sound</b>." : inlineDescription;
+  };
+  new MutationObserver(syncSpineView).observe(root.getElementById("piece-name")!, { childList: true });
+  syncSpineView();
   root.querySelector<HTMLCanvasElement>("#stage canvas")!.setAttribute("aria-label", "Interactive ring shaped by the recording; drag to turn");
   syncPhoto();
   host.querySelector(".silver-loading")?.remove();

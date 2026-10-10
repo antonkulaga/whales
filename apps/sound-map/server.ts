@@ -6,6 +6,8 @@ import { mkdir, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import index from "./src/index.html";
 import { contentType, readableLog, safeJoin } from "./src/lib/paths.ts";
+import { SILVER_AUDIO_METHODS } from "./src/lib/silver-audio.ts";
+import { SILVER_AUDIO_RUNTIME } from "./src/lib/silver-performance.ts";
 import type { CombineMessage, ComboSummary, GenerationRuntime, Manifest } from "./src/lib/types.ts";
 
 const ROOT = resolve(process.env.WHALES_ROOT ?? join(import.meta.dir, "..", ".."));
@@ -240,11 +242,13 @@ async function silverViewerModule(): Promise<Response> {
       .replace('const w = stage.clientWidth, h = stage.clientHeight;', 'const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;')
       .replace(' · ${piece.triangle_count.toLocaleString()} triangles shown', '')
       .replace('mode: "silver", ghost: true', 'mode: "silver", ghost: false')
+      .replace('const INTEGRATED_VIEWER = false;', 'const INTEGRATED_VIEWER = true;')
       .replace('ghost.visible = true; scene.add(ghost);', 'ghost.visible = false; scene.add(ghost);')
       .replaceAll('"Play and bend"', '"▶ Play sound"')
       .replace('textContent = "Stop"', 'textContent = "■ Stop sound"')
       .replace('Drag to turn the ring. Play bends it as the sound plays.', 'Drag to turn the ring.');
     return new Response(`${module}
+${SILVER_AUDIO_RUNTIME}
 let previewOrigin = performance.now(), lastPreview = 0, previousPlaying = false;
 let previewSound = state.sound, previewPiece = state.piece;
 function animateViewer() {
@@ -252,18 +256,35 @@ function animateViewer() {
   if (state.playing !== previousPlaying || sound !== previewSound || state.piece !== previewPiece) {
     previewOrigin = now; previousPlaying = state.playing; previewSound = sound; previewPiece = state.piece;
   }
-  if (!state.playing && now - lastPreview >= 50) {
+  if (!state.playing && !state.held && !(state.piece.id === "inline" && state.spineNeutral) && now - lastPreview >= (rotating ? 150 : 50)) {
     // A silent loop makes the sound-to-form interaction visible before the first click.
     const elapsed = (now - previewOrigin) / 1000 * Number($("speed").value);
     state.t = Math.min(elapsed % (sound.duration_s + 0.35), sound.duration_s);
     update(); lastPreview = now;
   }
-  $("preview-note").textContent = state.playing ? "Playing at ¼ speed" : "Silent preview";
-  $("play").setAttribute("aria-pressed", String(state.playing));
+  const note=state.piece.id === "inline" && state.spineNeutral ? "Neutral spine" : state.playing ? (Number($("speed").value) === 1 ? "Playing" : "Playing at ¼ speed") : state.held ? "Generated shape · drag to inspect" : "Silent preview";
+  if ($("preview-note").textContent !== note) $("preview-note").textContent=note;
+  for (const button of root.querySelectorAll(".spine-view button")) {
+    const pressed=String((button.dataset.neutral === "true") === state.spineNeutral);
+    if (button.getAttribute("aria-pressed") !== pressed) button.setAttribute("aria-pressed",pressed);
+  }
+  const playing=String(state.playing);
+  if ($("play").getAttribute("aria-pressed") !== playing) $("play").setAttribute("aria-pressed",playing);
   arcLine.visible = state.playing;
-  controls.update(); renderer.render(scene, camera);
+  const moved=controls.update();
+  if (moved || needsRender) { renderer.render(scene, camera); needsRender=false; }
 }
-return { setActive(active) {
+return { ${SILVER_AUDIO_METHODS} snapshot() {
+  // Copy the displayed metal synchronously so playback cannot change this export.
+  const meshes = [mesh, ...(rootsHeads.visible ? [rootsHeads] : [])].map(object => ({
+    positions: new Float32Array(object.geometry.getAttribute("position").array),
+    indices: new Uint32Array(object.geometry.getIndex().array),
+  }));
+  const sound = state.live || state.sound;
+  const shape = state.piece.id === "inline" && state.spineNeutral ? "neutral" : sound.id;
+  const moment = Number.isFinite(state.t) ? state.t.toFixed(2) + "s" : "complete";
+  return { meshes, name: state.piece.id + "-" + shape + "-" + moment };
+}, setSpineNeutral(neutral) { stop(); state.held = false; state.spineNeutral = neutral; previewOrigin = performance.now(); state.t = 0; update(); }, setActive(active) {
   if (!active) stop();
   renderer.setAnimationLoop(active ? animateViewer : null);
   if (active) resize();
