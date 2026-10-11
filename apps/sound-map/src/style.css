@@ -318,6 +318,21 @@ h1 em { font: italic 1.12em/.95 var(--serif); letter-spacing: -.04em }
 .research-context p { font-size: .78rem; color: var(--muted) }
 .research-context p + p { margin-top: 14px }
 .research-context .text-link { margin-top: 12px; font-size: .72rem }
+.silver-research { padding: 30px; background: #faf8f2f2 }
+.silver-research h2 { font: 400 2rem/1.15 var(--serif); letter-spacing: -.025em; margin: 12px 0 18px }
+.silver-research h3 { font: 400 1.6rem/1.2 var(--serif); margin: 28px 0 14px }
+.silver-research p { font-size: .95rem; color: var(--muted) }
+.silver-research p + p { margin-top: 16px }
+.inscription-results { width: 100%; max-width: 75ch; margin: 24px 0; border-collapse: collapse; font-size: .9rem }
+.inscription-results caption { text-align: left; color: var(--muted); font-size: .8rem; margin-bottom: 12px }
+.inscription-results th, .inscription-results td { padding: 10px 12px; border-bottom: 1px solid var(--rule); text-align: left }
+.inscription-results tbody th { font-weight: 400 }
+.inscription-results td { font-family: var(--mono); white-space: nowrap }
+.inscription-results th:first-child { padding-left: 0 }
+@media (max-width: 640px) {
+  .silver-research { padding: 24px 18px }
+  .inscription-results th, .inscription-results td { padding: 10px 6px }
+}
 /* Detailed sound sources on the technical page, PANGAEA and DCLDE first. */
 .sources { border: 1px solid var(--rule); padding: 30px; background: #faf8f2f2 }
 .sources .section-heading p { max-width: 64ch; font-size: .8rem; color: var(--muted) }

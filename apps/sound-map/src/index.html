@@ -112,8 +112,9 @@
 
       <section class="research-context" aria-labelledby="development-title">
         <div><span class="section-number">Development &amp; models</span><h2 id="development-title">Tools, choices and authorship.</h2><p>We used Claude Code and OpenAI Codex to help develop and debug the software. Livia Zaharia and Anton Kulaga define the project concept, artistic direction and methodological choices, make the final decisions, and take responsibility for the work.</p></div>
-        <div><p><b>Measuring the recordings.</b> Signal analysis extracts call timing and pitch contours. Our code maps those measurements to instruments and registers, then combines them into a playable audio guide.</p><p><b>Generating the music.</b> We run <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5's pretrained base checkpoint</a> locally. Its diffusion transformer generates music from the combined audio guide and a caption. Our current pipeline leaves the model's optional language-model planning stage disabled.</p><p><b>Checking the response.</b> A deterministic musical response provides a comparison, and timing scores test how closely the generated music follows the measured events. Original recordings, constructed guides and generated music remain separately playable.</p><a href="https://github.com/Livia-Zaharia/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">Generation settings and phrase tests</a></div>
+        <div><p><b>Measuring the recordings.</b> Signal analysis extracts call timing and pitch contours. Our code maps those measurements to instruments and registers, then combines them into a playable audio guide.</p><p><b>Generating the music.</b> We run <a href="https://huggingface.co/ACE-Step/acestep-v15-base" target="_blank" rel="noopener noreferrer">ACE-Step 1.5's pretrained base checkpoint</a> locally. Its diffusion transformer generates music from the combined audio guide and a caption. Our current pipeline leaves the model's optional language-model planning stage disabled.</p><p><b>Checking the response.</b> A deterministic musical response provides a comparison, and timing scores test how closely the generated music follows the measured events. Original recordings, constructed guides and generated music remain separately playable.</p><p data-server-only>Jewellery methods and digital tests are on the <a href="?view=silver" data-show-view="silver">Sound to silver page</a>.</p></div>
       </section>
+
 
       <section class="sources" id="sources" aria-labelledby="sources-title">
         <div class="section-heading"><div><span class="section-number">Sound sources</span><h2 id="sources-title">Where the voices come from.</h2></div>
@@ -195,7 +196,7 @@
             <li>Add recordings, check our phrase measurements against expert annotations, and explore how shipping noise masks calls with the <a href="https://hifmb.de/research/working-groups/marine-acoustic-underwater-diversity-maud/" target="_blank" rel="noopener noreferrer">Marine Acoustic Underwater Diversity</a> group.</li>
             <li>Use long-term recordings to show how a site's sound changes across seasons, with researchers in <a href="https://hifmb.de/research/working-groups/biodiversitaetstheorie/" target="_blank" rel="noopener noreferrer">biodiversity theory</a> and <a href="https://hifmb.de/research/working-groups/ecosystem-data-science/" target="_blank" rel="noopener noreferrer">ecosystem data science</a>.</li>
             <li>Add protected areas and shipping lanes to the map with <a href="https://hifmb.de/research/working-groups/marine-conservation/" target="_blank" rel="noopener noreferrer">Marine Conservation</a> and <a href="https://hifmb.de/research/working-groups/marine-governance/" target="_blank" rel="noopener noreferrer">Marine Governance</a>, and study visitors' responses to ocean sound with the qualitative research lab.</li>
-            <li>Improve the <a href="https://github.com/Livia-Zaharia/whales/blob/main/docs/follow-the-phrase.md" target="_blank" rel="noopener noreferrer">current method</a> with researchers and musicians: compare bioacoustic detectors and music models, choose instruments and registers, and test how closely the music follows the measured calls.</li>
+            <li>Improve the <a href="?view=technical" data-show-view="technical">current method</a> with researchers and musicians: compare bioacoustic detectors and music models, choose instruments and registers, and test how closely the music follows the measured calls.</li>
           </ul>
           <p>Related work includes <i>Mirrors</i> (2023), by Geraint Rhys Whittaker, Kimberley Peters and Ilse van Opzeeland, which follows a minke whale's acoustic journey and is described in their <a href="https://doi.org/10.1016/j.emospa.2025.101067" target="_blank" rel="noopener noreferrer">2025 paper</a>.</p>
         </div>
@@ -223,10 +224,33 @@
       </section>
 
       <div class="silver-notes">
-        <p>The <a href="https://github.com/Livia-Zaharia/whales/blob/main/docs/sound-to-silver-bending.md" target="_blank" rel="noopener noreferrer">ring-bending study</a> works with Livia's Inline and Roots models and checks how far each can move while remaining suitable for casting. This is an artistic mapping of measured sound; it does not decode animal meaning. The same method can be applied to other forms Livia designs.</p>
+        <p>Sound shapes these forms through artistic mappings chosen by Livia. The same approach can be applied to other forms she designs.</p>
         <p><b>Planned editions.</b> Website visitors will be able to choose a recording and download its sound-shaped STL. At installations, a small batch of 3D printed pieces made from the default sound combinations will be available to take or buy to support the research.</p>
         <p>A limited cast-silver edition is planned for visitors who donate to marine-science and conservation causes. Each installation will name the beneficiary and state the donation amount.</p>
       </div>
+
+      <section class="silver-research" id="hardata-ii" aria-labelledby="silver-research-title">
+        <span class="section-number">Jewellery / Digital tests</span>
+        <h2 id="silver-research-title">Digital jewellery tests.</h2>
+        <p>Earlier whole-ring bending tests checked finger openings, wall thickness and gaps on Livia's Inline and Roots models. The current additive previews still need their parts joined and checked before fabrication.</p>
+
+        <h3>Hardata II: keeping a whistle's contour.</h3>
+        <p>The pilot asks which features of a dolphin whistle can survive a compact inscription. Its input is the annotated pitch contour from an <a href="https://huggingface.co/datasets/dolphinteam/OpenWhistle-Classification-Finetuning" target="_blank" rel="noopener noreferrer">OpenWhistle recording</a>. We sample the contour at 32 points, store each pitch in 8 bits, and add 16 bits for start and end times: 272 bits per whistle. A constant-amplitude tone reconstructed from those measurements is the output. A separate version maps time around a ring band and pitch across its width, forming a groove.</p>
+        <p>Using the <a href="https://huggingface.co/dolphinteam/OpenWhistle-Wav2Vec2.0" target="_blank" rel="noopener noreferrer">dolphin-trained OpenWhistle encoder</a>, we trained a classifier on original recordings and tested it on the same 420 held-out whistles in each condition. Recording sessions are separate across the training, validation and test sets. The labels are six whistle types: five signature types associated with named dolphins and one shared non-signature type. They identify types, rather than verified callers.</p>
+        <table class="inscription-results">
+          <caption>Hardata II pilot · 7 October 2026. Macro-F1 averages the classification score equally across the six whistle types; it is not percentage accuracy.</caption>
+          <thead><tr><th scope="col">Audio tested</th><th scope="col">Macro-F1</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Original recordings</th><td>0.822</td></tr>
+            <tr><th scope="row">Tones from 272-bit pitch contours</th><td>0.617</td></tr>
+            <tr><th scope="row">Reversed contours</th><td>0.229</td></tr>
+            <tr><th scope="row">Flat tones at each whistle's mean pitch</th><td>0.256</td></tr>
+            <tr><th scope="row">Amplitude-only reconstruction, following Hardata (2021)</th><td>0.096</td></tr>
+          </tbody>
+        </table>
+        <p>Some distinctions between whistle types remain in the contour tones. Reversing or flattening the contour reduces the classifier's score, suggesting that contour shape matters to this model. This tests a model's response, not what dolphins hear or what their calls mean.</p>
+        <p>The groove version also retained type distinctions after simulated blur and surface noise. That digital simulation does not establish casting tolerance: printing, casting and polishing tests remain to be done.</p>
+      </section>
     </main>
     <main id="about-panel" class="view-panel technical about" role="tabpanel" aria-labelledby="about-tab" tabindex="0" hidden>
       <section class="technical-hero"><span class="eyebrow">About</span><h1>Architecture, nature<br>and <em>measured sound.</em></h1><p>Whale &amp; Dolphin Orchestra grows from Livia Zaharia's practice as a Romanian architect, established parametric jewellery designer and science-art artist. It brings her work with computational form into marine sound and silver, in a pre-project prototype for the HIFMB × HWK ArtWaves residency. Anton Kulaga contributes bioinformatics, longevity research and open-source software.</p></section>
